@@ -1,0 +1,106 @@
+# schema-versions.yaml — 跨仓契约版本注册表（Peak v3 §30 / §29 DOC3-09）
+#
+# 规则（§30）：
+#   - minor 向后兼容
+#   - breaking change 升 major
+#   - Consumer 必须明确支持版本
+#   - 不认识的 major → BLOCKED，不猜
+#   - 禁止多个仓复制 schema 后各改一版
+#
+# canonical 位置：ai-programming-docs/shared/
+# 各仓测试时拉 release copy 或安装 bundle。
+
+schema_name: schema-versions
+schema_version: 1
+
+# ── 契约注册表 ──────────────────────────────────────────────────────
+contracts:
+
+  handoff:
+    file: shared/handoff-schema.yaml
+    schema_version: 1
+    major: 1
+    minor: 0
+    status: ACTIVE
+    compatible_consumers:
+      - ai-design
+      - ai-code
+      - ai-debug
+    breaking_history: []
+
+  release-manifest:
+    file: shared/release-manifest.yaml
+    schema_version: 1
+    major: 1
+    minor: 0
+    status: ACTIVE
+    compatible_consumers:
+      - build_release.py
+      - verify_skill_drift.py
+      - validate_bundle.py
+      - install.ps1
+    breaking_history: []
+
+  capability-registry:
+    file: shared/capability-registry.yaml
+    schema_version: 1
+    major: 1
+    minor: 0
+    status: ACTIVE
+    compatible_consumers:
+      - validate_bundle.py
+      - install.ps1
+    breaking_history: []
+
+  verification-policy:
+    file: shared/verification-policy.yaml
+    schema_version: 1
+    major: 1
+    minor: 1
+    status: ACTIVE
+    compatible_consumers:
+      - ai-code
+      - ai-design
+    breaking_history: []
+
+  deploy-bundle:
+    file: deploy.bundle.yaml
+    schema_version: 2
+    major: 2
+    minor: 0
+    status: ACTIVE
+    compatible_consumers:
+      - install.ps1
+      - validate_bundle.py
+    breaking_history:
+      - version: 1
+        version_2_breaks: "新增 release 段（manifest/capability_registry/schema_versions 指针）"
+        note: "v1 仍可被 install.ps1 读取（release 段可选）"
+
+  requirementmind-state:
+    file: skills/ai-requirement/schemas/state.schema.json
+    schema_version: 1
+    major: 1
+    minor: 0
+    status: ACTIVE
+    compatible_consumers:
+      - requirement-mind
+      - ai-requirement
+    breaking_history: []
+
+# ── Consumer 最低支持版本（不满足则 BLOCKED）────────────────────────
+consumer_requirements:
+  install.ps1:
+    handoff: ">=1.0 <2.0"
+    release-manifest: ">=1.0 <2.0"
+    deploy-bundle: ">=1.0 <3.0"
+  validate_bundle.py:
+    deploy-bundle: ">=1.0 <3.0"
+    release-manifest: ">=1.0 <2.0"
+    capability-registry: ">=1.0 <2.0"
+
+# 版本号语法约定
+versioning:
+  format: "major.minor"
+  unknown_major_policy: BLOCKED
+  note: "不认识的 major 一律 BLOCKED，禁止猜测兼容"

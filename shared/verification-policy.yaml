@@ -1,0 +1,21 @@
+# 风险→Gate 映射（v1.1 §10.3 / §29）。/ai-verify 已退役；本文件仍为档位 SSOT，由 /ai-code LOCAL SELF-CHECK 对照。
+
+# 契约身份（Peak v3 §30 强制）。注册表：shared/schema-versions.yaml
+schema_name: verification-policy
+schema_version: 1
+
+risk_floor:
+  auth: { min: R3 }
+  payment: { min: R3 }
+  production_config: { min: R4 }
+  db_migration: { min: R3 }
+  permission_model: { min: R3 }
+
+required_gates:
+  R0: [format]
+  R1: [build, targeted_tests]
+  R2: [build, tests, scenario_matrix]
+  R3: [R2, independent_review]
+  R4: [R3, human_approval]
+
+note: 阈值示例，非硬编码最终值；生效前须按仓校准。

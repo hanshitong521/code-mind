@@ -1,0 +1,121 @@
+# capability-registry.yaml — 能力归属与阶段路由（Peak v3 §14.2 / §29 DOC3-02）
+#
+# 解决两个问题：
+#   1. 一个状态只有一个权威 Owner（I-01）—— 谁负责哪类能力，登记在此。
+#   2. Tool Budget —— Agent 只暴露当前阶段需要的工具（§9.8 / §14.3），而不是
+#      一次性把所有 MCP 工具塞给模型。
+#
+# 消费方式：Agent 进入某阶段 → 只加载该阶段 + phase:all 的能力。
+
+schema_name: capability-registry
+schema_version: 1
+
+# ── 能力清单 ─────────────────────────────────────────────────────────
+capabilities:
+
+  # WHAT —— 需求冻结
+  requirement.clarify:
+    owner: requirement-mind
+    phase: requirement
+    description: 需求追问与取证，产出 UNKNOWN/QUESTION
+  requirement.freeze:
+    owner: requirement-mind
+    phase: requirement
+    description: 冻结决策，产出 FROZEN 决策（下游唯一真源）
+  requirement.gate:
+    owner: requirement-mind
+    phase: requirement
+    description: Requirement Gate，判定 READY_FOR_DEVELOPMENT
+
+  # WHY —— 长期记忆
+  brain.search:
+    owner: project-brain-agent
+    phase: design,coding,debug
+    description: 召回历史 WHY（ADR / Bug 根因）
+  brain.write:
+    owner: project-brain-agent
+    phase: verification
+    description: 选择性沉淀（须过 promotion gate，非每次 PASS 都写）
+    gate: promotion_required
+
+  # CTX —— 上下文治理
+  context.fetch:
+    owner: token-mind
+    phase: all
+    description: 最小充分上下文获取
+  context.orient:
+    owner: token-mind
+    phase: coding,debug
+    description: Java 代码结构定位（替代整读 ServiceImpl）
+
+  # HOW / DO —— 设计与实现
+  design.plan:
+    owner: ai-programming-docs
+    phase: design
+    skill: ai-design
+    description: 产出 plan + Handoff
+  code.implement:
+    owner: ai-programming-docs
+    phase: coding
+    skill: ai-code
+    description: 最小正确 diff
+  debug.rootcause:
+    owner: ai-programming-docs
+    phase: debug
+    skill: ai-debug
+    description: 根因定位（未钉根因禁进修复）
+
+  # VERIFY —— 验证
+  test.run:
+    owner: test-mind
+    phase: verification
+    description: 真实执行 + Evidence Gate（无执行不 PASS）
+
+  # LEAN —— 瘦身约束
+  lean.review:
+    owner: concise-mind
+    phase: coding,review
+    description: 最小正确 diff 审查（Overlay，不替代 ai-code gate）
+
+# ── 阶段 → 能力路由（Tool Budget 依据）──────────────────────────────
+phases:
+  requirement:
+    - requirement.clarify
+    - requirement.freeze
+    - requirement.gate
+    - context.fetch
+  design:
+    - brain.search
+    - context.fetch
+    - design.plan
+  coding:
+    - brain.search
+    - context.fetch
+    - context.orient
+    - code.implement
+    - lean.review
+  debug:
+    - brain.search
+    - context.fetch
+    - context.orient
+    - debug.rootcause
+  verification:
+    - test.run
+    - brain.write
+    - context.fetch
+    - lean.review
+
+# ── 独占声明：同一状态禁止双 Owner（I-01 / I-08）────────────────────
+exclusive_owners:
+  requirement_state: requirement-mind
+  why_memory: project-brain-agent
+  context_policy: token-mind
+  engineering_policy: ai-programming-docs
+  verification: test-mind
+  lean_overlay: concise-mind
+  git_source_code: git
+
+# 预算：单阶段默认暴露工具数上限（§14.3）
+tool_budget:
+  default_max_tools_per_phase: 12
+  note: "超出须在 task bundle 中显式声明理由"

@@ -1,0 +1,107 @@
+schema_name: release-manifest
+schema_version: 1
+control_plane:
+  repo: ai-programming-docs
+  local_path: .
+  canonical_for_skills: true
+external_sources:
+  requirement-mind:
+    repo: hanshitong521/requirement-mind
+    kind: external
+    local_path: requirement-mind
+    source_ref: null
+    note: canonical 在独立仓；本仓 skills/ai-requirement 为发布副本
+  concise-mind:
+    repo: hanshitong521/concise-mind
+    kind: external
+    local_path: concise-mind
+    source_ref: null
+    note: canonical 在独立仓；本仓 skills/ai-concise 为发布副本
+skills:
+  ai-code:
+    status: CANONICAL_LOCAL
+    source_repo: ai-programming-docs
+    source_ref: WORKING_TREE
+    source_path: skills/ai-code
+    artifact_path: skills/ai-code
+    content_hash: sha256:a5139c31d70145931557ada5653c9d2091e1fccf0c103708ba94758b37cfa7c0
+    version: 7.0.0
+    schema_version: 1
+    editable: true
+  ai-design:
+    status: CANONICAL_LOCAL
+    source_repo: ai-programming-docs
+    source_ref: WORKING_TREE
+    source_path: skills/ai-design
+    artifact_path: skills/ai-design
+    content_hash: sha256:fa99370acd0fab6f120162f978b9bd7344dbbb5cfc8726c4cf167303da23880f
+    version: 5.0.0
+    schema_version: 1
+    editable: true
+  ai-debug:
+    status: CANONICAL_LOCAL
+    source_repo: ai-programming-docs
+    source_ref: WORKING_TREE
+    source_path: skills/ai-debug
+    artifact_path: skills/ai-debug
+    content_hash: sha256:828d425f2f41ad0df40d12f38507708e3bb70ceb4c5b2bb5297c2a97fec8d81e
+    version: 1.1.0
+    schema_version: 1
+    editable: true
+  ai-requirement:
+    status: VENDORED_RELEASE_COPY
+    source_repo: hanshitong521/requirement-mind
+    source_ref: null
+    source_path: SKILL.md
+    artifact_path: skills/ai-requirement
+    content_hash: sha256:bbef23f16176c02b7995503731dc293feb5d8adf3595395573ff8511edc08c32
+    version: null
+    schema_version: 1
+    editable: false
+    compare:
+      mode: single_file
+      canonical_file: SKILL.md
+      release_file: SKILL.md
+  ai-concise:
+    status: VENDORED_RELEASE_COPY
+    source_repo: hanshitong521/concise-mind
+    source_ref: null
+    source_path: SKILL.md
+    artifact_path: skills/ai-concise
+    content_hash: sha256:654039d0257fba8ac7f6b4cd6d5f33cbe4432b23300d73a15b96bc90ec5db50e
+    version: null
+    schema_version: 1
+    editable: false
+    compare:
+      mode: single_file
+      canonical_file: SKILL.md
+      release_file: SKILL.md
+shared_contracts:
+  shared/core.md:
+    content_hash: sha256:36c862a69fb3c6f7e9f6ea272e4b8f735ecd85b85e2bb01df0bca60aea2375cd
+    schema_version: 1
+  shared/handoff-schema.yaml:
+    content_hash: sha256:7219448d296077fbd30a386508560a80ccf21442651d4ffe15539c377ed29ee0
+    schema_version: 1
+  shared/verification-policy.yaml:
+    content_hash: sha256:e234c4113d0c5b70a9ba80cee7e3293a578bf4b8a69e5d5369d912da31cf08c0
+    schema_version: 1
+  shared/capability-registry.yaml:
+    content_hash: sha256:1257c5b968e577aa25d4e26ac6efd5f2fc0b7373e1ce87cc8cf978eea493ed8e
+    schema_version: 1
+  shared/schema-versions.yaml:
+    content_hash: sha256:8cb577d433dfdf7e88f3c04e3fba9a6632da5bdb1868a3ee6120428459bcb31c
+    schema_version: 1
+drift_verdicts:
+- PASS
+- DRIFT
+- MISSING
+- UNTRACKED
+hash:
+  algorithm: sha256
+  normalize:
+    line_endings: LF
+    trailing_whitespace: strip
+    exclude:
+    - .gitignore
+    - evals.json

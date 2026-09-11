@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 安装回滚快照
+.skill-rollback/
+docs/_pre_p0_backup/
+
+# 临时验证输出
+*_out.txt
+*_hc*.txt
+*_vh*.txt
+*_s*.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# 本地 DB 配置（凭证不入库）
+.env
+.skill-db.env
+scripts/db_config.*
+!scripts/db_config.example.*
+
+# 本机工程路径（Phase 1 runtime-context）
+runtime-context.local.yaml
+
+# 本机 IDE / 索引（勿上传）
+.codeartsdoer/
+.codegraph/
+.merkle-snapshot.json

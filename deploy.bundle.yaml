@@ -1,0 +1,36 @@
+# Deploy bundle (SSOT)：增删 skill 只改本文件，然后 install.ps1 -Force
+# P0 合并：保留工作区新增的 ai-requirement / ai-concise（与 §1.1 审计一致），
+#          恢复 HEAD 的 version/package 元数据与全部 legacy_skill_names。
+version: 2
+package: engineering-control-plane
+
+# 契约身份（Peak v3 §30 强制）。注册表：shared/schema-versions.yaml
+schema_name: deploy-bundle
+schema_version: 2
+
+skills:
+  - ai-design
+  - ai-code
+  - ai-debug
+  - ai-requirement
+  - ai-concise
+
+install_shared: true
+
+# 发布控制面（P0）。canonical source 清单见 shared/release-manifest.yaml。
+release:
+  manifest: shared/release-manifest.yaml
+  capability_registry: shared/capability-registry.yaml
+  schema_versions: shared/schema-versions.yaml
+  require_hash_verify: true
+  backup_before_install: true
+
+# 卸载时顺带清理的旧目录（曾装过、源已删或已退役）
+legacy_skill_names:
+  - ask-matt
+  - ai-verify
+  - handoff
+  - skill-meta
+  - java-spec
+  - agent-runtime
+  - session-hygiene

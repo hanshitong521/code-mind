@@ -1,0 +1,183 @@
+# Handoff 结构化契约（JSON Schema 兼容 YAML 表示）
+#
+# 三种 Handoff 的字段契约。scripts/validate_handoff.py 据此校验。
+# Handoff 实例须为 SKILL.md / handoff-template.md 中的 ```yaml 代码块，
+# 或独立 .yaml 文件。校验失败 → Handoff 不合格，下游 Skill 拒绝消费。
+#
+# 设计原则：
+#   - 必填字段缺失 → FAIL（下游无法安全消费）
+#   - 选填字段缺失 → PASS（仅警告）
+#   - 字段值须为行为契约层（模块/表/接口/状态机），禁止文件路径/行号
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+
+# ── 契约身份（Peak v3 §30 强制）──────────────────────────────────
+# 所有跨仓 JSON/YAML 契约必须声明 schema_name + schema_version。
+# 规则：minor 向后兼容；breaking change 升 major；不认识的 major → BLOCKED。
+# 注册表：shared/schema-versions.yaml
+schema_name: handoff
+schema_version: 1
+
+# ── design → code ──────────────────────────────────────────────
+design_to_code:
+  description: "设计阶段产出，交给 /ai-code 实现"
+  type: object
+  required:
+    - 变更面
+    - plan路径
+    - 范围
+    - 验收
+    - 验证档位
+    - 建议下一步
+  properties:
+    变更面:
+      type: string
+      description: "从路径推断，如 backend/api、pkg/auth；行为层非文件路径"
+    plan路径:
+      type: string
+      pattern: '^@.+\.(plan|md)(\.md)?$'
+      description: "引用 plan，不复制全文"
+    假设:
+      type: string
+      description: "我理解的问题是…"
+    范围:
+      type: string
+      description: "模块 + 表 + 接口（行为层）"
+    验收:
+      type: string
+      description: "验收表 #N 全部独立可测"
+    验证档位:
+      type: string
+      enum: [micro-fix, local-fix, surface, pr-ready, release]
+    待代码确认:
+      type: string
+    规则演进:
+      type: string
+      description: "本任务暴露的全局准则缺口；无则「无」"
+    建议下一步:
+      type: string
+      enum: [/ai-design, /ai-code, /ai-debug, 无]
+    接入门:
+      type: string
+      description: "可选；涉及 DB/服务器须先走接入门（结构化提问）。值：已填 | 跳过(原因)"
+    identity_matrix:
+      type: string
+      enum: [yes, na]
+      description: "过滤/权限/tenant 类须 yes；na 须写原因"
+    verification_escalation:
+      type: string
+      enum: [yes, na]
+      description: "命中升档表时 yes"
+
+# ── design → test ──────────────────────────────────────────────
+design_to_test:
+  description: "设计阶段产出，交给 /ai-code 先测后改（LOCAL SELF-CHECK）"
+  type: object
+  required:
+    - plan路径
+    - 只验SQL或含API
+    - 测试库写操作
+    - 建议下一步
+  properties:
+    plan路径:
+      type: string
+      pattern: '^@.+\.(plan|md)(\.md)?$'
+    基址:
+      type: string
+      description: "若测 API，http://localhost:PORT/context"
+    夹具:
+      type: string
+      description: "userId=… entityId=…（当次 plan + SELECT，禁止抄历史）"
+    只验SQL或含API:
+      type: string
+      enum: [只验SQL, 含API]
+    测试库写操作:
+      type: string
+      description: "用户是否授权 UPDATE/INSERT（须进入 /ai-code 探针流程）"
+    建议下一步:
+      type: string
+      enum: [/ai-design, /ai-code, /ai-debug, 无]
+    接入门:
+      type: string
+      description: "可选；涉及 DB/服务器须先走接入门（结构化提问）。值：已填 | 跳过(原因)"
+
+# ── code → test ────────────────────────────────────────────────
+code_to_test:
+  description: "编码阶段产出，本 skill 自检（compile+探针）"
+  type: object
+  required:
+    - 变更面
+    - plan引用
+    - 已跑验证
+    - 未跑验证
+    - 建议下一步
+  properties:
+    变更面:
+      type: string
+    改动文件:
+      type: string
+      description: "本轮触碰的文件列表"
+    plan引用:
+      type: string
+      pattern: '^@.+\.(plan|md)(\.md)?$'
+    已跑验证:
+      type: string
+      description: "L1：构建+触及单测(+写SQL探针) 实际跑过的项 + cmd/exit 结论"
+    验证写库恢复:
+      type: string
+      description: "若有验证写库，附恢复证明（COUNT=0 / 字段已还原）"
+    未跑验证:
+      type: string
+      description: "无 | 矩阵维:… | 原因（如未配DB）。只补此处所列维"
+    剩余风险:
+      type: string
+    规则演进:
+      type: string
+    建议下一步:
+      type: string
+      enum: [/ai-design, /ai-code, /ai-debug, 无]
+    接入门:
+      type: string
+      description: "可选；涉及 DB/服务器须先走接入门（结构化提问）。值：已填 | 跳过(原因)"
+    identity_matrix:
+      type: string
+      enum: [yes, na]
+    verification_escalation:
+      type: string
+      enum: [yes, na]
+
+# ── test → design（SQL 证伪回退）────────────────────────────────
+test_to_design:
+  description: "测试 SQL 证伪后回到设计对齐"
+  type: object
+  required:
+    - 结论
+    - 证据
+    - 建议
+    - 建议下一步
+  properties:
+    结论:
+      type: string
+      enum: [SQL证伪, SQL证实Bug, 全部PASS]
+    证据:
+      type: string
+      description: "SELECT … 结果 …"
+    数据恢复结果:
+      type: string
+      description: "COUNT=0 或字段已还原"
+    建议:
+      type: string
+    建议下一步:
+      type: string
+      enum: [/ai-design, /ai-code, /ai-debug, 无]
+    接入门:
+      type: string
+      description: "可选；涉及 DB/服务器须先走接入门（结构化提问）。值：已填 | 跳过(原因)"
+
+# ── 通用约束（所有 Handoff 类型）────────────────────────────────
+common_constraints:
+  - "禁止文件路径/行号（会过期）；行为契约可写接口/类型/状态机"
+  - "引用 plan 用 @path，不复制全文"
+  - "脱敏：API key、密码、PII 不进 Handoff"
+  - "末尾一行 建议下一步 须在枚举内"
+  - "接入门 为可选字段：涉及 DB/服务器须 已填；用户显式跳过须 跳过(原因)；缺失不阻断校验"

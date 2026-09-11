@@ -1,0 +1,28 @@
+# Minimal handoff contract (v1). Extend with project-specific fields in plan docs.
+version: 1
+required_any:
+  - 变更面
+  - plan路径
+  - 建议下一步
+transitions:
+  design_to_code:
+    required:
+      - 变更面
+      - plan路径
+      - 范围
+      - 验收
+      - 验证档位
+      - 建议下一步
+  code_to_test:
+    required:
+      - 变更面
+      - plan引用
+      - 已跑验证
+      - 未跑验证
+      - 建议下一步
+verification_levels:
+  - micro-fix
+  - local-fix
+  - surface
+  - pr-ready
+  - release

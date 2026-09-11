@@ -1,0 +1,10 @@
+# Deploy bundle for install.ps1
+skills:
+  - ai-design
+  - ai-code
+  - ai-debug
+  - ai-requirement
+  - ai-concise
+legacy_skill_names:
+  - ai-verify
+install_shared: true

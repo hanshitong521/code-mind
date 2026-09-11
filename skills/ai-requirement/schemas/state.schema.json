@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "requirement-mind/state",
+  "title": "RequirementMind .requirementmind/ 状态文件数据模型",
+  "notes": "每个顶层 key 对应一个落盘文件。所有 id 前缀固定；status/priority 等枚举是硬约束，脚本 scripts/state.mjs validate 据此校验。",
+  "session": {
+    "type": "object",
+    "file": "session.json",
+    "required": ["requirement", "phase", "updated_at"],
+    "properties": {
+      "requirement": { "type": "string", "description": "用户需求原文" },
+      "phase": { "enum": ["SCANNED", "PARSED", "GRILLING", "SPEC_COMPILED", "REVIEWED", "VALIDATED", "GATED", "READY"] },
+      "updated_at": { "type": "string" }
+    }
+  },
+  "fact": {
+    "type": "object",
+    "file": "facts.json",
+    "id_prefix": "FACT-",
+    "required": ["id", "category", "statement", "source", "confidence", "status"],
+    "properties": {
+      "id": { "type": "string" },
+      "category": { "enum": ["stack", "structure", "database", "api", "test", "business_rule", "history", "constraint", "doc"] },
+      "statement": { "type": "string" },
+      "source": {
+        "type": "object",
+        "required": ["type", "path"],
+        "properties": {
+          "type": { "enum": ["code", "sql", "doc", "test", "git", "config"] },
+          "path": { "type": "string" },
+          "line": { "type": "integer" }
+        }
+      },
+      "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+      "status": { "enum": ["VERIFIED"] }
+    }
+  },
+  "question": {
+    "type": "object",
+    "file": "questions.json",
+    "id_prefix": "Q-",
+    "required": ["id", "topic", "question", "reason", "priority", "options", "status"],
+    "properties": {
+      "id": { "type": "string" },
+      "topic": { "type": "string" },
+      "question": { "type": "string" },
+      "reason": { "type": "string" },
+      "priority": { "enum": ["BLOCKING", "IMPORTANT", "OPTIONAL"] },
+      "options": { "type": "array", "items": { "type": "string" }, "minItems": 2, "maxItems": 5 },
+      "status": { "enum": ["OPEN", "ANSWERED"] }
+    }
+  },
+  "decision": {
+    "type": "object",
+    "file": "decisions.json",
+    "id_prefix": "DEC-",
+    "required": ["id", "question_id", "decision", "topic", "source", "status", "created_at"],
+    "properties": {
+      "id": { "type": "string" },
+      "question_id": { "type": "string" },
+      "decision": { "type": "string" },
+      "topic": { "type": "string" },
+      "source": { "enum": ["USER"] },
+      "status": { "enum": ["FROZEN", "SUPERSEDED"] },
+      "replaced_by": { "type": ["string", "null"] },
+      "impact": { "type": "array", "items": { "type": "string" } },
+      "created_at": { "type": "string" }
+    }
+  },
+  "assumption": {
+    "type": "object",
+    "file": "assumptions.json",
+    "id_prefix": "ASM-",
+    "required": ["id", "statement", "risk", "source", "status"],
+    "properties": {
+      "id": { "type": "string" },
+      "statement": { "type": "string" },
+      "risk": { "enum": ["HIGH", "MEDIUM", "LOW"] },
+      "source": { "enum": ["MODEL_INFERENCE"] },
+      "status": { "enum": ["UNVERIFIED", "CONFIRMED_AS_FACT", "RESOLVED"] }
+    }
+  },
+  "conflict": {
+    "type": "object",
+    "file": "conflicts.json",
+    "id_prefix": "CON-",
+    "required": ["id", "left", "right", "severity", "status"],
+    "properties": {
+      "id": { "type": "string" },
+      "left": { "type": "string", "description": "一侧陈述，带证据 file:line" },
+      "right": { "type": "string", "description": "另一侧陈述，带证据 file:line" },
+      "severity": { "enum": ["BLOCKING", "IMPORTANT"] },
+      "status": { "enum": ["OPEN", "RESOLVED"] },
+      "resolution_decision_id": { "type": ["string", "null"] }
+    }
+  },
+  "challenge": {
+    "type": "object",
+    "file": "challenges.json",
+    "id_prefix": "CH-",
+    "required": ["id", "claim", "challenge", "evidence", "counterexample", "validation", "severity", "status"],
+    "properties": {
+      "id": { "type": "string" },
+      "claim": { "type": "string" },
+      "challenge": { "type": "string" },
+      "evidence": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+      "counterexample": { "type": "string" },
+      "validation": { "type": "string" },
+      "severity": { "enum": ["BLOCKING", "HIGH", "MEDIUM"] },
+      "status": { "enum": ["PENDING_VALIDATION", "CONFIRMED", "PLAUSIBLE", "REFUTED"] }
+    }
+  },
+  "evidence": {
+    "type": "object",
+    "file": "evidence.json",
+    "id_prefix": "EV-",
+    "required": ["id", "challenge_id", "verdict", "reasoning"],
+    "properties": {
+      "id": { "type": "string" },
+      "challenge_id": { "type": "string" },
+      "verdict": { "enum": ["CONFIRMED", "PLAUSIBLE", "REFUTED"] },
+      "reasoning": { "type": "string", "description": "裁决理由，含 file:line" },
+      "suggested_severity": { "enum": ["BLOCKING", "HIGH", "MEDIUM", null] }
+    }
+  },
+  "gate": {
+    "type": "object",
+    "file": "gate.json",
+    "required": ["status", "checklist", "hard_counters", "missing"],
+    "properties": {
+      "status": { "enum": ["READY_FOR_DEVELOPMENT", "BLOCKED"] },
+      "checklist": {
+        "type": "object",
+        "required": ["business_goal", "scope", "core_flow", "business_rules", "data_model", "api_contract", "state_machine", "validation_rules", "permission", "concurrency", "idempotency", "exception_handling", "compatibility", "acceptance_criteria", "testability", "spec_consistency"],
+        "additionalProperties": { "enum": ["PASS", "FAIL"] }
+      },
+      "hard_counters": {
+        "type": "object",
+        "required": ["blocking_questions", "blocking_conflicts", "critical_assumptions", "unvalidated_high_risks"],
+        "additionalProperties": { "type": "integer", "minimum": 0 }
+      },
+      "missing": { "type": "array", "items": { "type": "string" } },
+      "checked_at": { "type": "string" }
+    }
+  }
+}

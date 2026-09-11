@@ -1,0 +1,46 @@
+{
+  "findings": [
+    {
+      "skill": "ai-code",
+      "layer": "canonical_vs_release",
+      "verdict": "PASS",
+      "path": "skills/ai-code",
+      "detail": "canonical == release"
+    },
+    {
+      "skill": "ai-design",
+      "layer": "canonical_vs_release",
+      "verdict": "PASS",
+      "path": "skills/ai-design",
+      "detail": "canonical == release"
+    },
+    {
+      "skill": "ai-debug",
+      "layer": "canonical_vs_release",
+      "verdict": "PASS",
+      "path": "skills/ai-debug",
+      "detail": "canonical == release"
+    },
+    {
+      "skill": "ai-requirement",
+      "layer": "canonical_vs_release",
+      "verdict": "PASS",
+      "path": "SKILL.md",
+      "detail": "canonical == release [SKILL.md]"
+    },
+    {
+      "skill": "ai-concise",
+      "layer": "canonical_vs_release",
+      "verdict": "DRIFT",
+      "path": "SKILL.md",
+      "detail": "canonical(hanshitong521/concise-mind) sha256:eaea50a165df131963b4b54dc4840d5ff5aa04060606c66b85983e0d458a9598 != release sha256:15f6913907cf717c0721edbcf6929374b49b08615e9b2c4affee1ac80b647488 [SKILL.md]"
+    }
+  ],
+  "summary": {
+    "PASS": 4,
+    "DRIFT": 1,
+    "MISSING": 0,
+    "UNTRACKED": 0
+  },
+  "ok": false
+}
