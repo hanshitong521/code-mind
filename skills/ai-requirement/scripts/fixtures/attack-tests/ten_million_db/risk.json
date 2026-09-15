@@ -1,0 +1,48 @@
+{
+  "dimensions": {
+    "business_criticality": {
+      "score": 2,
+      "refs": [
+        "FACT-101"
+      ]
+    },
+    "data_impact": {
+      "score": 3,
+      "refs": [
+        "FACT-101"
+      ]
+    },
+    "concurrency_risk": {
+      "score": 2,
+      "refs": [
+        "FACT-103"
+      ]
+    },
+    "security_risk": {
+      "score": 0,
+      "refs": []
+    },
+    "compatibility_risk": {
+      "score": 3,
+      "refs": [
+        "FACT-103"
+      ]
+    },
+    "irreversibility": {
+      "score": 2,
+      "refs": [
+        "FACT-101"
+      ]
+    },
+    "blast_radius": {
+      "score": 2,
+      "refs": [
+        "FACT-103"
+      ]
+    },
+    "evidence_gap": {
+      "score": 1,
+      "refs": []
+    }
+  }
+}

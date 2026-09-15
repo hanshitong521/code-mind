@@ -20,12 +20,11 @@ contracts:
     file: shared/handoff-schema.yaml
     schema_version: 1
     major: 1
-    minor: 0
+    minor: 1
     status: ACTIVE
     compatible_consumers:
       - ai-design
       - ai-code
-      - ai-debug
     breaking_history: []
 
   release-manifest:

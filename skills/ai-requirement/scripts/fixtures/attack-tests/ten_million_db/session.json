@@ -1,0 +1,5 @@
+{
+  "requirement": "订单列表深翻页性能从 5s 优化到 500ms 以内",
+  "phase": "GRILLING",
+  "updated_at": "2026-09-11T00:00:00.000Z"
+}

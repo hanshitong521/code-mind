@@ -1,0 +1,11 @@
+architecture-beta
+    group client(cloud)[客户端]
+    service user(internet)[用户] in client
+    group app(cloud)[应用层]
+    service api(server)[API 网关] in app
+    service svc(server)[业务服务] in app
+    group data(cloud)[数据层]
+    service db(database)[主库] in data
+    user:R -- L:api
+    api:R -- L:svc
+    svc:B -- T:db

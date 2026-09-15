@@ -1,0 +1,38 @@
+[
+  {
+    "id": "CH-001",
+    "claim": "沿用 order_id 唯一索引可防重复退款",
+    "challenge": "同笔订单多次部分退款将失败",
+    "evidence": [
+      "sql/refunds.sql:8"
+    ],
+    "counterexample": "订单 #1 第一次退 50，第二次退 30 应允",
+    "validation": "核对幂等键 + 多次部分退款语义",
+    "severity": "BLOCKING",
+    "status": "PENDING_VALIDATION"
+  },
+  {
+    "id": "CH-002",
+    "claim": "回调超时可不重试靠对账",
+    "challenge": "对账周期内用户已看到退款但状态未更新",
+    "evidence": [
+      "docs/payment-flow.md:22"
+    ],
+    "counterexample": "用户截图投诉到客服",
+    "validation": "查 oncall 历史",
+    "severity": "HIGH",
+    "status": "PENDING_VALIDATION"
+  },
+  {
+    "id": "CH-003",
+    "claim": "decimal(18,2) 足以表达退款金额",
+    "challenge": "跨境业务可能涉及多币种多精度",
+    "evidence": [
+      "sql/refunds.sql:8"
+    ],
+    "counterexample": "日韩韩元无小数但 BTC 8 位小数",
+    "validation": "查业务覆盖币种",
+    "severity": "MEDIUM",
+    "status": "PENDING_VALIDATION"
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "id": "CON-201",
+    "left": "需求：Agent 可改决策",
+    "right": "R5：冻结决策不可被 Agent 静默覆盖",
+    "severity": "BLOCKING",
+    "status": "OPEN"
+  }
+]

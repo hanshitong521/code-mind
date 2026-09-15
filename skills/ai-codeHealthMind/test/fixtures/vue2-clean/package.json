@@ -1,0 +1,14 @@
+{
+  "name": "vue2-clean-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.27.2",
+    "vue": "^2.7.14",
+    "vue-router": "^3.6.5",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "webpack": "^5.88.0"
+  }
+}

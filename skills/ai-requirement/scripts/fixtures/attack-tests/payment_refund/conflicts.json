@@ -1,0 +1,9 @@
+[
+  {
+    "id": "CON-001",
+    "left": "旧 PRD：退款需 1-3 工作日",
+    "right": "docs/adr/008.md：2026-08 起承诺秒级到账",
+    "severity": "IMPORTANT",
+    "status": "OPEN"
+  }
+]

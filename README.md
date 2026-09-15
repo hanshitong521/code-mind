@@ -3,8 +3,9 @@
 | 路径 | 作用 |
 |------|------|
 | `skills/*/SKILL.md` | 斜杠加载 |
-| `skills/*/references/refs.md` | 细则（按需读） |
-| `skills/ai-design/.../handoff-template.md` | Handoff 示例 |
+| `skills/ai-code/references/lean.md` | `/ai-code` 默认写码路径（随 skill 加载） |
+| `skills/*/references/` | 细则（命中才读；`refs.md` 仅旧锚跳转） |
+| `docs/diagram/design.md` | 设计交付（D7 产出，含 Handoff YAML） |
 | `shared/core.md` | 栈/公理/词汇 |
 | `shared/handoff-schema.yaml` · `verification-policy.yaml` | 契约 |
 | `domain-packs/` | Java8 / ADS |

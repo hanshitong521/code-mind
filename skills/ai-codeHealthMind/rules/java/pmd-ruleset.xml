@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  CodeHealthMind : PMD 6.55 rule set for Java.
+
+  Every rule name below was verified against the actual rule definitions shipped
+  in `pmd-java-6.55.0.jar` (category/java/*.xml).  A wrong name makes PMD abort
+  the whole run, so do not add rules from memory.  Check the jar first:
+
+      jar xf pmd-bin-6.55.0/lib/pmd-java-6.55.0.jar category/java/
+      grep -o 'name="[A-Za-z0-9]*"' category/java/design.xml
+
+  Thresholds mirror `.codehealth.yml -> complexity_thresholds` so the external
+  evidence and the built-in analyzers agree instead of contradicting each other.
+  Note: XML comments may not contain a double hyphen, hence the wording above.
+-->
+<ruleset name="CodeHealthMind Java"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+    <description>
+        Code-health oriented PMD rules: dead code, duplication-adjacent smells,
+        complexity, error handling, resource and concurrency risks.
+    </description>
+
+    <!-- ================================================================
+         Dead code
+         ================================================================ -->
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod"/>
+    <rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
+    <rule ref="category/java/bestpractices.xml/UnusedLocalVariable"/>
+    <rule ref="category/java/bestpractices.xml/UnusedFormalParameter"/>
+    <rule ref="category/java/bestpractices.xml/UnusedAssignment"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryImport"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryLocalBeforeReturn"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryModifier"/>
+    <rule ref="category/java/codestyle.xml/UnnecessaryReturn"/>
+    <rule ref="category/java/codestyle.xml/EmptyControlStatement"/>
+    <rule ref="category/java/design.xml/SingularField"/>
+    <rule ref="category/java/design.xml/ImmutableField"/>
+    <rule ref="category/java/design.xml/UselessOverridingMethod"/>
+
+    <!-- ================================================================
+         Complexity / size
+         ================================================================ -->
+    <rule ref="category/java/design.xml/CyclomaticComplexity">
+        <properties>
+            <property name="methodReportLevel" value="15"/>
+            <property name="classReportLevel" value="80"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/CognitiveComplexity">
+        <properties>
+            <property name="reportLevel" value="15"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/NPathComplexity">
+        <properties>
+            <property name="reportLevel" value="200"/>
+        </properties>
+    </rule>
+    <!--
+      NcssCount replaces the deprecated ExcessiveMethodLength /
+      ExcessiveClassLength pair.  Thresholds mirror complexity_thresholds.
+    -->
+    <rule ref="category/java/design.xml/NcssCount">
+        <properties>
+            <property name="methodReportLevel" value="80"/>
+            <property name="classReportLevel" value="800"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/ExcessiveParameterList">
+        <properties>
+            <property name="minimum" value="6"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/ExcessivePublicCount">
+        <properties>
+            <property name="minimum" value="40"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/TooManyMethods">
+        <properties>
+            <property name="maxmethods" value="30"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/TooManyFields">
+        <properties>
+            <property name="maxfields" value="30"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts">
+        <properties>
+            <property name="problemDepth" value="4"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/CouplingBetweenObjects">
+        <properties>
+            <property name="threshold" value="20"/>
+        </properties>
+    </rule>
+    <rule ref="category/java/design.xml/GodClass"/>
+    <rule ref="category/java/design.xml/CollapsibleIfStatements"/>
+    <rule ref="category/java/design.xml/SimplifyBooleanReturns"/>
+    <rule ref="category/java/design.xml/SimplifyConditional"/>
+    <rule ref="category/java/design.xml/SwitchDensity"/>
+
+    <!-- ================================================================
+         Error handling / correctness smells
+         ================================================================ -->
+    <rule ref="category/java/errorprone.xml/EmptyCatchBlock"/>
+    <rule ref="category/java/errorprone.xml/AvoidCatchingThrowable"/>
+    <rule ref="category/java/errorprone.xml/AvoidCatchingNPE"/>
+    <rule ref="category/java/errorprone.xml/AvoidLosingExceptionInformation"/>
+    <rule ref="category/java/errorprone.xml/DoNotThrowExceptionInFinally"/>
+    <rule ref="category/java/errorprone.xml/BrokenNullCheck"/>
+    <rule ref="category/java/errorprone.xml/CloseResource"/>
+    <rule ref="category/java/errorprone.xml/AssignmentToNonFinalStatic"/>
+    <rule ref="category/java/errorprone.xml/DoNotTerminateVM"/>
+    <rule ref="category/java/design.xml/AvoidCatchingGenericException"/>
+    <rule ref="category/java/design.xml/AvoidThrowingRawExceptionTypes"/>
+    <rule ref="category/java/design.xml/AvoidThrowingNullPointerException"/>
+    <rule ref="category/java/design.xml/ExceptionAsFlowControl"/>
+    <rule ref="category/java/bestpractices.xml/PreserveStackTrace"/>
+    <rule ref="category/java/bestpractices.xml/CheckResultSet"/>
+    <rule ref="category/java/bestpractices.xml/DefaultLabelNotLastInSwitchStmt"/>
+    <rule ref="category/java/bestpractices.xml/MissingOverride"/>
+
+    <!-- ================================================================
+         Concurrency
+         ================================================================ -->
+    <rule ref="category/java/multithreading.xml/DoubleCheckedLocking"/>
+    <rule ref="category/java/multithreading.xml/NonThreadSafeSingleton"/>
+    <rule ref="category/java/multithreading.xml/UseConcurrentHashMap"/>
+    <rule ref="category/java/multithreading.xml/AvoidUsingVolatile"/>
+    <rule ref="category/java/multithreading.xml/UnsynchronizedStaticFormatter"/>
+    <rule ref="category/java/multithreading.xml/AvoidSynchronizedAtMethodLevel"/>
+    <rule ref="category/java/multithreading.xml/DontCallThreadRun"/>
+    <rule ref="category/java/multithreading.xml/UseNotifyAllInsteadOfNotify"/>
+    <rule ref="category/java/multithreading.xml/AvoidThreadGroup"/>
+
+    <!-- ================================================================
+         Performance
+         ================================================================ -->
+    <rule ref="category/java/performance.xml/AvoidInstantiatingObjectsInLoops"/>
+    <rule ref="category/java/performance.xml/ConsecutiveLiteralAppends"/>
+    <rule ref="category/java/performance.xml/ConsecutiveAppendsShouldReuse"/>
+    <rule ref="category/java/performance.xml/InefficientEmptyStringCheck"/>
+    <rule ref="category/java/performance.xml/InefficientStringBuffering"/>
+    <rule ref="category/java/performance.xml/InsufficientStringBufferDeclaration"/>
+    <rule ref="category/java/performance.xml/UseStringBufferForStringAppends"/>
+    <rule ref="category/java/performance.xml/UseStringBufferLength"/>
+    <rule ref="category/java/performance.xml/StringInstantiation"/>
+    <rule ref="category/java/performance.xml/StringToString"/>
+    <rule ref="category/java/performance.xml/UseIndexOfChar"/>
+    <rule ref="category/java/performance.xml/RedundantFieldInitializer"/>
+    <rule ref="category/java/performance.xml/OptimizableToArrayCall"/>
+    <rule ref="category/java/performance.xml/TooFewBranchesForASwitchStatement"/>
+
+    <!-- ================================================================
+         Testability / maintainability smells
+         ================================================================ -->
+    <rule ref="category/java/design.xml/ClassWithOnlyPrivateConstructorsShouldBeFinal"/>
+    <rule ref="category/java/design.xml/AbstractClassWithoutAnyMethod"/>
+    <rule ref="category/java/design.xml/LawOfDemeter"/>
+    <rule ref="category/java/bestpractices.xml/LooseCoupling"/>
+    <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters"/>
+    <rule ref="category/java/bestpractices.xml/MethodReturnsInternalArray"/>
+    <rule ref="category/java/bestpractices.xml/ArrayIsStoredDirectly"/>
+    <rule ref="category/java/bestpractices.xml/AccessorClassGeneration"/>
+    <rule ref="category/java/bestpractices.xml/OneDeclarationPerLine"/>
+
+    <!-- ================================================================
+         Debug residue
+         ================================================================ -->
+    <rule ref="category/java/bestpractices.xml/SystemPrintln"/>
+    <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace"/>
+    <rule ref="category/java/bestpractices.xml/GuardLogStatement"/>
+
+    <!--
+      Deliberately NOT enabled (noise >> signal for a code-health gate):
+        - documentation.xml/*            prose style, not health
+        - errorprone.xml/AvoidDuplicateLiterals   fires on legitimate constants
+        - performance.xml/AvoidFileStream          style preference
+        - codestyle.xml/* (naming, braces)         formatting belongs to a formatter
+    -->
+</ruleset>

@@ -27,7 +27,7 @@ P68|08-21|monitor 昨日成交|销量有成交0(收货单)|成交只认订单付
 P65|08-20|INSERT SELECT CAST SIGNED|exception_type TINYINT列40040 BIGINT|ADS CAST AS SIGNED推断BIGINT|INSERT用jdbcType=TINYINT或裸绑定;勿CAST SIGNED写TINYINT|
 P64|08-20|expireStoreLockLogs/主表|倒计时结束草稿不删(84480)|UPDATE…ORDER BY LIMIT 在ADS不落地;主表expire曾写0h|过期/slide/草稿删改id IN(子查询LIMIT);upsertBrandLock拒非未来expire|
 P63|08-20|CG/Forge query|短名handle灌仓;踩坑→scope=pitfall 0hit;低分再Read全文|名碰撞+query-gate与规则互斥|CG用FQCN;Forge勿硬塞踩坑;0hit停;likely_irrelevant不Read;见daily mcp-dual-engine-opt|
-P62|08-20|Agent MCP路由|改码首条Read/Grep烧票|explore歧义+Router不首工具|写码首条context_orient;口径semantic_search→get_evidence;见shared/pipeline-contract.md|
+P62|08-20|Agent MCP路由|改码首条Read/Grep烧票|explore歧义+Router不首工具|写码首条context_orient;口径semantic_search→get_evidence;见shared/core.md#pipeline-contract|
 P61|08-19|评论门禁|刷完才强制评/待填≥10才拦|旧聚合门禁与刷新脱钩|reclaim+1 owed；owed>0禁刷采锁；评论区>15禁采锁；删待填≥10|
 P60|08-19|audit productMonitorLiveUp|飞书上架失败中控台仍60|回滚用contains异常≠liveUpIsSuccess|audit/update 60路径!liveUpIsSuccess回滚;建联60延后百应成功|
 |P67|08-21|brandHandle 折叠|FoldPick 全池更慢|test 粘住批窗函数≈GROUP BY|折叠/count 单路窗函数+PoolList；禁 FoldPick 双 SQL|

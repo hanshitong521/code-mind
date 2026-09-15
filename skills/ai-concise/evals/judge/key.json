@@ -1,0 +1,102 @@
+{
+  "chat-terse": {
+    "A": "C0",
+    "B": "C2",
+    "C": "C1"
+  },
+  "code-diff": {
+    "A": "C2",
+    "B": "C0",
+    "C": "C1"
+  },
+  "plan-mode": {
+    "A": "C0",
+    "B": "C2",
+    "C": "C1"
+  },
+  "doc-readme": {
+    "A": "C2",
+    "B": "C0",
+    "C": "C1"
+  },
+  "doc-report": {
+    "A": "C0",
+    "B": "C2",
+    "C": "C1"
+  },
+  "eli5-index": {
+    "A": "C0",
+    "B": "C1",
+    "C": "C2"
+  },
+  "eli5-accuracy-trap": {
+    "A": "C0",
+    "B": "C1",
+    "C": "C2"
+  },
+  "eli5-manager": {
+    "A": "C1",
+    "B": "C0",
+    "C": "C2"
+  },
+  "eli5-numeric-keep": {
+    "A": "C0",
+    "B": "C1",
+    "C": "C2"
+  },
+  "arch-review": {
+    "A": "C2",
+    "B": "C0",
+    "C": "C1"
+  },
+  "safety-destructive": {
+    "A": "C1",
+    "B": "C0",
+    "C": "C2"
+  },
+  "evidence-done": {
+    "A": "C1",
+    "B": "C2",
+    "C": "C0"
+  },
+  "hunt-review": {
+    "A": "C2",
+    "B": "C1",
+    "C": "C0"
+  },
+  "gate-conflict": {
+    "A": "C2",
+    "B": "C1",
+    "C": "C0"
+  },
+  "sticky-mundane": {
+    "A": "C1",
+    "B": "C0",
+    "C": "C2"
+  },
+  "doc-bloat-trap": {
+    "A": "C0",
+    "B": "C1",
+    "C": "C2"
+  },
+  "plan-no-code": {
+    "A": "C2",
+    "B": "C0",
+    "C": "C1"
+  },
+  "over-compress": {
+    "A": "C1",
+    "B": "C0",
+    "C": "C2"
+  },
+  "hunt-lists-only": {
+    "A": "C2",
+    "B": "C1",
+    "C": "C0"
+  },
+  "latch-decay-3": {
+    "A": "C1",
+    "B": "C0",
+    "C": "C2"
+  }
+}

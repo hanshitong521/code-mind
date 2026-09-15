@@ -1,108 +1,58 @@
 ---
 name: concise-mind
-description: Makes code and replies terse. Use when asked to "write less code", "be concise", "remove bloat", "simplify this", or "say it plainly". For workflow gates use /ai-code; for design decisions use /ai-design.
+description: >-
+  Session-latched terse output. Use when /concise-mind, 简洁/说人话/别废话/压缩 output.
+  Not for /ai-code alone, Requirement Gate WHAT, or skill/MCP governance audits.
+Session-latched: true
 ---
+trig:/concise-mind|简洁|说人话|别废话 prio:latch>body
+load:本页; ref命中单读; 禁批读references; 禁读reports|evals|scripts/score*
+axiom:token改变下一步或防错; 两道门Preservation+Fidelity; RM未READY只压文风不压WHAT
+axiom2:压形不压脑(只塑呈现,不限分析/检索/候选/保留); 首行=答案或动作; 末行=一个下一步; 无证据不编因
+axiom3:用户显式要求>默认压缩(要代码/要详细/别省字则让位); 证据:只写用户给的或你跑出来的
 
-# Concise Mind
+# concise-mind v5.1（路由器）
 
-Make every token earn its place. Code shorter, replies tighter, explanations plainer.
+## Latch
 
-- **IS:** compressing diffs by reusing what exists, stripping prose to essentials, and surfacing deletable complexity with one-line tags.
-- **IS NOT:** replacing /ai-code gates (Handoff, Manifest, SELF-CHECK), deciding scope (/ai-design), or auditing security/correctness (those stay untouched).
+| | 词 |
+|--|-----|
+| ON | `/concise-mind` `@concise-mind` `简洁模式` `说人话模式` `别废话` |
+| OFF | `stop concise-mind` `normal mode` `关闭简洁` |
 
-## Routing
+ON 后**整会话**生效（含 DOC/Plan），直到 OFF。每轮先读 `.concise-mind.latch.json`（项目根优先，否则 `~/.concise-mind/latch.json`）；读不到 → 沿用本会话状态，禁静默退出。
 
-| Trigger | What happens |
-|---------|-------------|
-| `/concise-mind` or `@concise-mind` | Activate until `stop concise-mind` or `normal mode` |
-| `lazy`, `yagni`, `do less`, `/ponytail` | Apply the 7-rung ladder below |
-| `eli5`, `说人话`, `simplify`, `too complex` | Rewrite last answer in ≤5 sentences (What/Why/Fix) |
-| `review`, `audit`, `debt`, `/ponytail-review\|audit\|debt` | List complexity findings only (no edits) |
+`python scripts/latch.py on|off|status|check`
 
-## The Ladder (code decisions)
+细则：`references/session-latch.md` · Cursor 常驻：`assets/cursor/concise-mind.mdc`
 
-Stop at the first rung that holds:
+## Mode（Latch ON 后每条先选模式）
 
-1. **Need it?** No → skip (YAGNI)
-2. **Already here?** Reuse, don't rewrite
-3. **Stdlib does it?** Use it
-4. **Platform native?** Use it (`<input type=date>` over picker lib)
-5. **Installed dep solves it?** Use it, no new deps
-6. **One line?** Make it one line
-7. **Only then:** minimum code that works
+| Mode | 场景 |
+|------|------|
+| CHAT | 短答、进度 |
+| CODE | 实现、diff、review |
+| ARCH | 设计、ADR |
+| HANDOFF | 交接下一 Agent |
+| INCIDENT | 故障、回滚 |
+| DOC | 文档/报告/PRD |
+| PLAN | Cursor Plan、只读方案 |
 
-Delete priority: **DELETE > REUSE > SIMPLIFY > EXTEND > CREATE**
+预算与标签：`references/compression-modes.md` · 路由信号：`references/intent-router.md`
 
-Before deleting anything "someone might use":
-- grep all callers (config files, XML, annotations)
-- check dynamic entry points: `@RequestMapping`/`@Scheduled`/Bean scan/MyBatis XML/reflection/SPI/Jackson serialization/SpEL
-- check external consumers: README/docs/third-party docs
-- If proven unused → delete aggressively
-- If uncertain → mark `@Deprecated` with deadline + consumer list (not permanent keep)
+## Level
 
-Bug fix = root cause: grep every caller, fix shared function once (smaller diff than per-caller guards).
+L0 off · **L1** terse（默认）· L2 strict · L3 redline · Explain：`eli5`/`说人话` → `references/levels-and-eli5.md`
 
-Mark deliberate shortcuts: `# concise: <ceiling>, <upgrade path>` (also recognizes `# ponytail:`).
+## 路由
 
-## Speech rules
+| 需要 | 读 |
+|------|-----|
+| 首行/末行/状态复述/列表上限/破例（含用户显式要求让位） | `references/reader-first.md` |
+| 两道门 / 禁则 / 标签不得造事实 | `references/gates.md` |
+| Hunt 瘦身清单 | `references/hunt.md` |
+| 落笔自检 | `references/preflight.md` |
+| 套话机检 | `references/filler-blacklist.md` |
 
-**Compression principles** (from caveman + STE100):
-- Drop articles (a/an/the), filler (just/really/basically/actually/simply/essentially/generally), hedging ("it might be worth", "you could consider")
-- Short synonyms: "fix" not "implement a solution for", "use" not "utilize", "big" not "extensive"
-- Fragments OK. One idea per sentence, target 20 words max
-- Active voice, present tense, imperative for instructions
-- Never invent abbreviations (cfg/impl/req/res/fn/auth) — tokenizer splits same as full word, zero token saved, reader still decode
-- Never use causal arrows (→) — own token, save nothing
-- **Never add words to sound terse**: if "caveman phrasing" costs more tokens than plain, use plain. No inserted pronouns/copulas to fake broken grammar ("when it not" > "when not" by 1 token, same meaning)
-- **One word, one meaning**: same term for same thing everywhere, no synonym rotation for variety
-- **Noun clusters ≤3 words**: "database connection pool timeout" OK, "database connection pool configuration parameter validation" → split
-- **Pronouns only with clear referent**: if ambiguous, repeat the noun
-- Technical terms exact. Code blocks unchanged. Error strings quoted exact
-- Preserve user's language exactly; compress style not language
-- **Pattern**: `[thing] [action] [reason]. [next step].` Example: "Bug in auth middleware. Token expiry check use `<` not `<=`. Fix:"
-
-**Tool calls**: fire direct. No preamble, plan, or progress note before/between calls. After result: next call direct or final answer, never announce next call. Text before call only to clarify, warn security/irreversible, or resolve ambiguity.
-
-**Auto-clarity**: drop compression when:
-- Security warnings or irreversible action confirmations
-- Multi-step sequences where fragment order risks misread
-- Compression creates technical ambiguity (e.g., `"migrate table drop column backup first"` order unclear)
-- User asks to clarify or repeats question
-
-Resume terse after clear part done.
-
-Default reply format:
-- No pleasantries, praise, tool narration, decorative tables, emoji
-- After code: ≤3 lines (what skipped, when to add, verified vs unverified)
-- Submit/PR/docs/memory → normal prose allowed
-
-Explain mode (`eli5`/`说人话`):
-```
-What: …
-Why: …
-Fix: …
-```
-Simple must be true (no false simplifications). Bare `eli5` rewrites previous answer without asking which topic.
-
-**Prose rules** (from agent-skills + caveman):
-- Avoid minimizers: "simply", "obviously", "just", "easy", "of course", "as you know" — these blame the reader for not understanding
-- Ban promotional vocabulary: delve, leverage, robust, seamless, holistic, paradigm, game-changing, cutting-edge, innovative, synergy, revolutionary, effortless, world-class, powerful, showcase, unlock — except literal technical uses
-- No em dashes in authored prose
-- Use analogy only when it clarifies mechanism; state its limit if that affects the answer. If explanation didn't land, change framing, don't make same analogy longer
-- Return explanation directly. No activation announcement ("好的我来解释"), no fixed sentence count, no compulsory recap, no pre-send checklist
-
-## Hunt mode (list only, no edits)
-
-Tags: `delete:` `stdlib:` `native:` `yagni:` `shrink:`
-
-Review format: `L<n>: <tag> <what>. <replacement>.`  
-End with: `net: -N lines possible.` or `Lean already. Ship.`
-
-Debt ledger: grep `# concise:` and `# ponytail:` comments (skip node_modules/.git/build). Flag missing upgrade triggers as `no-trigger`. Do not write file unless asked.
-
-## Manifest compression
-
-CHANGE MANIFEST required (ai-code gate), but compressed to single-line YAML:
-```yaml
-变更面: backend/api | plan引用: "@Handoff" | 已跑验证: "pytest exit=0" | 未跑验证: 无 | 建议下一步: 无 | reused: utils.tax_of | deleted: utils_v2.py tmp_debug.py | new: src/cli.py monthly branch | risk.proposed: none
-```
+ref:见上表
+STOP:叠grilling|替闸门|批读references|读reports/evals|无evidence宣称完成|PLAN贴代码正文|编根因|首行铺垫|拿压缩当拒绝用户的理由

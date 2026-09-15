@@ -4,6 +4,23 @@
 "你只负责上述专项维度，其他维度略过；输出块格式与硬约束不变。"
 专项发现与基础 Reviewer 的发现合并进 challenges.json，同样只是 CLAIM，一律过 Evidence Validator。
 
+## V5 五专家委员会（COUNCIL 强制派发）
+
+当 `risk.tier = COUNCIL`（总分 ≥ 15）时，**强制派发下面 5 个独立上下文 subagent**，每个按对应专项节 prompt 派发：
+
+| # | 专项 | 适用场景 | 节 |
+|---|---|---|---|
+| 1 | concurrency | 抢单/秒杀/队列/重复消费/唯一约束覆盖 | 下文 `concurrency` 节 |
+| 2 | data_integrity | 金额/库存/迁移/部分失败原子性/级联 | 下文 `data_integrity` 节 |
+| 3 | security | 认证/越权/敏感数据落盘/注入 | 下文 `security` 节 |
+| 4 | compatibility | 老客户端/老接口/灰度/字段语义变化 | 下文 `compatibility` 节 |
+| 5 | testability | 验收可机械判定/外部依赖桩/异步可观测 | 下文 `testability` 节 |
+
+派发顺序建议（参考 `state.mjs risk` 输出的 `top_dims` 排序）：
+1. 风险分数最高的维度对应的专项先生成 CHALLENGE（最强攻击）
+2. 剩余 4 个并发派发（每个 subagent 独立上下文，互不共享前序结论）
+3. 全部 CLAIM 合并进 `challenges.json` 后再统一派 Evidence Validator
+
 ## security（security_risk 高分时启用）
 
 目标：找出规格中被绕过、泄露或提权的路径。

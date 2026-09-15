@@ -1,4 +1,4 @@
-﻿<#
+<#
   install.ps1 — Engineering Control Plane 发布安装器（Peak v3 P0）
 
   安装流程（§6.2 / §27.4）：
@@ -349,7 +349,7 @@ try {
     $ok = Invoke-Doctor -TargetDirs $TargetDirs -Names $Bundle.Skills -IncludeShared $Bundle.InstallShared -Json:$false
     if (-not $ok) { throw 'doctor 体检未通过' }
 
-    Write-Host 'Done. /ai-design /ai-code /ai-debug /ai-requirement /ai-concise'
+    Write-Host 'Done. /ai-design /ai-code /ai-requirement /ai-concise'
     exit 0
 } catch {
     Write-Warning "安装失败: $($_.Exception.Message)"

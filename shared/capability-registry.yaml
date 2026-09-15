@@ -62,8 +62,8 @@ capabilities:
   debug.rootcause:
     owner: ai-programming-docs
     phase: debug
-    skill: ai-debug
-    description: 根因定位（未钉根因禁进修复）
+    skill: ai-code
+    description: 根因定位（ai-code DBG；未钉根因禁进修复）
 
   # VERIFY —— 验证
   test.run:

@@ -1,0 +1,53 @@
+[
+  {
+    "id": "Q-301",
+    "topic": "dept_admin_scope",
+    "question": "部门管理员可写哪些资源？",
+    "reason": "决定权限表达式",
+    "priority": "BLOCKING",
+    "options": [
+      "A. 仅本部门用户",
+      "B. 本部门 + 跨部门只读",
+      "C. 仅本部门订单"
+    ],
+    "recommended_option": "A",
+    "recommendation_reason": "最小权限原则",
+    "authority": "USER_ONLY",
+    "value": "HIGH",
+    "status": "OPEN"
+  },
+  {
+    "id": "Q-302",
+    "topic": "cache_invalidate",
+    "question": "权限变更后缓存何时失效？",
+    "reason": "避免越权窗口",
+    "priority": "BLOCKING",
+    "options": [
+      "A. 立即失效",
+      "B. 5 分钟",
+      "C. 1 小时"
+    ],
+    "recommended_option": "A",
+    "recommendation_reason": "安全优先",
+    "authority": "USER_ONLY",
+    "value": "HIGH",
+    "status": "OPEN"
+  },
+  {
+    "id": "Q-303",
+    "topic": "audit_log",
+    "question": "是否需要审计日志？",
+    "reason": "合规",
+    "priority": "IMPORTANT",
+    "options": [
+      "A. 全部操作",
+      "B. 仅敏感操作",
+      "C. 不需要"
+    ],
+    "recommended_option": "A",
+    "recommendation_reason": "权限类操作都需审计",
+    "authority": "USER_ONLY",
+    "value": "MEDIUM",
+    "status": "OPEN"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "CH-401",
+    "claim": "DB 乐观锁可防超发",
+    "challenge": "10 万 QPS 下 DB 锁等待是瓶颈",
+    "evidence": [
+      "sql/seckill.sql:12"
+    ],
+    "counterexample": "活动开始瞬间 DB 锁队列爆",
+    "validation": "压测验证",
+    "severity": "BLOCKING",
+    "status": "PENDING_VALIDATION"
+  },
+  {
+    "id": "CH-402",
+    "claim": "Redis DECR 一定不会超发",
+    "challenge": "异步落库失败时库存已减但 DB 未扣",
+    "evidence": [
+      "application.yml:34"
+    ],
+    "counterexample": "Redis 减到 0 但 DB 还有 1 个",
+    "validation": "查异步落库重试幂等",
+    "severity": "HIGH",
+    "status": "PENDING_VALIDATION"
+  }
+]

@@ -1,0 +1,5 @@
+{
+  "requirement": "RBAC 权限系统新增「部门管理员」角色（跨部门只读 + 本部门写）",
+  "phase": "GRILLING",
+  "updated_at": "2026-09-11T00:00:00.000Z"
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "CH-201",
+    "claim": "Agent 可改冻结决策",
+    "challenge": "违反 R5，规格不可行",
+    "evidence": [
+      "references/freezer.md:40"
+    ],
+    "counterexample": "Agent 自作主张改 DEC",
+    "validation": "读 R5",
+    "severity": "BLOCKING",
+    "status": "PENDING_VALIDATION"
+  },
+  {
+    "id": "CH-202",
+    "claim": "共享 Redis 可解决多 Agent 状态",
+    "challenge": "脑裂与一致性窗口",
+    "evidence": [
+      "docs/agent-os.md:18"
+    ],
+    "counterexample": "网络分区下两 Agent 写同 key",
+    "validation": "查 Redis 集群拓扑",
+    "severity": "HIGH",
+    "status": "PENDING_VALIDATION"
+  },
+  {
+    "id": "CH-203",
+    "claim": "Token 硬上限可配置",
+    "challenge": "执行到一半超限怎么办",
+    "evidence": [
+      "pyproject.toml:12"
+    ],
+    "counterexample": "已完成 80% 工作的 Agent 超限",
+    "validation": "查 abort 语义",
+    "severity": "MEDIUM",
+    "status": "PENDING_VALIDATION"
+  }
+]

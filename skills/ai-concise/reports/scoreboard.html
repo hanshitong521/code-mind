@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>concise-mind v3.1 实测记分板</title>
+<style>
+:root{--bg:#f7f8fa;--fg:#1b1f24;--mut:#6b7280;--line:#e5e7eb;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;padding:32px;background:var(--bg);color:var(--fg);
+font:15px/1.6 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
+h1{font-size:24px;margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 24px;font-size:13px}
+h2{font-size:17px;margin:32px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card header{display:flex;align-items:baseline;justify-content:space-between}
+.card h3{margin:0;font-size:15px;letter-spacing:.5px}
+.total{font-size:26px;font-weight:700}
+.n{color:var(--mut);font-size:12px;margin:2px 0 12px}
+.dim{margin-bottom:7px}
+.dim label{display:block;font-size:12px;color:var(--mut);margin-bottom:2px}
+.bar{position:relative;height:14px;background:#eef0f3;border-radius:7px;overflow:hidden}
+.bar span{display:block;height:100%;border-radius:7px}
+.bar em{position:absolute;right:6px;top:-2px;font-size:11px;font-style:normal;color:#374151}
+table{width:100%;border-collapse:collapse;background:var(--card);
+border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13px}
+th,td{padding:7px 10px;text-align:center;border-bottom:1px solid var(--line)}
+th{background:#f1f3f6;font-weight:600;color:#374151}
+td.cid{text-align:left;font-family:ui-monospace,Consolas,monospace;font-size:12px}
+td.big{font-weight:700;font-size:15px}
+.tag{background:#e8f0fe;color:#3b6fd4;border-radius:4px;padding:0 5px;font-size:10px}
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid #e8a33d;
+border-radius:8px;padding:12px 16px;font-size:13px;color:#374151}
+code{background:#eef0f3;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body>
+<h1>concise-mind v3.1 实测记分板</h1>
+<p class="sub">生成时间 2026-09-12 07:21:29 · 用例 20 · 条件 3 · 数据源 final-score-20260912-072129.json</p>
+
+<h2>盲测总分 · 三维对比</h2>
+<div class="cards"><section class="card">
+  <header><h3>C0</h3><span class="total" style="color:#9aa0a6">83.2</span></header>
+  <p class="n">n = 20 用例 · 锁存续命 38%</p>
+  <div class="dim"><label>无套话/结构水</label><div class="bar"><span style="width:95.0%;background:#9aa0a6"></span><em>95</em></div></div><div class="dim"><label>精度</label><div class="bar"><span style="width:65.0%;background:#9aa0a6"></span><em>65</em></div></div><div class="dim"><label>保真</label><div class="bar"><span style="width:90.0%;background:#9aa0a6"></span><em>90</em></div></div><div class="dim"><label>Gate 保留</label><div class="bar"><span style="width:64.6%;background:#9aa0a6"></span><em>65</em></div></div><div class="dim"><label>篇幅</label><div class="bar"><span style="width:88.1%;background:#9aa0a6"></span><em>88</em></div></div><div class="dim"><label>模式适配</label><div class="bar"><span style="width:99.0%;background:#9aa0a6"></span><em>99</em></div></div><div class="dim"><label>格式纯净</label><div class="bar"><span style="width:100.0%;background:#9aa0a6"></span><em>100</em></div></div><div class="dim"><label>锁存续命</label><div class="bar"><span style="width:75.0%;background:#9aa0a6"></span><em>75</em></div></div>
+</section><section class="card">
+  <header><h3>C1</h3><span class="total" style="color:#e8a33d">85.1</span></header>
+  <p class="n">n = 20 用例 · 锁存续命 62%</p>
+  <div class="dim"><label>无套话/结构水</label><div class="bar"><span style="width:95.0%;background:#e8a33d"></span><em>95</em></div></div><div class="dim"><label>精度</label><div class="bar"><span style="width:70.0%;background:#e8a33d"></span><em>70</em></div></div><div class="dim"><label>保真</label><div class="bar"><span style="width:92.5%;background:#e8a33d"></span><em>92</em></div></div><div class="dim"><label>Gate 保留</label><div class="bar"><span style="width:70.8%;background:#e8a33d"></span><em>71</em></div></div><div class="dim"><label>篇幅</label><div class="bar"><span style="width:78.1%;background:#e8a33d"></span><em>78</em></div></div><div class="dim"><label>模式适配</label><div class="bar"><span style="width:99.5%;background:#e8a33d"></span><em>100</em></div></div><div class="dim"><label>格式纯净</label><div class="bar"><span style="width:99.0%;background:#e8a33d"></span><em>99</em></div></div><div class="dim"><label>锁存续命</label><div class="bar"><span style="width:85.0%;background:#e8a33d"></span><em>85</em></div></div>
+</section><section class="card">
+  <header><h3>C2</h3><span class="total" style="color:#2e9e6b">99.9</span></header>
+  <p class="n">n = 20 用例 · 锁存续命 100%</p>
+  <div class="dim"><label>无套话/结构水</label><div class="bar"><span style="width:100.0%;background:#2e9e6b"></span><em>100</em></div></div><div class="dim"><label>精度</label><div class="bar"><span style="width:100.0%;background:#2e9e6b"></span><em>100</em></div></div><div class="dim"><label>保真</label><div class="bar"><span style="width:100.0%;background:#2e9e6b"></span><em>100</em></div></div><div class="dim"><label>Gate 保留</label><div class="bar"><span style="width:100.0%;background:#2e9e6b"></span><em>100</em></div></div><div class="dim"><label>篇幅</label><div class="bar"><span style="width:100.0%;background:#2e9e6b"></span><em>100</em></div></div><div class="dim"><label>模式适配</label><div class="bar"><span style="width:100.0%;background:#2e9e6b"></span><em>100</em></div></div><div class="dim"><label>格式纯净</label><div class="bar"><span style="width:99.0%;background:#2e9e6b"></span><em>99</em></div></div><div class="dim"><label>锁存续命</label><div class="bar"><span style="width:100.0%;background:#2e9e6b"></span><em>100</em></div></div>
+</section></div>
+
+<h2>逐用例（绿=好 红=差）</h2>
+<table><thead><tr><th>用例</th><th>C0</th><th>C1</th><th>C2</th></tr></thead>
+<tbody><tr><td class='cid'>chat-terse</td><td style="background:#eaf7ef">92</td><td style="background:#fdf3e0">80</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>code-diff</td><td style="background:#eaf7ef">93</td><td style="background:#eaf7ef">90</td><td style="background:#d8f3e3">98</td></tr><tr><td class='cid'>plan-mode <span class="tag">sticky</span></td><td style="background:#fbe4e4">52</td><td style="background:#d8f3e3">95</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>doc-readme <span class="tag">sticky</span></td><td style="background:#fdf3e0">60</td><td style="background:#fdf3e0">70</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>doc-report <span class="tag">sticky</span></td><td style="background:#d8f3e3">96</td><td style="background:#d8f3e3">96</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>eli5-index</td><td style="background:#d8f3e3">97</td><td style="background:#eaf7ef">85</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>eli5-accuracy-trap</td><td style="background:#eaf7ef">82</td><td style="background:#c9edda">100</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>eli5-manager</td><td style="background:#c9edda">100</td><td style="background:#c9edda">100</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>eli5-numeric-keep</td><td style="background:#d8f3e3">98</td><td style="background:#c9edda">100</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>arch-review</td><td style="background:#fdf3e0">73</td><td style="background:#fdf3e0">76</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>safety-destructive</td><td style="background:#c9edda">100</td><td style="background:#c9edda">100</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>evidence-done</td><td style="background:#c9edda">100</td><td style="background:#c9edda">100</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>hunt-review</td><td style="background:#eaf7ef">82</td><td style="background:#fdf3e0">75</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>gate-conflict</td><td style="background:#fdf3e0">70</td><td style="background:#fdf3e0">70</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>sticky-mundane <span class="tag">sticky</span></td><td style="background:#eaf7ef">94</td><td style="background:#eaf7ef">91</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>doc-bloat-trap <span class="tag">sticky</span></td><td style="background:#fdf3e0">74</td><td style="background:#d8f3e3">99</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>plan-no-code <span class="tag">sticky</span></td><td style="background:#fbe4e4">59</td><td style="background:#fdf3e0">62</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>over-compress <span class="tag">sticky</span></td><td style="background:#fdf3e0">63</td><td style="background:#fbe4e4">44</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>hunt-lists-only</td><td style="background:#eaf7ef">82</td><td style="background:#fdf3e0">75</td><td style="background:#c9edda">100</td></tr><tr><td class='cid'>latch-decay-3 <span class="tag">sticky</span></td><td style="background:#d8f3e3">96</td><td style="background:#eaf7ef">92</td><td style="background:#c9edda">100</td></tr></tbody></table>
+
+<h2>多轮独立盲测轨迹（C2）</h2>
+<p class="sub">最近 8 轮中 4 轮 ≥ 98；末 3 轮均值 100.0</p>
+<table><thead><tr><th>轮次</th><th>C2 总分</th><th>失分用例数</th><th>进度</th><th>判定</th></tr></thead>
+<tbody><tr><td>r1</td><td class="big">94.7</td><td>8</td><td><div class="bar"><span style="width:94.7%;background:#2e9e6b"></span></div></td><td>未达标</td></tr><tr><td>r2</td><td class="big">96.7</td><td>5</td><td><div class="bar"><span style="width:96.7%;background:#2e9e6b"></span></div></td><td>未达标</td></tr><tr><td>r3</td><td class="big">100.0</td><td>1</td><td><div class="bar"><span style="width:100.0%;background:#2e9e6b"></span></div></td><td>达标</td></tr><tr><td>r4</td><td class="big">97.8</td><td>2</td><td><div class="bar"><span style="width:97.8%;background:#2e9e6b"></span></div></td><td>未达标</td></tr><tr><td>r5</td><td class="big">97.8</td><td>3</td><td><div class="bar"><span style="width:97.8%;background:#2e9e6b"></span></div></td><td>未达标</td></tr><tr><td>r6</td><td class="big">100.0</td><td>1</td><td><div class="bar"><span style="width:100.0%;background:#2e9e6b"></span></div></td><td>达标</td></tr><tr><td>r7</td><td class="big">100.0</td><td>0</td><td><div class="bar"><span style="width:100.0%;background:#2e9e6b"></span></div></td><td>达标</td></tr><tr><td>r8</td><td class="big">99.9</td><td>1</td><td><div class="bar"><span style="width:99.9%;background:#2e9e6b"></span></div></td><td>达标</td></tr></tbody></table>
+
+<h2>评分器灵敏度探针 —— 检出 8/8</h2>
+<table><thead><tr><th>用例</th><th>植入缺陷</th><th>评分器给出</th><th>结果</th></tr></thead>
+<tbody><tr><td>chat-terse</td><td>无套话/结构水</td><td>0</td><td>检出</td></tr><tr><td>arch-review</td><td>Gate 保留</td><td>25</td><td>检出</td></tr><tr><td>eli5-accuracy-trap</td><td>精度</td><td>0</td><td>检出</td></tr><tr><td>chat-terse</td><td>篇幅</td><td>82</td><td>检出</td></tr><tr><td>plan-mode</td><td>锁存续命</td><td>0</td><td>检出</td></tr><tr><td>doc-readme</td><td>模式适配</td><td>69</td><td>检出</td></tr><tr><td>doc-bloat-trap</td><td>保真</td><td>25</td><td>检出</td></tr><tr><td>doc-report</td><td>格式纯净</td><td>60</td><td>检出</td></tr></tbody></table>
+
+<h2>文档承重行占比（DOC）</h2>
+<table><thead><tr><th>用例</th><th>C0</th><th>C1</th><th>C2</th></tr></thead>
+<tbody><tr><td>doc-readme</td><td>44%</td><td>56%</td><td>71%</td></tr><tr><td>doc-report</td><td>59%</td><td>52%</td><td>72%</td></tr><tr><td>doc-bloat-trap</td><td>33%</td><td>38%</td><td>75%</td></tr></tbody></table>
+
+<h2>怎么读</h2>
+<div class="note">
+<b>C0</b> 裸模型（Cursor Plan 下 skill 未加载的真实行为）　·　
+<b>C1</b> 只做触发词式压缩、无锁存　·　<b>C2</b> v3.1 锁存（含文档与 Plan）。<br>
+关键差异不在总分，而在 <b>sticky 用例</b>：只有锁存生效，后续不带触发词的消息才不会回退成长篇。<br>
+本页 C2 数据来自<b>独立 agent 盲测</b>——产出者只读 skill 规则、未接触 <code>evals.json</code> 与评分器，
+与手写样本的平均文本相似度 0.24（非抄袭）。<br>
+探针为人为植入缺陷，验证评分器本身能否检出：检出率不足 100% 说明打分器失灵，此时 C2 高分不可信。
+</div>
+</body></html>

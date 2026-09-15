@@ -1,0 +1,53 @@
+[
+  {
+    "id": "Q-101",
+    "topic": "pagination",
+    "question": "深翻页采用哪种方案？",
+    "reason": "OFFSET 性能瓶颈",
+    "priority": "BLOCKING",
+    "options": [
+      "A. 游标分页（created_at, id）",
+      "B. OFFSET（保持兼容）",
+      "C. 强制前端禁用深页",
+      "D. 搜索引擎"
+    ],
+    "recommended_option": "A",
+    "recommendation_reason": "OFFSET 100000 性能崩，参考业内做法",
+    "authority": "USER_ONLY",
+    "value": "HIGH",
+    "status": "OPEN"
+  },
+  {
+    "id": "Q-102",
+    "topic": "archive_threshold",
+    "question": "订单保留期多久？",
+    "reason": "归档策略",
+    "priority": "BLOCKING",
+    "options": [
+      "A. 1 年",
+      "B. 3 年",
+      "C. 永久"
+    ],
+    "recommended_option": "B",
+    "recommendation_reason": "合规要求",
+    "authority": "USER_ONLY",
+    "value": "HIGH",
+    "status": "OPEN"
+  },
+  {
+    "id": "Q-103",
+    "topic": "search_engine",
+    "question": "是否引入 ES？",
+    "reason": "成本评估",
+    "priority": "IMPORTANT",
+    "options": [
+      "A. 引入",
+      "B. 不引入，靠 SQL 优化"
+    ],
+    "recommended_option": "B",
+    "recommendation_reason": "现有 SQL 优化可达成 500ms，无需新组件",
+    "authority": "TECHNICAL",
+    "value": "MEDIUM",
+    "status": "OPEN"
+  }
+]

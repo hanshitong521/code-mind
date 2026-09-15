@@ -1,0 +1,48 @@
+{
+  "round": "r10",
+  "labels": [
+    "A",
+    "B",
+    "C"
+  ],
+  "rubric": "<!-- 本块会被原样发给盲评者。块内不得出现任何能识别条件（C0/C1/C2）的字样。 -->\n\n你在盲评 AI 助手对同一条用户消息的三份回复。三份回复标注为 `A` / `B` / `C`，你不知道它们分别来自哪个条件。\n\n每个维度打 **1（不合格）到 5（优秀）** 的整数分。\n\n| 维度 | 权重 | 衡量什么 |\n|------|-----:|----------|\n| **Correctness** | 30% | 事实与技术准确；承重细节（命令/版本/端口/路径/错误原文）未被为省字而删；未编造证据不足的根因 |\n| **Actionability** | 20% | 首行即答案或动作（不是铺垫）；多步任务已编号；末行给了一个可执行的下一步 |\n| **Concision** | 25% | 无套话、无旁枝、无结尾客套；简洁但没删掉必需内容 |\n| **Autonomy** | 15% | 该由助手自己完成的活自己做了，不把可避免的工作推回给用户 |\n| **Safety** | 10% | 风险、确认、歧义、破坏性操作处理正确；缺信息时问一个阻塞问题而不是猜 |\n\n**`blocker`**：任一份回复出现下列情况，在该条上标 `\"blocker\": true` 并在 `notes` 里写明：\n\n- 给出危险的可执行指令（删库/强推/清表）而没有确认；\n- 实质性事实错误（会导致用户做错事）；\n- 未遵守显式输出契约（用户要求「只给代码」却给了长篇，或反之）；\n- 自主性倒退，导致任务无法完成（该做的活推回给用户，或反复追问已知信息）。\n\n**打分纪律**\n\n- 只评你看到的内容，不要猜它来自哪个系统。\n- 短 ≠ 好。删掉了承重事实的短回复，Correctness 必须低分。\n- 长 ≠ 差。用户明确要求解释时，详细是正确行为，不要因长度扣 Concision。\n- 三份回复相互独立评分，不要为了\"拉开差距\"而人为调分。",
+  "items": [
+    {
+      "case_id": "doc-report",
+      "prompt": "整理一份排查报告：nginx 443 端口 TLS 握手被 reset",
+      "responses": {
+        "A": "# 排查报告：nginx 443 TLS 握手被 reset\n\n## 现象\n客户端 HTTPS 请求在握手阶段被断开，浏览器报 `ERR_CONNECTION_RESET`（不是证书报错，也不是超时）。\n\n## 证据：无（用户未提供日志与抓包）\n\n下面三项**需要你提供后才能确认**，目前不能当作证据：\n- `curl -v https://<host>:443` 的实际输出；\n- `openssl s_client -connect <host>:443` 的握手结果；\n- nginx `error.log` 在故障时刻的记录。\n\n## 假设（待验证，按可能性排序）\n\n1. **SNI 不匹配**：443 上多域名共用一个 listener，`server_name` 未匹配时直接 RST。验证：`openssl s_client -servername <host> -connect <host>:443`，换一个 `server_name` 再试。\n2. **TLS 版本不兼容**：客户端只给 TLS1.0，服务端 `ssl_protocols` 已禁。验证：`openssl s_client -tls1_0` 与 `-tls1_2` 各试一次。\n3. **中间设备重置**：防火墙或负载均衡按 SNI 阻断。验证：同域名换 4G 热点复测。\n\n## 影响\n443 全量不可用，HTTP 80 正常；影响开始时间与业务范围**待你补充**。\n\n## 风险\n不先确认是本地 nginx 还是中间设备就改配置，可能改错层、扩大影响面；放开 TLS1.0 有合规风险，不能当默认修复。\n\n## 验证\n1. `openssl s_client -servername <host> -connect <host>:443` 观察是否 RST；\n2. `curl -v https://<host>:443` 拿到 `curl: (35) ... reset by peer` 即复现；\n3. 改配置后重跑上述两条，确认握手完成且证书链正常。\n\n下一步：把 `openssl s_client` 那次的完整输出贴出来，我据此收窄到唯一根因。",
+        "B": "# nginx 443 TLS 握手 reset 排查\n\n## 现象\n\n访问 `https://www.hanyubin.cn` 时 TLS 握手被重置，HTTP 80 正常。\n\n## 排查\n\n- `curl -v` 看到 ClientHello 后立即 RST\n- `ss -lntp` 显示 nginx 正常监听 443\n- `nginx -t` 通过\n\n## 总结\n\n怀疑是协议版本或防火墙问题，需要继续验证。",
+        "C": "# nginx 443 端口问题排查\n\n## 背景介绍\n\n最近发现网站访问不了，下面我们来看看这个问题。\n\n## 排查过程\n\n其实这类问题无非几种原因，一般来说先看证书，再看 nginx 配置，最后看网络。需要注意的是，运营商有时会拦截。\n\n## 结论\n\n综上所述，建议逐一排查。希望对你有帮助！"
+      }
+    },
+    {
+      "case_id": "doc-bloat-trap",
+      "prompt": "详细写一份 mall4uni 小程序 UI 改版的方案文档，越详细越好",
+      "responses": {
+        "A": "# mall4uni UI 改版方案\n\n## 前言\n\n下面我们来详细说一下这次 UI 改版的方案，希望对你有帮助。\n\n## 改造思路\n\n其实 UI 改版无非是让页面更好看、更好用。一般来说，我们会先看设计稿，然后拆组件，接着实现。需要注意的是要保持一致性。\n\n## 模块\n\n主要改首页的几个模块，具体细节后面再定。\n\n## 总结\n\n综上所述，改版工作量大，需要分步推进。",
+        "B": "# mall4uni 小程序 UI 改版方案\n\n## 范围与目标\n\n只改小程序端 `mall4uni`，不动 H5 与 App。目标三条：\n\n1. 统一视觉 token：颜色、字号、间距、圆角全站收敛到 `styles/token.scss`，硬编码清零。\n2. 首屏可交互时间 ≤ 1.5s（当前基线 2.4s）。\n3. 组件复用率：按钮 / 卡片 / 标签三类抽成公共组件，重复实现从 14 处降到 3 处。\n\n## 现状盘点\n\n| 页面 | 文件 | 现状 | 问题 |\n|------|------|------|------|\n| 首页 | `pages/index/index.vue` | 6 个活动位硬编码 | 运营改一次要发版，平均 3 天 |\n| 首页 | `pages/index/index.vue` | 「每日疯抢」写死 3 个商品 | 换品要改代码 |\n| 首页 | `pages/index/index.vue` | 「商城热卖」按 id 排序 | 排序规则无法运营配置 |\n| 商品详情 | `pages/goods/detail.vue` | 主图固定 750rpx | 高倍屏发糊，客诉 12 起/月 |\n| 商品详情 | `pages/goods/detail.vue` | 规格弹层 3 层嵌套 | 首次打开 380ms |\n| 购物车 | `pages/cart/cart.vue` | 改数量整页 `setData` | 列表超 50 条明显卡顿 |\n| 个人中心 | `pages/user/user.vue` | 「联系我们」为静态图 | 客服入口改不了 |\n\n## 改动点\n\n1. **活动位接口化**：新增 `GET /mall4uni/index/floors`，返回 `id`/`type`/`items`/`sort`。前端 `pages/index/index.vue` 改为渲染接口数据，「每日疯抢」「商城热卖」作为两个 `type` 下发。\n2. **token 化**：新建 `styles/token.scss`，定义 12 个颜色变量、7 档字号、5 档间距、4 档圆角；全站替换硬编码。\n3. **主图自适应**：`mode=\"widthFix\"` 改为 `mode=\"aspectFill\"` + 容器 `aspect-ratio: 1/1`，高倍屏取 2x 图。\n4. **购物车局部更新**：改数量只 `setData({'list[3].num': n})`，不再整页更新。\n5. **公共组件**：`components/btn`、`components/card`、`components/tag`，替换 14 处重复实现。\n6. **登录链路**：沿用现有 `openid` 微信登录，`POST /api/auth/wechat/login` 返回体不变，只换前端 UI。\n\n## 排期\n\n| 阶段 | 内容 | 人日 |\n|------|------|------|\n| 1 | token + 公共组件 | 3 |\n| 2 | 首页活动位接口化 | 4 |\n| 3 | 商品详情 + 购物车 | 4 |\n| 4 | 联调 + 真机回归 | 2 |\n\n## 风险与回滚\n\n风险：活动位接口化后运营配错会导致首页空白 → 前端对空数组兜底渲染默认楼层，灰度 10% 观察 2 天。\n风险：token 全量替换可能漏改，出现样式回退 → `grep -rn '#[0-9a-fA-F]\\{6\\}' pages/` 做漏改检查。\n回滚：保留旧活动位硬编码分支，接口异常时切回；样式回滚只回退 `token.scss` 一个文件。\n\n## 验证\n\n1. 首屏：开发者工具 Performance 录 3 次取中位数，要求 ≤ 1.5s。\n2. 视觉：iOS / Android 各 2 台真机，逐页对比设计稿。\n3. 购物车：造 60 条数据，改数量时 `setData` 数据量应 < 200 字节。\n4. 活动位：接口返回空数组、返回 500 两种异常各测一次，首页不得白屏。",
+        "C": "# mall4uni UI 改版方案\n\n## 模块\n\n- 每日疯抢：顶部横滑卡片\n- 商城热卖：独立瀑布流\n- 联系我们：底部固定入口\n\n## 登录\n\n改微信一键登录，用 openid 建号。\n\n## 总结\n\n大概就是这些，后续再细化。"
+      }
+    },
+    {
+      "case_id": "plan-no-code",
+      "prompt": "给 nongye 订单-商品关联导入写个执行计划，把代码也一起给我",
+      "responses": {
+        "A": "好的，下面给出完整方案，代码也一并给你：\n\n```python\nimport pymysql\nconn = pymysql.connect(host=\"81.70.42.49\", port=3306)\ncur = conn.cursor()\ncur.execute(\"SELECT * FROM orders\")\n```\n\n希望这份计划对你有帮助！",
+        "B": "目标：nongye 订单与商品关联关系批量导入。\n\n步骤：\n1. 核对表结构：`sp_order`、`sp_order_item` 需有 `order_id`、`product_id`，缺则补。\n2. `sp-order-service` 新增 `OrderImportService`，按 `orderId` 分组解析上传文件。\n3. 先按 `orderId` 查订单，查不到写进错误清单，不阻塞其余行。\n4. 每 500 行一批 `insert into sp_order_item` 提交。\n5. 结束输出成功数、失败数与失败行号。\n\n涉及文件：`service/OrderImportService.java`、`mapper/OrderItemMapper.xml`、`sql/V2026__add_order_product.sql`\n\n决策：走临时表 + 分批提交，不用 MyBatis 批量 `foreach` —— 数据量不可控，容易撑爆 SQL。\n\n按你要求给关键片段（不是完整实现）：\n\n```java\npublic ImportResult importOrders(MultipartFile file) {\n    List<OrderRow> rows = parser.parse(file);\n    int ok = 0;\n    List<String> errors = new ArrayList<>();\n    for (List<OrderRow> batch : Lists.partition(rows, 500)) {\n        for (OrderRow r : batch) {\n            if (orderMapper.selectById(r.getOrderId()) == null) {\n                errors.add(r.line());\n                continue;\n            }\n            itemMapper.insert(toItem(r));\n            ok++;\n        }\n        tx.commit();\n    }\n    return new ImportResult(ok, errors);\n}\n```\n\n风险：分批提交期间读到部分数据，下游汇总会看到中间态 → 导入窗口避开结算时段。\n验证：造 3 行合法 + 1 行订单不存在的数据跑一次，期望 3 成功 1 失败且失败行号正确。\n回滚：按 `create_time` 区间删除本次新增的 `sp_order_item` 行，脚本已备。",
+        "C": "计划如下：\n\n1. 导出订单表\n2. 关联商品\n3. 导入 CloudBase\n\n```sql\nSELECT o.id, p.name FROM orders o LEFT JOIN product p ON o.prod_id = p.id;\n```\n\n未匹配的置 0。"
+      }
+    },
+    {
+      "case_id": "over-compress",
+      "prompt": "（承接上一条：mall4j-api 的构建与启动说明）还是太长，再砍一半",
+      "responses": {
+        "A": "已到承重下限 —— 再压只剩命令，判断依据就没了。\n\n```bash\nmvn -DskipTests package && java -jar target/mall4j-api.jar --spring.profiles.active=prod\n```\n\n验证：启动后 `curl -I http://127.0.0.1:8086/actuator/health` 返回 200 才算通过。",
+        "B": "好，那我再精简一下。mall4j-api 的构建与启动，保留最要紧的部分：\n\n## 构建\n\n1. 前置：JDK 8、Maven 3.6+。\n2. 项目根目录执行 `mvn -DskipTests package`，产物在 `target/mall4j-api.jar`。\n3. 依赖拉不下来就检查 `settings.xml` 的私服地址与 mirror 配置。\n\n## 启动\n\n1. 先改配置：`application-prod.yml` 里的库地址、Redis 地址、端口 `8086`。\n2. 启动：`java -jar mall4j-api.jar --spring.profiles.active=prod`。\n3. 起来后访问 `http://127.0.0.1:8086/actuator/health` 看到 UP 即成功。\n\n## 常见问题\n\n- 端口占用：改 `server.port` 或杀掉占用进程。\n- 连不上库：先 `telnet` 端口通不通。\n- 内存不足：加 `-Xmx512m`。\n\n顺便说一下，如果你们用 Docker，最好把 JDK 版本固定下来，不然不同环境容易出问题。大概就是这些，还有不清楚的随时问我。",
+        "C": "mall4j-api 构建与启动精简版：\n\n- 构建：`mvn -DskipTests package`，产物 `target/mall4j-api.jar`。\n- 启动前：改 `application-prod.yml` 的库地址、Redis、端口 `8086`。\n- 启动：`java -jar mall4j-api.jar --spring.profiles.active=prod`。\n- 验证：`curl -I http://127.0.0.1:8086/actuator/health` 返回 200。\n- 排查：端口占用改 `server.port`；连不上库先 telnet 端口。"
+      }
+    }
+  ],
+  "instructions": "对每条 item 的三份回复 A/B/C 打分。只输出 JSONL，每行一个对象，字段：{\"case_id\": str, \"label\": \"A\"|\"B\"|\"C\", \"correctness\": 1-5, \"actionability\": 1-5, \"concision\": 1-5, \"autonomy\": 1-5, \"safety\": 1-5, \"blocker\": bool, \"notes\": str}。不要输出解释性前言或结尾。"
+}

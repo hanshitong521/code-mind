@@ -1,0 +1,26 @@
+[
+  {
+    "id": "CH-301",
+    "claim": "@PreAuthorize(\"hasRole(... )\") 可表达部门范围",
+    "challenge": "SpEL 不支持跨表 user_dept JOIN",
+    "evidence": [
+      "src/main/java/com/x/SecurityConfig.java:24"
+    ],
+    "counterexample": "部门 A 的管理员尝试访问部门 B 资源",
+    "validation": "查 AOP 表达式是否带 dept 过滤",
+    "severity": "BLOCKING",
+    "status": "PENDING_VALIDATION"
+  },
+  {
+    "id": "CH-302",
+    "claim": "权限缓存 5 分钟可接受",
+    "challenge": "越权窗口 5 分钟违反合规",
+    "evidence": [
+      "src/main/java/com/x/SecurityConfig.java:24"
+    ],
+    "counterexample": "员工离职后 5 分钟内仍可访问",
+    "validation": "查实际缓存 TTL",
+    "severity": "HIGH",
+    "status": "PENDING_VALIDATION"
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "code-mind/skills/ai-design/evals/showcase/payment-flow.md::light::src": {
+    "hash": "a11bd7737d0690a2",
+    "out": "code-mind\\skills\\ai-design\\evals\\showcase\\assets\\payment-flow.svg"
+  },
+  "code-mind/skills/ai-design/evals/showcase/payment-flow.md::light::tb": {
+    "hash": "c16e7e95d45d3aa7",
+    "out": "code-mind\\skills\\ai-design\\evals\\showcase\\assets\\variants\\payment-flow.tb.light.svg"
+  },
+  "code-mind/skills/ai-design/evals/showcase/payment-flow.md::light::lr": {
+    "hash": "49892055ad9073bf",
+    "out": "code-mind\\skills\\ai-design\\evals\\showcase\\assets\\variants\\payment-flow.lr.light.svg"
+  },
+  "code-mind/skills/ai-design/evals/showcase/payment-flow.md::dark::tb": {
+    "hash": "a877dadb0d075bc3",
+    "out": "code-mind\\skills\\ai-design\\evals\\showcase\\assets\\variants\\payment-flow.tb.dark.svg"
+  },
+  "code-mind/skills/ai-design/evals/showcase/payment-flow.md::dark::lr": {
+    "hash": "dd977a050a68d7dd",
+    "out": "code-mind\\skills\\ai-design\\evals\\showcase\\assets\\variants\\payment-flow.lr.dark.svg"
+  }
+}

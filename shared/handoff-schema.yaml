@@ -1,7 +1,7 @@
 # Handoff 结构化契约（JSON Schema 兼容 YAML 表示）
 #
 # 三种 Handoff 的字段契约。scripts/validate_handoff.py 据此校验。
-# Handoff 实例须为 SKILL.md / handoff-template.md 中的 ```yaml 代码块，
+# Handoff 实例须为 docs/diagram/design.md（DiagramMind D7 设计交付）中的 ```yaml 代码块，
 # 或独立 .yaml 文件。校验失败 → Handoff 不合格，下游 Skill 拒绝消费。
 #
 # 设计原则：
@@ -56,7 +56,7 @@ design_to_code:
       description: "本任务暴露的全局准则缺口；无则「无」"
     建议下一步:
       type: string
-      enum: [/ai-design, /ai-code, /ai-debug, 无]
+      enum: [/ai-design, /ai-code, 无]
     接入门:
       type: string
       description: "可选；涉及 DB/服务器须先走接入门（结构化提问）。值：已填 | 跳过(原因)"
@@ -96,7 +96,7 @@ design_to_test:
       description: "用户是否授权 UPDATE/INSERT（须进入 /ai-code 探针流程）"
     建议下一步:
       type: string
-      enum: [/ai-design, /ai-code, /ai-debug, 无]
+      enum: [/ai-design, /ai-code, 无]
     接入门:
       type: string
       description: "可选；涉及 DB/服务器须先走接入门（结构化提问）。值：已填 | 跳过(原因)"
@@ -135,7 +135,7 @@ code_to_test:
       type: string
     建议下一步:
       type: string
-      enum: [/ai-design, /ai-code, /ai-debug, 无]
+      enum: [/ai-design, /ai-code, 无]
     接入门:
       type: string
       description: "可选；涉及 DB/服务器须先走接入门（结构化提问）。值：已填 | 跳过(原因)"
@@ -145,6 +145,65 @@ code_to_test:
     verification_escalation:
       type: string
       enum: [yes, na]
+
+# ── code → verify（DevTest Hub 交接）────────────────────────────
+code_to_verify:
+  description: "编码阶段产出，交 DevTest Hub 由 VerifyMind 验证（开发声明面 submitted）"
+  type: object
+  required:
+    - handoff_id
+    - 契约引用
+    - 接口清单
+    - 编译自检
+    - 建议下一步
+  properties:
+    handoff_id:
+      type: string
+      pattern: '^DH-\d{8}-[A-Za-z0-9]+$'
+      description: "DevTest Hub 交接单号；Hub SSOT 主键（UI .data/handoffs/{project}/{id}.json）"
+    契约引用:
+      type: string
+      description: "contract §3 接口 / §5 数据 等段引用（行为层）；禁复制全文、禁盘符路径"
+    接口清单:
+      type: string
+      description: "method + path 列表，标注 origin：submitted（声明面）/ discovered（扩面）"
+    扩面项:
+      type: string
+      description: "work_items：scope_add | contract_gap；无 source → contract_gap，禁臆造 expected"
+    编译自检:
+      type: string
+      enum: [PASS, FAIL, 未跑]
+      description: "dev_self_check.compile"
+    本地探针:
+      type: string
+      enum: [PASS, FAIL, 未跑]
+      description: "dev_self_check.local_probe；未跑须在 未跑原因 写明"
+    未跑原因:
+      type: string
+      description: "无 | 原因（如未配 DB / 无联调环境）"
+    gate结果:
+      type: string
+      enum: [PASS, FAIL, HOLD, BLOCKED, 未测]
+      description: "测试侧回写；开发提交时填 未测。声明面全绿但扩面未测/未决 → HOLD，禁报全 PASS"
+    缺陷:
+      type: string
+      description: "BUG 行：bug_id + status + triage；争议未关前任务不得 PASS"
+    镜像:
+      type: string
+      description: "mirror：业务仓相对路径 + content_hash（须与 Hub 一致，AC-6）"
+    提示轨道:
+      type: string
+      enum: [hints_only, 无]
+      description: "WHY 层 hints 仅 candidate，与 memories 分离；禁作判定依据、禁进 expected"
+    规则演进:
+      type: string
+      description: "本任务暴露的全局准则缺口；无则「无」"
+    建议下一步:
+      type: string
+      enum: [/ai-design, /ai-code, 无]
+    接入门:
+      type: string
+      description: "可选；涉及 DB/服务器须先走接入门（结构化提问）。值：已填 | 跳过(原因)"
 
 # ── test → design（SQL 证伪回退）────────────────────────────────
 test_to_design:
@@ -169,7 +228,7 @@ test_to_design:
       type: string
     建议下一步:
       type: string
-      enum: [/ai-design, /ai-code, /ai-debug, 无]
+      enum: [/ai-design, /ai-code, 无]
     接入门:
       type: string
       description: "可选；涉及 DB/服务器须先走接入门（结构化提问）。值：已填 | 跳过(原因)"

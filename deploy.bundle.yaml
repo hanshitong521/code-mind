@@ -11,7 +11,6 @@ schema_version: 2
 skills:
   - ai-design
   - ai-code
-  - ai-debug
   - ai-requirement
   - ai-concise
 
@@ -27,6 +26,7 @@ release:
 
 # 卸载时顺带清理的旧目录（曾装过、源已删或已退役）
 legacy_skill_names:
+  - ai-debug
   - ask-matt
   - ai-verify
   - handoff

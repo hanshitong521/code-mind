@@ -1,0 +1,11 @@
+{
+  "name": "vue2-dead-code-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "vue": "^2.7.14",
+    "vue-router": "^3.6.5"
+  }
+}

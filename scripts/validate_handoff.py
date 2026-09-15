@@ -7,7 +7,7 @@ validate_handoff.py — Handoff 结构化契约校验器
 零外部依赖（仅 Python 标准库）。
 
 用法:
-  python scripts/validate_handoff.py                          # 校验 handoff-template.md 中的示例
+  python scripts/validate_handoff.py                          # 校验 docs/diagram/design.md（设计交付）
   python scripts/validate_handoff.py path/to/handoff.yaml     # 校验独立 YAML 文件
   python scripts/validate_handoff.py path/to/markdown.md      # 校验 markdown 中的 ```yaml 块
 
@@ -25,27 +25,37 @@ SCHEMA = {
         "required": ["变更面", "plan路径", "范围", "验收", "验证档位", "建议下一步"],
         "enum_fields": {
             "验证档位": ["micro-fix", "local-fix", "surface", "pr-ready", "release"],
-            "建议下一步": ["/ai-design", "/ai-code", "/ai-debug", "无"],
+            "建议下一步": ["/ai-design", "/ai-code", "无"],
         },
     },
     "design_to_test": {
         "required": ["plan路径", "只验SQL或含API", "测试库写操作", "建议下一步"],
         "enum_fields": {
             "只验SQL或含API": ["只验SQL", "含API"],
-            "建议下一步": ["/ai-design", "/ai-code", "/ai-debug", "无"],
+            "建议下一步": ["/ai-design", "/ai-code", "无"],
         },
     },
     "code_to_test": {
         "required": ["变更面", "plan引用", "已跑验证", "未跑验证", "建议下一步"],
         "enum_fields": {
-            "建议下一步": ["/ai-design", "/ai-code", "/ai-debug", "无"],
+            "建议下一步": ["/ai-design", "/ai-code", "无"],
+        },
+    },
+    "code_to_verify": {
+        "required": ["handoff_id", "契约引用", "接口清单", "编译自检", "建议下一步"],
+        "enum_fields": {
+            "编译自检": ["PASS", "FAIL", "未跑"],
+            "本地探针": ["PASS", "FAIL", "未跑"],
+            "gate结果": ["PASS", "FAIL", "HOLD", "BLOCKED", "未测"],
+            "提示轨道": ["hints_only", "无"],
+            "建议下一步": ["/ai-design", "/ai-code", "无"],
         },
     },
     "test_to_design": {
         "required": ["结论", "证据", "建议", "建议下一步"],
         "enum_fields": {
             "结论": ["SQL证伪", "SQL证实Bug", "全部PASS"],
-            "建议下一步": ["/ai-design", "/ai-code", "/ai-debug", "无"],
+            "建议下一步": ["/ai-design", "/ai-code", "无"],
         },
     },
 }
@@ -55,6 +65,7 @@ TYPE_MARKERS = {
     "design_to_code": ["设计 Handoff → 编码", "设计 Handoff → 代码", "design_to_code"],
     "design_to_test": ["设计 Handoff → 测试", "design_to_test"],
     "code_to_test": ["编码 Handoff", "code_to_test"],
+    "code_to_verify": ["开发交接 → 验证", "code_to_verify"],
     "test_to_design": ["测试 Handoff → 设计", "test_to_design"],
 }
 
@@ -94,6 +105,8 @@ def detect_handoff_type(text):
         return "design_to_code"
     if {"plan路径", "只验SQL或含API"} <= keys:
         return "design_to_test"
+    if {"handoff_id", "契约引用"} <= keys:
+        return "code_to_verify"
     if {"plan引用", "已跑验证", "未跑验证"} <= keys:
         return "code_to_test"
     if {"结论", "证据", "建议"} <= keys and "SQL" in text:
@@ -102,16 +115,29 @@ def detect_handoff_type(text):
 
 
 def extract_yaml_blocks(markdown_text):
-    """从 markdown 中提取 ```yaml 或 ``` 代码块。"""
+    """从 markdown 中提取 ```yaml / ```yml / 无标签 代码块。
+
+    注意：不能用单个正则匹配围栏对 —— 非 YAML 块（如 ```mermaid）的**结束围栏**
+    会被误当成一个无标签块的开始，从而把正文当成 Handoff。这里按行扫描做围栏配对。
+    """
     blocks = []
-    pattern = re.compile(r'```(?:ya?ml)?\s*\n(.*?)```', re.DOTALL)
-    for m in pattern.finditer(markdown_text):
-        block_text = m.group(1)
-        # 只保留看起来像 Handoff 的块（含至少 2 个 key: value 行）
-        kv = parse_kv_block(block_text)
-        if len(kv) >= 2:
-            blocks.append(block_text)
-    return blocks
+    cur = None      # 当前块的行缓冲；None 表示不在块内
+    lang = None
+    for line in markdown_text.splitlines():
+        s = line.strip()
+        if cur is None:
+            if s.startswith("```"):
+                lang = s[3:].strip().lower()
+                cur = []
+        elif s == "```":
+            if lang in ("", "yaml", "yml"):
+                blocks.append("\n".join(cur))
+            cur = None
+            lang = None
+        else:
+            cur.append(line)
+    # 只保留看起来像 Handoff 的块（含至少 2 个 key: value 行）
+    return [b for b in blocks if len(parse_kv_block(b)) >= 2]
 
 
 def validate_one(handoff_text, source_label=""):
@@ -246,19 +272,23 @@ def main():
                 else:
                     all_issues.extend(iss)
     else:
-        # 默认校验 handoff-template.md
-        template = root / "skills" / "ai-design" / "references" / "handoff-template.md"
-        if template.exists():
-            text = template.read_text(encoding="utf-8")
+        # 默认校验设计交付（DiagramMind D7 产物：docs/diagram/design.md）
+        candidates = [root / "docs" / "diagram" / "design.md"]
+        for c in candidates:
+            if not c.exists():
+                continue
+            text = c.read_text(encoding="utf-8")
             blocks = extract_yaml_blocks(text)
             for i, blk in enumerate(blocks):
                 total += 1
-                ok, iss = validate_one(blk, f"handoff-template.md#block{i+1}")
+                ok, iss = validate_one(blk, f"{c.relative_to(root)}#block{i+1}")
                 if ok:
                     passed += 1
                 else:
                     all_issues.extend(iss)
-        # 也校验 schema 自身示例不存在时跳过
+        if total == 0:
+            print("[validate_handoff] 未找到 docs/diagram/design.md（纯理解任务无设计交付属正常），跳过")
+            return 0
 
     print(f"[validate_handoff] 校验 {total} 个 Handoff 实例，{passed} 通过，{total - passed} 失败")
     if all_issues:

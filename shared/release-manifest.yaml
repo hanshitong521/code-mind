@@ -24,8 +24,8 @@ skills:
     source_ref: WORKING_TREE
     source_path: skills/ai-code
     artifact_path: skills/ai-code
-    content_hash: sha256:a5139c31d70145931557ada5653c9d2091e1fccf0c103708ba94758b37cfa7c0
-    version: 7.0.0
+    content_hash: sha256:f35723b984075c69f4957883a6d98ace16ab3b0df41a6e21be3484f34c66f456
+    version: 8.0.0
     schema_version: 1
     editable: true
   ai-design:
@@ -34,18 +34,18 @@ skills:
     source_ref: WORKING_TREE
     source_path: skills/ai-design
     artifact_path: skills/ai-design
-    content_hash: sha256:fa99370acd0fab6f120162f978b9bd7344dbbb5cfc8726c4cf167303da23880f
-    version: 5.0.0
+    content_hash: sha256:f3b761eab119eeb3f7b617954a975f2225248c8b58603a085244fab00391a3b9
+    version: 6.5.0
     schema_version: 1
     editable: true
-  ai-debug:
+  ai-codeHealthMind:
     status: CANONICAL_LOCAL
     source_repo: ai-programming-docs
     source_ref: WORKING_TREE
-    source_path: skills/ai-debug
-    artifact_path: skills/ai-debug
-    content_hash: sha256:828d425f2f41ad0df40d12f38507708e3bb70ceb4c5b2bb5297c2a97fec8d81e
-    version: 1.1.0
+    source_path: skills/ai-codeHealthMind
+    artifact_path: skills/ai-codeHealthMind
+    content_hash: sha256:87edfc5aa601b237627c019232774ffa7827d4c05c4a119dde51ddb459f27d0b
+    version: 1.0.0
     schema_version: 1
     editable: true
   ai-requirement:
@@ -54,7 +54,7 @@ skills:
     source_ref: null
     source_path: SKILL.md
     artifact_path: skills/ai-requirement
-    content_hash: sha256:bbef23f16176c02b7995503731dc293feb5d8adf3595395573ff8511edc08c32
+    content_hash: sha256:c3870a1432c0ba7a4f80605f921ae158f2e53d46dc6dc2dfb0b3dc2c54de7786
     version: null
     schema_version: 1
     editable: false
@@ -68,7 +68,7 @@ skills:
     source_ref: null
     source_path: SKILL.md
     artifact_path: skills/ai-concise
-    content_hash: sha256:654039d0257fba8ac7f6b4cd6d5f33cbe4432b23300d73a15b96bc90ec5db50e
+    content_hash: sha256:b2f94eb37fefce06177d7e7c5c7be4d3ee67006992390713ba4b2d2c70920524
     version: null
     schema_version: 1
     editable: false
@@ -78,19 +78,19 @@ skills:
       release_file: SKILL.md
 shared_contracts:
   shared/core.md:
-    content_hash: sha256:36c862a69fb3c6f7e9f6ea272e4b8f735ecd85b85e2bb01df0bca60aea2375cd
+    content_hash: sha256:014a172abd772b6c21e11f7447044cf4dcfd0c07ee8226fac7dcb09cf13be699
     schema_version: 1
   shared/handoff-schema.yaml:
-    content_hash: sha256:7219448d296077fbd30a386508560a80ccf21442651d4ffe15539c377ed29ee0
+    content_hash: sha256:015e15a7ef6579d12ba94c71ff9bf71f6840287c4283ac64c93077ef1cf104d3
     schema_version: 1
   shared/verification-policy.yaml:
     content_hash: sha256:e234c4113d0c5b70a9ba80cee7e3293a578bf4b8a69e5d5369d912da31cf08c0
     schema_version: 1
   shared/capability-registry.yaml:
-    content_hash: sha256:1257c5b968e577aa25d4e26ac6efd5f2fc0b7373e1ce87cc8cf978eea493ed8e
+    content_hash: sha256:309164b151732d01432a6b6d2c18d5521dd4cc39e7ef48b1548a1b925ee906b1
     schema_version: 1
   shared/schema-versions.yaml:
-    content_hash: sha256:8cb577d433dfdf7e88f3c04e3fba9a6632da5bdb1868a3ee6120428459bcb31c
+    content_hash: sha256:266702bf75eec3d5de30dfaf71755e7add2ed8c863c18209e934a74da2b67fe6
     schema_version: 1
 drift_verdicts:
 - PASS

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "FACT-101",
+    "category": "database",
+    "statement": "orders 表当前 4200 万行",
+    "source": {
+      "type": "sql",
+      "path": "sql/orders.sql",
+      "line": 1
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-102",
+    "category": "database",
+    "statement": "idx_user_created 索引 (user_id, created_at)",
+    "source": {
+      "type": "sql",
+      "path": "sql/orders.sql",
+      "line": 23
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-103",
+    "category": "api",
+    "statement": "GET /api/orders 接受 page/size 参数",
+    "source": {
+      "type": "code",
+      "path": "src/main/java/com/x/OrderController.java",
+      "line": 55
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-104",
+    "category": "structure",
+    "statement": "历史归档表 orders_archive 已有",
+    "source": {
+      "type": "sql",
+      "path": "sql/archive.sql",
+      "line": 5
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  }
+]

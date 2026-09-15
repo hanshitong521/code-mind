@@ -5,7 +5,11 @@ description: AI requirement clarification, adversarial review and spec compilati
 
 # RequirementMind — 需求澄清、反驳审查与规格编译
 
-把一句模糊需求，编译成经过取证、追问、反驳、验证、冻结的开发规格。
+把一句模糊需求，编译成经过取证、追问、反驳、验证、冻结的开发规格，输出三层产物：
+- **人读**：`docs/requirementmind/DEVELOPMENT_SPEC.md`
+- **机读 IR**：`.requirementmind/ir/{requirement,business-rule,workflow,risk,acceptance}.yaml + decision.json + trace.json`（V5）
+- **跨会话记忆**：`.requirementmind/decision-memory.json`（V5）
+
 **核心原则：先把"做什么"彻底搞清楚，才允许 AI 解决"怎么做"。**
 
 Skill home：本文件所在目录，下称 `$SKILL`。加载后将其展开为绝对路径（不要假设具体安装位置）。
@@ -31,18 +35,21 @@ Skill home：本文件所在目录，下称 `$SKILL`。加载后将其展开为�
 
 ```
 .requirementmind/
-├── session.json      # 当前阶段游标 + 需求原文
+├── session.json      # 当前阶段游标 + 需求原文 + Gate 状态机节点（V5）
 ├── facts.json        # FACT-xxx 项目事实（带文件级证据）
 ├── questions.json    # Q-xxx   问题（priority: BLOCKING|IMPORTANT|OPTIONAL）
-├── decisions.json    # DEC-xxx 冻结决策（FROZEN | SUPERSEDED）
+├── decisions.json    # DEC-xxx 冻结决策（FROZEN | SUPERSEDED + rejected_alternatives / failure_history V5）
 ├── assumptions.json  # ASM-xxx 模型推断（risk: HIGH|MEDIUM|LOW）
 ├── conflicts.json    # CON-xxx 冲突（severity: BLOCKING|IMPORTANT）
 ├── challenges.json   # CH-xxx  Reviewer 的 CLAIM
-├── evidence.json     # 裁决：CONFIRMED | PLAUSIBLE | REFUTED
+├── evidence.json     # 裁决：CONFIRMED | PLAUSIBLE | REFUTED（含 confidence / verification V5）
 ├── gate.json              # Gate 检查表 + 最终状态
 ├── evidence-ledger.json   # 可交付主张证据账（P1）
+├── evidence-pack.json     # 统一四元组视图（V5，evidence-engine）
 ├── change-budget.json     # 开发变更上限（L2/L3 必填）
 ├── decision-graph.json    # 决策影响图（由脚本生成）
+├── decision-memory.json   # 跨会话决策记忆（V5，含 rejected_alternatives / failure_history）
+├── ir/                    # Requirement IR 7 文件（V5 P0：requirement / business-rule / workflow / risk / acceptance yaml + decision / trace json）
 └── history/               # 每轮快照
 ```
 
@@ -53,7 +60,6 @@ Schema 定义见 `$SKILL/schemas/state.schema.json`。会话中断后从这里�
 ## 工作流
 
 用户给出需求后，按顺序执行下列阶段。每个阶段先读对应的 `references/` 规则文件再动手。
-<<<<<<< HEAD
 
 ### Phase 0 — Complexity Router → `references/complexity-router.md`
 为需求定 **task_level**（L0–L3），避免简单改动走全套审查。
@@ -63,8 +69,6 @@ node $SKILL/scripts/state.mjs route .requirementmind [--write]
 ```
 
 L0 可跳过 Phase 5–6（须在 `session.json` 记 `skipped_phases`）；L2/L3 禁止跳过，且开发前须 `budget --write` 与完整 Review/Validator。
-=======
->>>>>>> origin/master
 
 ### Phase 1 — Context Scanner → `references/scanner.md`
 扫描目标项目（Java 系优先），产出 `facts.json` + 人读的 `PROJECT_FACTS.md`。
@@ -77,7 +81,7 @@ L0 可跳过 Phase 5–6（须在 `session.json` 记 `skipped_phases`）；L2/L3
 ### Phase 2.5 — Risk Router → `references/risk-router.md`
 八维风险评分写入 `risk.json`（score>=2 必须带证据 refs）→
 `node $SKILL/scripts/state.mjs risk .requirementmind` 分层，决定 Phase 5 审查投入：
-LIGHT(0-7)=现流程 / FOCUSED(8-14)=+1 专项 / COUNCIL(15+)=至多 3 专项。**80% 需求应停在 LIGHT。**
+LIGHT(0-7)=现流程 / FOCUSED(8-14)=+1 专项 / COUNCIL(15+)=**五专家委员会强制派发**（V5：concurrency / data_integrity / security / compatibility / testability 全部出场）。**80% 需求应停在 LIGHT。**
 
 ### Phase 3 — Grilling Engine（循环）→ `references/grilling.md` + `references/freezer.md`
 ```
@@ -90,6 +94,8 @@ frontier 只出 **USER_ONLY** 问题；TECHNICAL/LOW 由 AI 采纳推荐 `freeze
 ### Phase 4 — Spec Compiler → `references/spec-compiler.md`
 从 canonical JSON 状态**单向生成** `docs/requirementmind/DEVELOPMENT_SPEC.md`。
 禁止手改 Markdown 后反向生效。
+
+**V5 配套**：Spec 编译完成后立即 `node $SKILL/scripts/state.mjs ir .requirementmind --write` 生成 Requirement IR 7 文件，让 Coding Agent / Project-Brain / ContextMind / TestMind 并行开工。详见 `references/ir.md`。
 
 ### Phase 5 — Adversarial Review（独立上下文 subagent）→ `references/reviewer.md`
 按 risk.json 的 tier 派发（全新上下文 subagent）：LIGHT=1 个 reviewer；FOCUSED=reviewer +
@@ -113,6 +119,20 @@ Critical Assumptions / Unvalidated High Risks）全为 0 → `gate.json` 置
 READY_FOR_DEVELOPMENT；否则 BLOCKED 并列出缺失项。判定用
 `node $SKILL/scripts/state.mjs gate .requirementmind` 复核。
 
+**V5 状态机**（`session.json.phase`，由 `state.mjs gate-state --record --to <NODE>` 维护）：
+
+```
+INPUT ──▶ ANALYZING ──▶ BLOCKED ◀──┐
+                      │            │
+                      ▼            │
+              READY_FOR_DEVELOPMENT│
+                      │            │
+                      ▼            │
+                  FROZEN ─────────┘  (开发期发现新未知回 BLOCKED)
+```
+
+非法迁移（如 `BLOCKED → FROZEN` 跳过 READY）由脚本拦截。详见 `state.mjs gate-state`。
+
 ### 收尾 — Prompt Export
 READY 后，按 `$SKILL/templates/agent-prompt.md` 把 DEVELOPMENT_SPEC.md 转成
 `.agent-prompts/{generic,codex,cursor,claude-code}.md`，交给用户的 Coding Agent。
@@ -131,8 +151,10 @@ DEVELOPMENT_BLOCKER 报告退回本流程：转 CONFLICT/QUESTION → 批量追�
 ## 提问纪律（对用户的可见行为）— 批量模式
 
 格式模板与禁例全文见 `references/grilling.md`（Phase 3 必读）。铁律：
+- **说人话**：白话问句 + 一句「为啥要问」；术语第一次出现附白话；与 concise-mind Explain（`audience: engineer`）一致。
 - 每轮整批抛出 frontier（只含 **USER_ONLY** 的 BLOCKING+IMPORTANT + OPEN 冲突）；TECHNICAL/LOW 不问（R11）；选项依赖未答问题的归下一轮；取证进行中不阻塞其余问题先抛（R3）。
-- 每问必须带 `⭐ 推荐：X` + 可追溯到 FACT/`path:line` 的理由；推荐是默认建议，用户选其他项照常冻结，不得劝说改选。
+- **每问必有推荐**：`⭐ 推荐：X` + 可追溯到 FACT/`path:line` 的理由；缺推荐 → `validate` 失败，禁止展示。推荐是默认建议，用户选其他项照常冻结，不得劝说改选。
+- **展示形式二选一**：文字列表（默认）或 Cursor `AskQuestion` 下拉（推荐项 label 加 `(推荐)`，仍须单独一行 ⭐ 推荐理由）。
 - 禁止问项目里能查到的（R3）；禁止"还有补充吗"式空问题；禁止代答未答项。
 - 用户改主意：`freeze --supersede` 显式改判（旧 DEC SUPERSEDED + replaced_by，下游标记待重审），禁止静默覆盖（R5）。
 
@@ -141,7 +163,7 @@ DEVELOPMENT_BLOCKER 报告退回本流程：转 CONFLICT/QUESTION → 批量追�
 ```bash
 node $SKILL/scripts/state.mjs frontier .requirementmind                    # 本批待决项 + 计数；退出码 0 = R9 达成
 node $SKILL/scripts/state.mjs freeze   .requirementmind Q-007 B [--supersede] [--auto] [--impact "a,b"]  # 冻结答案 → DEC（--auto=AI 自治）
-node $SKILL/scripts/state.mjs risk     .requirementmind                    # 八维评分校验 → LIGHT/FOCUSED/COUNCIL + 专项路由
+node $SKILL/scripts/state.mjs risk     .requirementmind [--write]          # 八维评分 → LIGHT/FOCUSED/COUNCIL + 专项；COUNCIL=五专家强制派发（V5）
 node $SKILL/scripts/state.mjs stop     .requirementmind                    # 停止条件（R9+覆盖率）；退出码 0 = 收敛
 node $SKILL/scripts/state.mjs eval     .requirementmind                    # 会话指标（自治率/验真率），供 Eval 闭环
 node $SKILL/scripts/state.mjs counters .requirementmind                    # 四项关键计数
@@ -149,28 +171,26 @@ node $SKILL/scripts/state.mjs validate .requirementmind                    # JSO
 node $SKILL/scripts/state.mjs gate     .requirementmind                    # Gate 硬门槛汇总
 node $SKILL/scripts/state.mjs snapshot .requirementmind                    # 快照到 history/
 node $SKILL/scripts/state.mjs migrate  .requirementmind [--write]          # 旧 questions 补推荐字段（预览/写入）
-<<<<<<< HEAD
 node $SKILL/scripts/state.mjs route    .requirementmind [--write]          # Complexity Router L0–L3
 node $SKILL/scripts/state.mjs budget   .requirementmind [--write] [...]    # Change Budget
 node $SKILL/scripts/state.mjs ledger   .requirementmind list|validate|append
 node $SKILL/scripts/state.mjs impact-graph .requirementmind [--write]      # Decision Impact Graph
 node $SKILL/scripts/state.mjs context  .requirementmind                    # Decision Context Contract JSON
-node $SKILL/scripts/selftest.mjs                                           # 确定性自测（改动本 skill 后必跑）
+node $SKILL/scripts/state.mjs ir           .requirementmind [--write]      # V5 P0：生成 Requirement IR 7 文件
+node $SKILL/scripts/state.mjs gate-state   .requirementmind [--to NODE] [--reason "..."]   # V5 P0：Gate 状态机节点 + 迁移
+node $SKILL/scripts/state.mjs evidence-pack .requirementmind [--write]     # V5 P1：统一四元组视图（结论/证据/可信度/验证方式）
+node $SKILL/scripts/state.mjs decision-memory .requirementmind [--write]   # V5 P1：跨会话决策记忆（rejected_alternatives + failure_history）
+node $SKILL/scripts/selftest.mjs                                           # 确定性自测（改动本 skill 后必跑，含 5 攻击测试场景）
 ```
 
 修改本 Skill 须遵守 `references/skill-change-gate.md`（禁止无证据自改）。
 
-=======
-node $SKILL/scripts/selftest.mjs                                           # 确定性自测（改动本 skill 后必跑）
-```
-
->>>>>>> origin/master
 ## 下游栈（Gate READY 之后 · 禁本 skill 兼做实现）
 
-职责切分见技能库 `shared/pipeline-contract.md`（五层：WHAT/WHY/CTX/HOW/DO）。
+职责切分见技能库 `shared/core.md` §pipeline-contract（五层：WHAT/WHY/CTX/HOW/DO）。
 
-- **WHAT 已冻结**：禁止再用 `/ai-design` 或 `@grilling` 重问同一 FROZEN；HOW（模块/接缝/验证档）才走 `/ai-design`。
+- **WHAT 已冻结**：禁止再用 `/ai-design` 或 `@grilling` 重问同一 FROZEN；HOW（模块/接缝/验证档）才走 `/ai-design`（DiagramMind）。
 - **同步**：`decision_state.json` + 业务仓 `node scripts/sync-requirementmind-brain.mjs`（FROZEN → project-brain）。brain 记忆不得覆盖 FROZEN。
-- **CTX**：Handoff 经 `handoff_to_task_bundle.py` 写入 `.contextmind/task.active.json`；Java 结构用 `context_orient`（非 brain）。
+- **CTX**：设计交付（`docs/diagram/design.md`，含 `design_to_code` Handoff YAML）经 `handoff_to_task_bundle.py` 写入 `.contextmind/task.active.json`；Java 结构用 `context_orient`（非 brain）。
 - **DO**：`/ai-code`。规格与代码冲突 → `DEVELOPMENT_BLOCKER`（`references/dev-feedback.md`），禁止编码 Agent 私裁。
 - **Grill 互斥**：本流程 Phase 3 是 WHAT grilling 唯一入口；未 READY 时不要另挂 `grilling` skill 并行。

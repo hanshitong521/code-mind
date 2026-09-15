@@ -30,6 +30,24 @@ Gate READY 后把输出 JSON 存为 `.requirementmind/eval.json`（schema 见 sc
 | rework_count > 0 | 规格与代码现实脱节 | 检查 Impact Analysis 章节（spec-compiler.md）是否敷衍 |
 | not_ask_me > 0 | 具体问题 authority 标错 | 该问题类型下次默认 TECHNICAL |
 
+## 攻击测试指标（V5）
+
+按 `references/attack-tests.md` 列出的 5 类场景，selftest 必跑。每次跑记录到 `eval.json`：
+
+```json
+{
+  "attack_tests": {
+    "payment_refund":    { "ran": true, "found_hidden_issues": 2, "blocked_wrong_dev": true, "generated_acceptance": true },
+    "ten_million_db":    { "ran": true, "found_hidden_issues": 1, "blocked_wrong_dev": true, "generated_acceptance": true },
+    "ai_agent_arch":     { "ran": true, "found_hidden_issues": 3, "blocked_wrong_dev": true, "generated_acceptance": true },
+    "permission_system": { "ran": true, "found_hidden_issues": 2, "blocked_wrong_dev": true, "generated_acceptance": true },
+    "high_concurrency":  { "ran": true, "found_hidden_issues": 1, "blocked_wrong_dev": true, "generated_acceptance": true }
+  }
+}
+```
+
+任何一类 4 个子项（found_hidden_issues / blocked_wrong_dev / generated_acceptance / ran）不全 → 视为该场景覆盖失败，Gate 升级到 FOCUSED。
+
 ## 硬约束
 
 - eval.json 只记录指标与调整结论，禁止把对话流水账写进去。

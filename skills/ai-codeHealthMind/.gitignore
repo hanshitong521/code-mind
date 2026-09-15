@@ -1,0 +1,24 @@
+# CodeHealthMind run artefacts
+.codehealth/
+# Local config (the template `.codehealth.example.yml` is committed)
+.codehealth.yml
+.codehealth-baseline.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Toolchain cache (pinned tools are downloaded, not committed)
+.tools/
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

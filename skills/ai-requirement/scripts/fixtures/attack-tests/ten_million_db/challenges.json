@@ -1,0 +1,26 @@
+[
+  {
+    "id": "CH-101",
+    "claim": "OFFSET + 索引足以达成 500ms",
+    "challenge": "OFFSET 100000 仍需扫描 100000 行",
+    "evidence": [
+      "sql/orders.sql:23"
+    ],
+    "counterexample": "用户翻到第 1000 页",
+    "validation": "EXPLAIN OFFSET 100000",
+    "severity": "BLOCKING",
+    "status": "PENDING_VALIDATION"
+  },
+  {
+    "id": "CH-102",
+    "claim": "归档表与主表查询性能无关",
+    "challenge": "若查询未过滤归档标记会全表扫",
+    "evidence": [
+      "sql/archive.sql:5"
+    ],
+    "counterexample": "老订单的详情查询",
+    "validation": "查 SQL 是否带 status 过滤",
+    "severity": "HIGH",
+    "status": "PENDING_VALIDATION"
+  }
+]

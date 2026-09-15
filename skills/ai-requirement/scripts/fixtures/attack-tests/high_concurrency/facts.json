@@ -1,0 +1,38 @@
+[
+  {
+    "id": "FACT-401",
+    "category": "database",
+    "statement": "seckill 表有 (sku_id, user_id) 唯一索引",
+    "source": {
+      "type": "sql",
+      "path": "sql/seckill.sql",
+      "line": 12
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-402",
+    "category": "api",
+    "statement": "POST /api/seckill/{sku_id}/buy 已有",
+    "source": {
+      "type": "code",
+      "path": "src/main/java/com/x/SeckillController.java",
+      "line": 18
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-403",
+    "category": "structure",
+    "statement": "Redis Cluster 6 节点已部署",
+    "source": {
+      "type": "config",
+      "path": "application.yml",
+      "line": 34
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  }
+]

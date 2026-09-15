@@ -22,6 +22,16 @@ SCHEMA_VERSIONS_REL = "shared/schema-versions.yaml"
 CAPABILITY_REGISTRY_REL = "shared/capability-registry.yaml"
 BUNDLE_REL = "deploy.bundle.yaml"
 
+#: 不参与 content_hash 的目录名。
+#:
+#: 前三个是 VCS / 解释器缓存 / 依赖目录。
+#: 后两个是**生成物**目录：`.codehealth/` 是 CodeHealthMind 的运行产物（报告、ledger、
+#: 缓存），`reports/` 是验收脚本的输出。它们每次运行都会变，算进哈希只会让 CI 里的
+#: `--check` 反复报假 DRIFT。content_hash 描述源码，不描述「上一次跑出来的报告」。
+IGNORED_DIR_PARTS: frozenset[str] = frozenset(
+    {".git", "__pycache__", "node_modules", ".codehealth", "reports"}
+)
+
 
 def repo_root() -> Path:
     """本仓根 = scripts/ 的父目录。"""
@@ -62,6 +72,10 @@ def hash_tree(root: Path, exclude: list[str] | None = None) -> dict[str, Any]:
 
     目录哈希 = 对「相对路径排序后的 file:hash 行」再做一次 sha256，
     保证文件顺序变化不影响结果。
+
+    生成物目录（见 ``GENERATED_DIR_PARTS``）不参与哈希：它们是**每次运行都会变**的
+    输出，把它们算进 content_hash 只会让 CI 里的 ``--check`` 反复报假 DRIFT。
+    内容哈希应该描述「源码」，不是「上一次跑出来的报告」。
     """
     exclude = exclude or []
     entries: list[tuple[str, str]] = []
@@ -77,8 +91,8 @@ def hash_tree(root: Path, exclude: list[str] | None = None) -> dict[str, Any]:
         rel = f.relative_to(base).as_posix()
         if rel in exclude or f.name in exclude:
             continue
-        # 跳过 VCS / 缓存目录
-        if any(part in {".git", "__pycache__", "node_modules"} for part in f.parts):
+        # 跳过 VCS / 缓存 / 生成物目录
+        if any(part in IGNORED_DIR_PARTS for part in f.parts):
             continue
         raw = f.read_bytes()
         norm = normalize_bytes(raw, exclude=exclude, name=f.name)

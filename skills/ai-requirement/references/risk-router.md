@@ -27,14 +27,24 @@ node $SKILL/scripts/state.mjs risk .requirementmind
 
 | 总分 | 层级 | 审查投入 |
 |---|---|---|
-| 0-7 | LIGHT | 现有流程：主 Agent + Reviewer + Validator |
+| 0-7 | LIGHT | 现有流程：主 Agent + Reviewer + Validator（**80% 需求**） |
 | 8-14 | FOCUSED | + 1 名专项 Reviewer（最高分维度映射，取 specialists.md 对应节） |
-| 15-24 | COUNCIL | + 至多 3 名专项 Reviewer；全部 BLOCKING CLAIM 必须过 Validator |
+| 15-24 | COUNCIL | **五专家委员会强制派发**：concurrency / data_integrity / security / compatibility / testability 全部出场；全部 BLOCKING CLAIM 必须过 Validator |
 
 专项映射：`security_risk→security`；`data_impact/irreversibility→data_integrity`；`concurrency_risk→concurrency`；`compatibility_risk→compatibility`；`evidence_gap→testability`。`business_criticality`、`blast_radius` 不映射专项，只抬总分。
+
+**V5 五专家清单**（COUNCIL 强制派发，按 `references/specialists.md` 对应节取 prompt 片段）：
+
+1. `concurrency`（并发竞态、抢单、消息重复消费）
+2. `data_integrity`（金额/库存精度、迁移、回滚后状态）
+3. `security`（认证/越权/敏感数据落盘）
+4. `compatibility`（老客户端/老接口/灰度）
+5. `testability`（验收是否可机械判定）
+
+**为何 COUNCIL 必须 5 个而不是 3 个**：3 个专项会遗漏剩余维度（如同分时只取前 3 会漏掉 1 个），强制派满 5 专家确保所有高风险面都有独立上下文 subagent 攻击一次；每个专项**只审其维度**，不重复全量攻击（省 token，防同质化）。
 
 ## 纪律
 
 - LIGHT 层禁止追加任何角色；FOCUSED/COUNCIL 的专项角色**只审其专项维度**，不重复全量攻击（省 token，防同质化）。
 - 评分随重解析更新：supersede 或新 CONFLICT 出现后重打分并重跑 `risk`。
-- tier 写回 `risk.json`（total/tier/specialists 字段），Phase 5 按它派发。
+- tier 写回 `risk.json`（total/tier/specialists 字段），Phase 5 按它派发。`state.mjs risk --write` 同步落盘。

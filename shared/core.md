@@ -14,7 +14,7 @@
 |L-WHAT|RequirementMind|做什么；FROZEN|`.requirementmind/decisions.json` + Gate|未 READY 正式开发；用记忆覆盖 FROZEN|
 |L-WHY|project-brain|为什么/ADR/坑|MCP `search_project_context` `get_change_context` `save_*`|查 Java 位置；与 `search_knowledge`+`build_task_context` 同开|
 |L-CTX|Token-Mind/ContextMind|读多少/从哪读|`context_orient`→`context_fetch`；`.contextmind/task.active.json`|无 orient 整读 `*ServiceImpl`>80；第二套 Explore|
-|L-HOW|`/ai-design`|怎么做本期切片|plan + Handoff YAML|同 chat 写码；重问 WHAT（FROZEN 已钉）|
+|L-HOW|`/ai-design` (DiagramMind)|系统怎么长：模块/数据流/角色|`docs/diagram/*.md` + `assets/*.svg`；`design.md` 内 `design_to_code` Handoff|无证据画节点；猜未知；重问 WHAT（FROZEN 已钉）|
 |L-DO|`/ai-code`|最小 diff + 自检|Change Manifest + LOCAL SELF-CHECK|未绿宣称完成；猜契约|
 |L-STYLE|`concise-mind`|说话/diff 胖瘦（可选叠加）|仅 `/concise-mind` 挂上|当工作流；跳闸门；常驻 L0；替 ponytail 技能整读|
 
@@ -25,7 +25,7 @@
 |模糊需求/多解读/未钉金标|RM 若未 Gate；否则 `/ai-design`|`/ai-code`|
 |Gate READY 且 HOW 未钉|`/ai-design`|再开 RM grilling|
 |改 Java/SQL/修 bug|`/ai-code`|`grilling`；无 orient|
-|一直修不好|`/ai-debug`→`/ai-code`|未复现改|
+|一直修不好|`/ai-code` DBG|未复现改|
 |「当初为啥」/ADR/坑|brain `search_project_context`|当代码图|
 |长任务续做|TaskBundle + `.agent/state`|靠 chat 历史|
 |diff 太胖/说人话|`@concise-mind`（可与 `/ai-code` 同挂）|当拷问；Read ponytail SKILL|
@@ -36,23 +36,28 @@ Grill SSOT：RM 未 READY → 只用 RM Phase3；Gate READY 后 HOW 拷问 → `
 
 1. FROZEN ≠ 代码/SELECT → `DEVELOPMENT_BLOCKER` 回 RM（禁 ai-code 私裁）
 2. FROZEN ≠ brain 记忆 → **FROZEN 赢**；brain 只作旁证；须 supersede 才改决策
-3. Handoff 范围 ≠ TaskBundle `allow_globs` → 以 Handoff 变更面改 bundle 后再写码
-4. 验证档位：Handoff enum > verification-gate 表 > 自拟清单
+3. 设计交付范围 ≠ TaskBundle `allow_globs` → 以 `docs/diagram/design.md` 变更面改 bundle 后再写码
+4. 验证档位：设计交付 enum > verification-gate 表 > 自拟清单
 
 ## 工件链（fail-closed）
 
 ```
 RM Gate READY
   → sync FROZEN: decision_state.json + `node scripts/sync-requirementmind-brain.mjs`
-  → /ai-design: plan + yaml Handoff
-  → `python scripts/validate_handoff.py` PASS
-  → `python scripts/validate_handoff.py to-bundle <handoff> -o .contextmind/task.active.json`
+  → /ai-design (DiagramMind): docs/diagram/ 系统图 + 设计说明
+  → 有代码变更 → `docs/diagram/design.md`（内嵌 `design_to_code` Handoff YAML）
+  → `python scripts/validate_handoff.py docs/diagram/design.md` PASS
+  → `python scripts/validate_handoff.py to-bundle <design.md> -o .contextmind/task.active.json`
   → /ai-code: orient1 → 最小 diff → LOCAL SELF-CHECK
   → Change Manifest（code_to_test 字段）
   → brain: `record_task_outcome`（摘要）+ 必要时 `save_architecture_decision`/`save_bug_memory`
 ```
 
-无 Handoff 的 micro-fix（typo/唯一解读）：可跳 design；仍须 G0 判据 + 档位 m/l。
+无设计交付的 micro-fix（typo/唯一解读）：可跳 design；仍须 G0 判据 + 档位 m/l。
+
+> **v6 变更（ai-design → DiagramMind）**：`/ai-design` 现为**设计层** skill，产物 = `docs/diagram/*.md` + `assets/*.svg`（给人看）
+> + `docs/diagram/design.md`（`design_to_code` Handoff YAML，给 `/ai-code` 执行）。
+> **Handoff 契约未变**（`handoff-schema.yaml` 照旧、`validate_handoff.py` 照用），变的只是**生产者与位置**：改由 DiagramMind 的 D7 设计交付产出。
 
 ## 命令
 
@@ -61,8 +66,8 @@ RM Gate READY
 |RM 出口|`node $SKILL/scripts/state.mjs gate .requirementmind`|
 |RM facts 缓存|`node $SKILL/scripts/state.mjs facts-stale .requirementmind [--write]`|
 |RM→manifest|`node $SKILL/scripts/state.mjs manifest .requirementmind`|
-|Handoff|`python scripts/validate_handoff.py <file>`|
-|Handoff→bundle|`python scripts/validate_handoff.py to-bundle <handoff> -o .contextmind/task.active.json`|
+|设计交付校验|`python scripts/validate_handoff.py docs/diagram/design.md`|
+|设计交付→bundle|`python scripts/validate_handoff.py to-bundle docs/diagram/design.md -o .contextmind/task.active.json`|
 |bundle|`node .cursor/contextmind/cli.mjs task validate`|
 |路由|`node .cursor/contextmind/cli.mjs task route`|
 |一张图|`node .cursor/contextmind/cli.mjs task manifest`|
@@ -79,7 +84,7 @@ RM Gate READY
 # 第一性原则（First Principles）
 
 > 三 Skill 体系的**公理层**——从公理推导流程，而非堆砌流程口号。
-> 与 [glossary.md](glossary.md)（词汇 SSOT）并列。
+> 与本文《Skill 词汇》（词汇 SSOT）并列。
 
 ---
 
@@ -122,7 +127,7 @@ RM Gate READY
 
 未 **Fresh** 跑完验证，禁止输出「已完成 / 已修复 / PR-ready / 全部 PASS」。
 
-- 编码：`verification-gate.md` 五步法
+- 编码：`skills/ai-code/references/gates.md#verify` 五步法
 - 测试：报告只写**实际跑过**的 SQL/HTTP
 - 设计：验收表每行须写明**哪一种**验证（compile / SELECT / lint / API）
 - **反模式**：`compile 绿` ≠ `行为正确`——过滤/权限类须跑身份×入参全矩阵（verification-gate，禁组合级 skip）
@@ -141,21 +146,21 @@ RM Gate READY
 
 - 证伪 → 不改代码（三 Skill 一致）
 - 证实 → 最小改动 + 改后 SELECT + compile
-- **先证「是不是 Bug」**：症状可能是设计允许的回流/空语义/环境错位 → 见 [false-alarm-missed-detection.md](false-alarm-missed-detection.md)；假阳性则**改动为零**
+- **先证「是不是 Bug」**：症状可能是设计允许的回流/空语义/环境错位 → 见本文《假阳性与漏检防火墙》；假阳性则**改动为零**
 
 ### 4. 单一事实源（Single Source of Truth）
 
 | 含义 | SSOT 位置 |
 |------|-----------|
-| 词汇 | [glossary.md](glossary.md) |
+| 词汇 | 本文《Skill 词汇》 |
 | 场景-行为表 / 穷举维 | ai-code verification-gate |
-| 假阳性与漏检防火墙 | [false-alarm-missed-detection.md](false-alarm-missed-detection.md) |
+| 假阳性与漏检防火墙 | 本文《假阳性与漏检防火墙》 |
 | 身份×入参组合矩阵 | ai-code verification-gate 身份维 |
 | 验证升档 | verification-policy.yaml（risk→gate） |
-| 验证档位 | [verification-gate.md](../skills/ai-code/references/verification-gate.md) + [verification-policy.yaml](../verification-policy.yaml) |
-| 五层栈 | [pipeline-contract.md](pipeline-contract.md) |
+| 验证档位 | [gates.md#verify](../skills/ai-code/references/gates.md) + [verification-policy.yaml](verification-policy.yaml) |
+| 五层栈 | 本文《pipeline-contract》 |
 | Handoff 字段 | [handoff-schema.yaml](handoff-schema.yaml) |
-| 跨 Skill 衔接 | [handoff-schema.yaml](handoff-schema.yaml) · design handoff-template |
+| 跨 Skill 衔接 | [handoff-schema.yaml](handoff-schema.yaml) · `skills/ai-design/references/design-delivery.md` |
 
 违反 SSOT = **复述** → token 浪费 + 维护漂移。
 
@@ -163,16 +168,16 @@ RM Gate READY
 
 只实现用户要的；**grep 复用优先于新建**；Bug 修共享 choke point，不只 patch 报告路径。
 
-- YAGNI 决策梯：[reuse-patterns.md](../skills/ai-code/references/reuse-patterns.md)（节「YAGNI 决策梯」；上游 `ponytail` 全文按需装）
+- YAGNI 决策梯：[lean.md](../skills/ai-code/references/lean.md)（随 `/ai-code` 加载；上游 `ponytail` 全文按需装）
 - 复用门禁：写新类/方法/SQL 前先过 grep 表
 - 精准改动：不顺手改相邻代码/格式
-- **语义守恒硬边界**：提速/精简 diff **≠** 删生效业务口径。Musk「删>优」只删死代码/未用开关/YAGNI 预留；**指标公式、兜底行、状态边、权限谓词**须保留或经 `/ai-design` 迁到等价实现并对拍。词汇 SSOT：[glossary.md](glossary.md)#语义守恒
+- **语义守恒硬边界**：提速/精简 diff **≠** 删生效业务口径。Musk「删>优」只删死代码/未用开关/YAGNI 预留；**指标公式、兜底行、状态边、权限谓词**须保留或经 `/ai-design` 迁到等价实现并对拍。词汇 SSOT：本文《Skill 词汇》
 
 ---
 
 ## 公理 → Skill 映射
 
-栈职责（WHAT/WHY/CTX/HOW/DO）只在 [pipeline-contract.md](pipeline-contract.md)；下表不复述。
+栈职责（WHAT/WHY/CTX/HOW/DO）只在本文《pipeline-contract》；下表不复述。
 
 | 公理 | ai-design | ai-code |
 |------|-----------|---------|
@@ -225,13 +230,13 @@ Agent 常见失败：**不 Read reference 就执行**。以下三条 SKILL 层�
 | 变更面 / Handoff | design 产出范围与验收；yaml 须过 validate_handoff |
 | 验证档位 | micro-fix / local-fix / surface / pr-ready；见 verification-gate + verification-policy.yaml |
 | 完成判据 | compile + 触及单测 + SQL 探针；禁裸 ✓ |
-| 证伪 / 假阳性 | 先数据否定再改码；见 false-alarm-missed-detection.md |
+| 证伪 / 假阳性 | 先数据否定再改码；见本文《假阳性与漏检防火墙》 |
 | 语义守恒 | 提速不删生效口径、权限谓词、状态边 |
 | FROZEN | RequirementMind 决策；冲突回 RM，禁 ai-code 私裁 |
 | 接缝 | 新逻辑挂现有 API，禁静默换契约 |
 | 规则演进 | 跨任务重复坑 → brain / pitfalls，禁一例升 STOP |
 
-细节 SSOT：`pipeline-contract.md`、`first-principles.md`。
+细节 SSOT：本文《pipeline-contract》《第一性原则》两节。
 
 ---
 <!-- was false-alarm-missed-detection.md -->
@@ -360,7 +365,7 @@ Agent 常见失败：**不 Read reference 就执行**。以下三条 SKILL 层�
 | 最小有效改动 | 环绿且 F1 → **改动为零** |
 
 行为表维度：状态机维须覆盖重入/回流。  
-难 Bug 流程：见 `skills/ai-code/references/systematic-debugging.md` Phase 0 / 0.5。
+难 Bug 流程：见 `skills/ai-code/references/gates.md#debug`。
 
 ---
 
