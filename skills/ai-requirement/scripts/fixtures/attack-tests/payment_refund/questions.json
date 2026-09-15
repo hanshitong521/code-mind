@@ -1,0 +1,70 @@
+[
+  {
+    "id": "Q-001",
+    "topic": "idempotency_key",
+    "question": "退款幂等键取哪个？",
+    "reason": "决定唯一索引与重复请求判定",
+    "priority": "BLOCKING",
+    "options": [
+      "A. order_id",
+      "B. order_id + reason",
+      "C. client_request_id",
+      "D. 沿用现有唯一约束"
+    ],
+    "recommended_option": "C",
+    "recommendation_reason": "client_request_id 让客户端可控重试而不依赖服务端语义",
+    "authority": "USER_ONLY",
+    "value": "HIGH",
+    "status": "OPEN"
+  },
+  {
+    "id": "Q-002",
+    "topic": "amount_unit",
+    "question": "退款金额单位？",
+    "reason": "decimal(18,2) 精度限制",
+    "priority": "BLOCKING",
+    "options": [
+      "A. 元（2 位小数）",
+      "B. 分（整数）",
+      "C. 沿用现订单单位"
+    ],
+    "recommended_option": "A",
+    "recommendation_reason": "FACT-003 表结构已定，避免再改",
+    "authority": "TECHNICAL",
+    "value": "HIGH",
+    "status": "OPEN"
+  },
+  {
+    "id": "Q-003",
+    "topic": "callback_retry",
+    "question": "支付网关回调超时如何重试？",
+    "reason": "决定补偿链路",
+    "priority": "BLOCKING",
+    "options": [
+      "A. 立即重试 3 次",
+      "B. 指数退避最多 5 次",
+      "C. 不重试，靠对账补偿"
+    ],
+    "recommended_option": "B",
+    "recommendation_reason": "金融接口标准做法",
+    "authority": "USER_ONLY",
+    "value": "HIGH",
+    "status": "OPEN"
+  },
+  {
+    "id": "Q-004",
+    "topic": "partial_refund",
+    "question": "是否支持部分退款？",
+    "reason": "决定状态机",
+    "priority": "BLOCKING",
+    "options": [
+      "A. 支持，多次累计",
+      "B. 不支持，全额"
+    ],
+    "recommended_option": "A",
+    "recommendation_reason": "电商通用需求",
+    "authority": "USER_ONLY",
+    "value": "HIGH",
+    "status": "OPEN"
+  }
+]

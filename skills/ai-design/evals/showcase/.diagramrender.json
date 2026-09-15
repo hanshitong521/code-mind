@@ -1,0 +1,49 @@
+{
+  "code-mind\\skills\\ai-design\\evals\\showcase\\payment-flow.md": {
+    "hash": "427b40e42399867b",
+    "out": "code-mind\\skills\\ai-design\\evals\\showcase\\assets\\payment-flow.svg"
+  },
+  "code-mind\\skills\\ai-design\\evals\\showcase\\payment-flow.md::light::src": {
+    "hash": "a11bd7737d0690a2",
+    "out": "code-mind\\skills\\ai-design\\evals\\showcase\\assets\\payment-flow.svg"
+  },
+  "code-mind\\skills\\ai-design\\evals\\showcase\\payment-flow.md::light::tb": {
+    "hash": "c16e7e95d45d3aa7",
+    "out": "code-mind\\skills\\ai-design\\evals\\showcase\\assets\\variants\\payment-flow.tb.light.svg"
+  },
+  "code-mind\\skills\\ai-design\\evals\\showcase\\payment-flow.md::light::lr": {
+    "hash": "49892055ad9073bf",
+    "out": "code-mind\\skills\\ai-design\\evals\\showcase\\assets\\variants\\payment-flow.lr.light.svg"
+  },
+  "code-mind\\skills\\ai-design\\evals\\showcase\\payment-flow.md::dark::tb": {
+    "hash": "a877dadb0d075bc3",
+    "out": "code-mind\\skills\\ai-design\\evals\\showcase\\assets\\variants\\payment-flow.tb.dark.svg"
+  },
+  "code-mind\\skills\\ai-design\\evals\\showcase\\payment-flow.md::dark::lr": {
+    "hash": "dd977a050a68d7dd",
+    "out": "code-mind\\skills\\ai-design\\evals\\showcase\\assets\\variants\\payment-flow.lr.dark.svg"
+  },
+  "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\evals\\showcase\\payment-flow.md::light::src": {
+    "hash": "5fc0270c1c2c4988",
+    "out": "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\evals\\showcase\\assets\\payment-flow.svg",
+    "layout": "elk",
+    "audit": {
+      "layout": "elk",
+      "kind": "flowchart-elk",
+      "supported": true,
+      "w": 2612,
+      "h": 388,
+      "ratio": 6.72,
+      "nodes": 15,
+      "edges": 14,
+      "coverage": 0.23,
+      "islands": 0,
+      "longestLabel": 0,
+      "violations": [
+        "画布宽 2612px > 1200（文档里字号会被压到 ~5px）",
+        "宽高比 6.72 越界 [0.5, 2.6]",
+        "节点 15 > 12（该砍信息进表）"
+      ]
+    }
+  }
+}

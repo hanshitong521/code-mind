@@ -1,0 +1,38 @@
+[
+  {
+    "id": "FACT-201",
+    "category": "stack",
+    "statement": "现有 Agent 框架：LangGraph + MCP 客户端",
+    "source": {
+      "type": "code",
+      "path": "pyproject.toml",
+      "line": 12
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-202",
+    "category": "structure",
+    "statement": "已有 mcp_servers/ 目录含 5 个 MCP server",
+    "source": {
+      "type": "code",
+      "path": "mcp_servers/registry.json",
+      "line": 3
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-203",
+    "category": "business_rule",
+    "statement": "主 Agent prompt 模板由 PromptMind 管理",
+    "source": {
+      "type": "doc",
+      "path": "docs/agent-os.md",
+      "line": 18
+    },
+    "confidence": 0.7,
+    "status": "VERIFIED"
+  }
+]

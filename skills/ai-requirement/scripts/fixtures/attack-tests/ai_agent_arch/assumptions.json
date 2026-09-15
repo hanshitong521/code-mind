@@ -1,0 +1,9 @@
+[
+  {
+    "id": "ASM-201",
+    "statement": "假设各 Agent 用同一 LLM API",
+    "risk": "HIGH",
+    "source": "MODEL_INFERENCE",
+    "status": "UNVERIFIED"
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "id": "CON-401",
+    "left": "需求：1 万件",
+    "right": "现状：seckill.stock 字段可能并发更新",
+    "severity": "BLOCKING",
+    "status": "OPEN"
+  }
+]

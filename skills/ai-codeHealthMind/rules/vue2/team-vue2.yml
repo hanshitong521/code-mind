@@ -1,0 +1,91 @@
+# CodeHealthMind -- Vue 2 / JavaScript Semgrep rules.
+#
+# Verification status: see rules/common/team-conventions.yml header.  Knip is
+# the primary JS/TS evidence source (dead files, exports, dependencies); these
+# rules cover the semantic patterns Knip cannot see.
+
+rules:
+  - id: chm.vue2.empty-catch
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Empty catch block. The failure is invisible to the caller and to
+      operations.
+    metadata:
+      chm_category: ERROR_HANDLING
+      chm_rule: CHM-JS-SG-EMPTY-CATCH
+      confidence: HIGH
+    pattern-regex: 'catch\s*\([^)]*\)\s*\{\s*\}'
+
+  - id: chm.vue2.api-wrapper-passthrough
+    languages: [javascript, typescript]
+    severity: INFO
+    message: >-
+      API wrapper that only forwards arguments. Unless it normalises errors or
+      centralises auth, it is pure indirection.
+    metadata:
+      chm_category: OVER_ENGINEERING
+      chm_rule: CHM-JS-SG-WRAPPER-PASSTHRU
+      confidence: LOW
+    patterns:
+      - pattern: |
+          export function $F($ARG) {
+            return $REQ({ ... });
+          }
+      - pattern-not: |
+          export function $F($ARG) {
+            return $REQ({ ... }).catch(...);
+          }
+
+  - id: chm.vue2.debug-residue
+    languages: [javascript, typescript]
+    severity: INFO
+    message: Console logging left in shipped code.
+    metadata:
+      chm_category: DEAD_CODE
+      chm_rule: CHM-JS-SG-DEBUG-RESIDUE
+      confidence: LOW
+    pattern-either:
+      - pattern: console.log(...)
+      - pattern: console.debug(...)
+      - pattern: console.info(...)
+
+  - id: chm.vue2-unbounded-v-for-key
+    languages: [generic]
+    severity: INFO
+    message: >-
+      v-for without a stable :key causes list reuse bugs. Prefer an immutable id
+      over the array index.
+    metadata:
+      chm_category: DEFENSIVE_JUNK
+      chm_rule: CHM-VUE-SG-VFOR-KEY
+      confidence: LOW
+    patterns:
+      - pattern-regex: '<[a-zA-Z-]+[^>]*v-for="[^"]+"(?![^>]*:key=)[^>]*>'
+
+  - id: chm.vue2-duplicate-computed
+    languages: [generic]
+    severity: WARNING
+    message: >-
+      Two computed properties with identical bodies. Confirm whether they model
+      the same business concept before collapsing them.
+    metadata:
+      chm_category: DUPLICATION
+      chm_rule: CHM-VUE-SG-DUP-COMPUTED
+      confidence: LOW
+    pattern-regex: 'computed:\s*\{\s*([A-Za-z_$][\w$]*)\s*\(\s*\)\s*\{[^}]{40,}\}\s*,\s*([A-Za-z_$][\w$]*)\s*\(\s*\)\s*\{\s*\}\s*\}'
+
+  - id: chm.vue2-direct-axios-in-component
+    languages: [javascript, typescript]
+    severity: INFO
+    message: >-
+      HTTP call made directly from a component instead of through the api layer.
+      This makes error handling and auth inconsistent.
+    metadata:
+      chm_category: ARCHITECTURE_DRIFT
+      chm_rule: CHM-JS-SG-DIRECT-HTTP
+      confidence: LOW
+    pattern-either:
+      - pattern: axios.$M(...)
+      - pattern: this.$axios.$M(...)
+      - pattern: this.$http.$M(...)

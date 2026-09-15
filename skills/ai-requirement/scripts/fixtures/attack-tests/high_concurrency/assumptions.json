@@ -1,0 +1,9 @@
+[
+  {
+    "id": "ASM-401",
+    "statement": "假设 Redis 原子操作 DECR 不会超发",
+    "risk": "HIGH",
+    "source": "MODEL_INFERENCE",
+    "status": "UNVERIFIED"
+  }
+]

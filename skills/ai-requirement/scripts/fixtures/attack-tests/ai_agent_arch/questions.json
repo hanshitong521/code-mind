@@ -1,0 +1,53 @@
+[
+  {
+    "id": "Q-201",
+    "topic": "state_share",
+    "question": "多 agent 状态如何共享？",
+    "reason": "决定架构形态",
+    "priority": "BLOCKING",
+    "options": [
+      "A. 共享 Redis",
+      "B. 各自私有 + Brain 同步",
+      "C. 事件总线"
+    ],
+    "recommended_option": "B",
+    "recommendation_reason": "Brain 是已有组件",
+    "authority": "USER_ONLY",
+    "value": "HIGH",
+    "status": "OPEN"
+  },
+  {
+    "id": "Q-202",
+    "topic": "tool_safety",
+    "question": "Tool 调用是否可回滚？",
+    "reason": "不可重入副作用风险",
+    "priority": "BLOCKING",
+    "options": [
+      "A. 全部可回滚（dry-run）",
+      "B. 只读工具可回滚，副作用不可",
+      "C. 不回滚，靠校验前置"
+    ],
+    "recommended_option": "C",
+    "recommendation_reason": "现实约束",
+    "authority": "USER_ONLY",
+    "value": "HIGH",
+    "status": "OPEN"
+  },
+  {
+    "id": "Q-203",
+    "topic": "token_cost",
+    "question": "Token 成本失控怎么办？",
+    "reason": "预算控制",
+    "priority": "IMPORTANT",
+    "options": [
+      "A. 硬上限",
+      "B. 软告警",
+      "C. 无控制"
+    ],
+    "recommended_option": "A",
+    "recommendation_reason": "防止成本雪崩",
+    "authority": "USER_ONLY",
+    "value": "MEDIUM",
+    "status": "OPEN"
+  }
+]

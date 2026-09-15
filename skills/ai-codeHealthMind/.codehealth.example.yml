@@ -1,0 +1,203 @@
+# CodeHealthMind configuration.
+#
+# Copy to `.codehealth.yml` at the repository root (`codehealth init` does this).
+# Every key below is validated; an unknown key or a bad type is a hard error
+# rather than a silent default.
+
+version: 1
+
+# Default review target.  One of: diff | staged | commit | range | file | repo
+mode: diff
+
+languages:
+  - java
+  - javascript
+  - typescript
+  - vue
+
+# ---------------------------------------------------------------------------
+# Evidence providers.
+#
+# Each provider is a *real* CLI adapter.  `enabled: false` removes it from the
+# run; a provider whose binary is missing degrades honestly (the report shows
+# TOOL_DEGRADED and the gate never turns that into a silent PASS).
+# ---------------------------------------------------------------------------
+tools:
+  # Built-in deterministic analyzers (pure Python, no external tool).
+  native:
+    enabled: true
+
+  # javac -- compiles the changed Java sources; a compile failure is a BLOCK.
+  compile:
+    enabled: true
+    timeout_s: 300
+
+  pmd:
+    enabled: true
+    timeout_s: 300
+    # ruleset: rules/java/pmd-ruleset.xml     # override the shipped ruleset
+    # home: /opt/pmd-bin-6.55.0               # or set CHM_PMD_HOME
+
+  cpd:
+    enabled: true
+    timeout_s: 300
+
+  spotbugs:
+    enabled: true
+    timeout_s: 300
+    # home: /opt/spotbugs-4.5.3               # or set CHM_SPOTBUGS_HOME
+
+  semgrep:
+    enabled: true
+    timeout_s: 300
+    # bin: /usr/local/bin/semgrep             # or set CHM_SEMGREP_BIN
+
+  knip:
+    enabled: true
+    timeout_s: 300
+    # bin: /opt/knip/node_modules/.bin/knip
+
+  # Repair executor only -- never an evidence source.  Off by default.
+  openrewrite:
+    enabled: false
+
+  # Optional test runner.  Set `args` to the real command, e.g.
+  #   args: ["mvn", "-q", "test"]  /  ["npm", "test", "--silent"]
+  test:
+    enabled: false
+    args: []
+    timeout_s: 900
+
+# ---------------------------------------------------------------------------
+# Semantic review
+# ---------------------------------------------------------------------------
+review:
+  # Reviewer must never see the author's rationale (spec §3.5).
+  context_isolation: true
+  multi_model_on_high: true
+
+  reviewers_low: 1
+  reviewers_medium: 1
+  reviewers_high: 2
+  reviewers_critical: 2
+  validator_on_high: true
+  validator_on_critical: true
+
+  # off  = no semantic pass at all (deterministic evidence only)
+  # rule = deterministic, honest local heuristics (labelled as such in reports)
+  # llm  = shell out to a real model command
+  backend: rule
+
+  # Required when backend: llm.  The prompt is fed on stdin; `{model}` is
+  # substituted.  Example:
+  #   llm_command: "my-llm --model {model} --json"
+  llm_command: null
+  model_a: model-a
+  model_b: model-b
+  max_tokens_per_call: 6000
+
+# ---------------------------------------------------------------------------
+# Gate thresholds (spec §12, §47)
+# ---------------------------------------------------------------------------
+gates:
+  block_on_critical: true
+  block_on_high: true
+  max_new_medium: 5
+  warn_on_new_medium: true
+  # When a tool that HIGH/CRITICAL evidence depends on is unavailable, the gate
+  # reports UNKNOWN instead of PASS.
+  block_on_tool_gap_for_critical: true
+  block_on_compile_fail: true
+  block_on_test_fail: true
+
+# ---------------------------------------------------------------------------
+# Token discipline (spec §14)
+# ---------------------------------------------------------------------------
+token:
+  diff_first: true
+  max_context_files: 12
+  cache: true
+  max_file_bytes_for_llm: 120000
+  summarize_generated: true
+  exclude_generated_from_llm: true
+
+# ---------------------------------------------------------------------------
+# Dead-code safety (spec §18)
+# ---------------------------------------------------------------------------
+dead_code:
+  # Even when true, only provably mechanical rules (unused import, debug
+  # residue) are ever edited -- and only after re-verifying the line content.
+  allow_auto_delete: false
+  require_reference_count_zero: true
+  dynamic_entry_check: true
+
+# ---------------------------------------------------------------------------
+# Baseline / delta (spec §13)
+# ---------------------------------------------------------------------------
+baseline:
+  enabled: true
+  path: .codehealth-baseline.json
+  block_on_new_high: true
+  block_on_new_critical: true
+
+# ---------------------------------------------------------------------------
+# Accepted risk (spec §50).  Expiry is enforced -- an expired entry stops
+# suppressing the finding.
+# ---------------------------------------------------------------------------
+accepted_risks: []
+# accepted_risks:
+#   - finding_id: CHM-000123
+#     reason: "legacy protocol kept for partner compatibility"
+#     owner: "payments-team"
+#     expires: 2026-12-31
+#   - rule_id: "CHM-JAVA-NAT-TODO-MARKER"
+#     reason: "tracked in JIRA-4711"
+#     owner: "platform"
+#     expires: 2026-06-30
+
+# ---------------------------------------------------------------------------
+# Scanning scope
+# ---------------------------------------------------------------------------
+excludes:
+  - .git
+  - .hg
+  - .svn
+  - node_modules
+  - target
+  - build
+  - dist
+  - out
+  - .venv
+  - venv
+  - __pycache__
+  - .mvn
+  - .gradle
+  - .idea
+  - .vscode
+  - coverage
+  - .next
+
+generated_patterns:
+  - "**/generated/**"
+  - "**/*.generated.*"
+  - "**/*_pb2.py"
+  - "**/target/generated-sources/**"
+  - "**/dist/**"
+  - "**/*.min.js"
+
+source_roots:
+  - src
+  - app
+  - lib
+
+# Duplicated-code detection: minimum normalised token count (CPD uses the same).
+duplication_min_tokens: 100
+
+complexity_thresholds:
+  method_lines: 80
+  method_cyclomatic: 15
+  class_lines: 800
+  nesting_depth: 4
+
+# Where run artefacts (reports, ledger, cache) are written.
+run_dir: .codehealth/runs

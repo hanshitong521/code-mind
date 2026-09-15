@@ -1,0 +1,62 @@
+[
+  {
+    "id": "FACT-001",
+    "category": "database",
+    "statement": "orders 表已有 status 字段 tinyint",
+    "source": {
+      "type": "sql",
+      "path": "sql/orders.sql",
+      "line": 12
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-002",
+    "category": "api",
+    "statement": "POST /api/orders/{id}/refund 已存在",
+    "source": {
+      "type": "code",
+      "path": "src/main/java/com/x/RefundController.java",
+      "line": 33
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-003",
+    "category": "database",
+    "statement": "refunds 表 amount 字段 decimal(18,2)",
+    "source": {
+      "type": "sql",
+      "path": "sql/refunds.sql",
+      "line": 8
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-004",
+    "category": "business_rule",
+    "statement": "原路退回走 payment-gateway SDK",
+    "source": {
+      "type": "doc",
+      "path": "docs/payment-flow.md",
+      "line": 22
+    },
+    "confidence": 0.7,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-005",
+    "category": "test",
+    "statement": "现有退款测试仅覆盖成功路径",
+    "source": {
+      "type": "test",
+      "path": "src/test/java/com/x/RefundServiceTest.java",
+      "line": 41
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  }
+]

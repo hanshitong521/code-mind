@@ -1,0 +1,54 @@
+[
+  {
+    "id": "Q-401",
+    "topic": "deduct_strategy",
+    "question": "库存扣减采用？",
+    "reason": "超发防御",
+    "priority": "BLOCKING",
+    "options": [
+      "A. Redis 预扣 + 异步落库",
+      "B. DB 乐观锁",
+      "C. DB 悲观锁",
+      "D. 分布式锁"
+    ],
+    "recommended_option": "A",
+    "recommendation_reason": "10 万 QPS DB 撑不住",
+    "authority": "USER_ONLY",
+    "value": "HIGH",
+    "status": "OPEN"
+  },
+  {
+    "id": "Q-402",
+    "topic": "queue_overflow",
+    "question": "超出库存的请求如何处理？",
+    "reason": "决定前端反馈",
+    "priority": "BLOCKING",
+    "options": [
+      "A. 立即返回已售罄",
+      "B. 入队等待",
+      "C. 概率放行"
+    ],
+    "recommended_option": "A",
+    "recommendation_reason": "用户体验清晰",
+    "authority": "USER_ONLY",
+    "value": "HIGH",
+    "status": "OPEN"
+  },
+  {
+    "id": "Q-403",
+    "topic": "retry_policy",
+    "question": "消息队列消费失败如何重试？",
+    "reason": "防止消费丢失",
+    "priority": "IMPORTANT",
+    "options": [
+      "A. 最多 3 次指数退避",
+      "B. 不重试",
+      "C. 进死信队列"
+    ],
+    "recommended_option": "A",
+    "recommendation_reason": "常规做法",
+    "authority": "TECHNICAL",
+    "value": "MEDIUM",
+    "status": "OPEN"
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "FACT-301",
+    "category": "code",
+    "statement": "使用 Spring Security + @PreAuthorize",
+    "source": {
+      "type": "code",
+      "path": "src/main/java/com/x/SecurityConfig.java",
+      "line": 24
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-302",
+    "category": "database",
+    "statement": "role_permissions 表存角色-权限映射",
+    "source": {
+      "type": "sql",
+      "path": "sql/rbac.sql",
+      "line": 10
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  },
+  {
+    "id": "FACT-303",
+    "category": "business_rule",
+    "statement": "用户-部门关系存 user_dept 表",
+    "source": {
+      "type": "sql",
+      "path": "sql/rbac.sql",
+      "line": 30
+    },
+    "confidence": 1,
+    "status": "VERIFIED"
+  }
+]

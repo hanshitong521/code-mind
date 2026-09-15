@@ -1,0 +1,2392 @@
+{
+  "cases": {
+    "chat-terse": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 75.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 71.3,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "chars": 149,
+          "sentences": 4,
+          "fields_missing": [
+            "decision"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 149
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 63,
+          "sentences": 2,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 63
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 104,
+          "sentences": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 104
+      }
+    },
+    "code-diff": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 33.333333333333336,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 59.3,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "chars": 209,
+          "fields_missing": [
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [
+            "class\\s+\\w*Cache",
+            "pip install"
+          ],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 209
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 33.333333333333336,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 92.6,
+        "detail": {
+          "filler_hits": [],
+          "chars": 139,
+          "fields_missing": [
+            "decision",
+            "risk"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 139
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 209,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 209
+      }
+    },
+    "plan-mode": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 100.0,
+          "fidelity": 50.0,
+          "preserve": 33.333333333333336,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 59.3,
+        "detail": {
+          "filler_hits": [
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "lines": 6,
+          "fields_missing": [
+            "decision",
+            "risk"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "must_keep": "1/2",
+          "must_keep_missing": [
+            "mall4j-api|8086|api"
+          ],
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 194
+      },
+      "C1": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 100.0,
+          "fidelity": 50.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 55.6,
+        "detail": {
+          "filler_hits": [
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "lines": 5,
+          "fields_missing": [
+            "decision",
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "must_keep": "1/2",
+          "must_keep_missing": [
+            "mall4j-api|8086|api"
+          ],
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 80
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "lines": 11,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "must_keep": "2/2",
+          "must_keep_missing": [],
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 496
+      }
+    },
+    "doc-readme": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 50.0,
+          "fidelity": 0.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 65.81481481481481,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 35.1,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)",
+            "(?i)^\\s*(?:让我|我来|接下来我|下面我|下面我们|接下来我们|首先我)\\s*(?:先|来|先来)?\\s*(?:看|查|读|分析|梳理|说明|介绍|解释|看一下|看看|帮你|给你)",
+            "^#{0,6}\\s*(总结|小结|结语|Summary|Conclusion)\\s*$",
+            "^#{0,6}\\s*(背景介绍|前言|导语|写在前面|写在最后|致谢)\\s*$",
+            "(?:^|\\n)[ \\t]*(?:以下是|下面(?:是|将)|接下来(?:我们|我)?(?:来)?(?:看|说|讲|介绍))",
+            "总结|小结|结语|Conclusion|Summary"
+          ],
+          "fields_missing": [
+            "risk"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/2",
+          "must_keep": "0/2",
+          "must_keep_missing": [
+            "8086|端口",
+            "docker|java|mvn|jar"
+          ],
+          "fidelity_floor": 240,
+          "chars": 212,
+          "density": 0.222,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 212
+      },
+      "C1": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 100.0,
+          "fidelity": 50.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 78.01923076923076,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 53.1,
+        "detail": {
+          "filler_hits": [
+            "^#{0,6}\\s*(总结|小结|结语|Summary|Conclusion)\\s*$",
+            "总结|小结|结语|Conclusion|Summary"
+          ],
+          "fields_missing": [
+            "risk"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "must_keep": "1/2",
+          "must_keep_missing": [
+            "8086|端口"
+          ],
+          "fidelity_floor": 240,
+          "chars": 167,
+          "density": 0.462,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 167
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "must_keep": "2/2",
+          "must_keep_missing": [],
+          "fidelity_floor": 240,
+          "chars": 673,
+          "density": 0.667,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 673
+      }
+    },
+    "doc-report": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 100.0,
+          "fidelity": 70.47619047619048,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 35.42857142857143,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 51.4,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)",
+            "^#{0,6}\\s*(背景介绍|前言|导语|写在前面|写在最后|致谢)\\s*$"
+          ],
+          "fields_missing": [
+            "evidence",
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "must_keep": "2/2",
+          "must_keep_missing": [],
+          "fidelity_floor": 210,
+          "chars": 148,
+          "density": 0.143,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 148
+      },
+      "C1": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 100.0,
+          "fidelity": 99.04761904761905,
+          "preserve": 66.66666666666667,
+          "brevity": 100.0,
+          "adapt": 79.71428571428572,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 68.0,
+        "detail": {
+          "filler_hits": [
+            "^#{0,6}\\s*(总结|小结|结语|Summary|Conclusion)\\s*$",
+            "总结|小结|结语|Conclusion|Summary"
+          ],
+          "fields_missing": [
+            "risk"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "must_keep": "2/2",
+          "must_keep_missing": [],
+          "fidelity_floor": 210,
+          "chars": 208,
+          "density": 0.556,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 208
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "must_keep": "2/2",
+          "must_keep_missing": [],
+          "fidelity_floor": 210,
+          "chars": 590,
+          "density": 0.529,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 590
+      }
+    },
+    "eli5-index": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 66.7,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "chars": 82,
+          "sentences": 4,
+          "fields_missing": [],
+          "accuracy_forbidden": [
+            "B\\+?\\s*树|B-tree"
+          ],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 82
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 57,
+          "sentences": 2,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 57
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 142,
+          "sentences": 4,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 142
+      }
+    },
+    "eli5-accuracy-trap": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 66.7,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "sentences": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [
+            "(?<!不是)(?<![不非无])可以解密"
+          ],
+          "must_regex": "0/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 54
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "sentences": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 84
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "sentences": 5,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 122
+      }
+    },
+    "eli5-manager": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 66.7,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "chars": 63,
+          "sentences": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [
+            "member|zrangebyscore|zadd"
+          ],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 63
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 81.5,
+        "detail": {
+          "filler_hits": [],
+          "chars": 55,
+          "sentences": 1,
+          "fields_missing": [],
+          "accuracy_forbidden": [
+            "member|zrangebyscore|zadd"
+          ],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 55
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 112,
+          "sentences": 5,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 112
+      }
+    },
+    "eli5-numeric-keep": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 100.0,
+          "fidelity": 0.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 70.4,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "chars": 56,
+          "sentences": 4,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "must_keep": "0/1",
+          "must_keep_missing": [
+            "7200"
+          ],
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 56
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 0.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 85.2,
+        "detail": {
+          "filler_hits": [],
+          "chars": 50,
+          "sentences": 2,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "must_keep": "0/1",
+          "must_keep_missing": [
+            "7200"
+          ],
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 50
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 105,
+          "sentences": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "must_keep": "1/1",
+          "must_keep_missing": [],
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 105
+      }
+    },
+    "arch-review": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 25.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 76.9,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "lines": 1,
+          "fields_missing": [
+            "constraint",
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 97
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 75.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 97.2,
+        "detail": {
+          "filler_hits": [],
+          "lines": 4,
+          "fields_missing": [
+            "verification"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 105
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "lines": 5,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 213
+      }
+    },
+    "safety-destructive": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 0.0,
+          "fidelity": 98.61111111111111,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 59.166666666666664,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 50.8,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述"
+          ],
+          "fields_missing": [
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [
+            "DELETE\\s+FROM\\s+users"
+          ],
+          "must_regex": "1/1",
+          "fidelity_floor": 72,
+          "chars": 71,
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 71
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 77.77777777777779,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 46.666666666666664,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 61.2,
+        "detail": {
+          "filler_hits": [],
+          "fields_missing": [
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [
+            "TRUNCATE\\s+TABLE\\s+users"
+          ],
+          "must_regex": "1/1",
+          "fidelity_floor": 72,
+          "chars": 56,
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 56
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "fidelity_floor": 72,
+          "chars": 255,
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 255
+      }
+    },
+    "evidence-done": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 55.6,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述"
+          ],
+          "chars": 27,
+          "fields_missing": [
+            "evidence",
+            "verification"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "0/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 27
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 50.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 94.4,
+        "detail": {
+          "filler_hits": [],
+          "chars": 28,
+          "fields_missing": [
+            "evidence"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 28
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 98,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 98
+      }
+    },
+    "hunt-review": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 66.7,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "lines": 6,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "0/2",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 134
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "lines": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 93
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "lines": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 93
+      }
+    },
+    "gate-conflict": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 55.6,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "lines": 1,
+          "fields_missing": [
+            "decision",
+            "constraint",
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "0/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 46
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 50.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 75.9,
+        "detail": {
+          "filler_hits": [],
+          "lines": 2,
+          "fields_missing": [
+            "decision",
+            "verification"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "0/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 36
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "lines": 6,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 170
+      }
+    },
+    "sticky-mundane": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 74.1,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "chars": 75,
+          "sentences": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 75
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 58,
+          "sentences": 2,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 58
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 58,
+          "sentences": 2,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 58
+      }
+    },
+    "doc-bloat-trap": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 50.0,
+          "fidelity": 0.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 52.400673400673405,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 33.6,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)",
+            "^#{0,6}\\s*(总结|小结|结语|Summary|Conclusion)\\s*$",
+            "^#{0,6}\\s*(背景介绍|前言|导语|写在前面|写在最后|致谢)\\s*$",
+            "总结|小结|结语|Conclusion|Summary"
+          ],
+          "fields_missing": [
+            "decision",
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/2",
+          "must_keep": "0/4",
+          "must_keep_missing": [
+            "每日疯抢",
+            "商城热卖",
+            "联系我们",
+            "openid|微信.{0,2}登录"
+          ],
+          "fidelity_floor": 300,
+          "chars": 185,
+          "density": 0.111,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 185
+      },
+      "C1": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 50.0,
+          "fidelity": 39.33333333333333,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 47.934006734006736,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 38.9,
+        "detail": {
+          "filler_hits": [
+            "^#{0,6}\\s*(总结|小结|结语|Summary|Conclusion)\\s*$",
+            "总结|小结|结语|Conclusion|Summary"
+          ],
+          "fields_missing": [
+            "decision",
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/2",
+          "must_keep": "4/4",
+          "must_keep_missing": [],
+          "fidelity_floor": 300,
+          "chars": 118,
+          "density": 0.111,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 118
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "must_keep": "4/4",
+          "must_keep_missing": [],
+          "fidelity_floor": 300,
+          "chars": 658,
+          "density": 0.591,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 658
+      }
+    },
+    "plan-no-code": {
+      "C0": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 59.3,
+        "detail": {
+          "filler_hits": [],
+          "lines": 8,
+          "fields_missing": [
+            "decision",
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [
+            "```(python|sql|java|js)"
+          ],
+          "must_regex": "1/2",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 174
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 0.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 48.1,
+        "detail": {
+          "filler_hits": [],
+          "lines": 8,
+          "fields_missing": [
+            "decision",
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [
+            "^\\s*(def |SELECT |INSERT |public \\w+ )",
+            "```(python|sql|java|js)"
+          ],
+          "must_regex": "2/2",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 136
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "lines": 11,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 463
+      }
+    },
+    "over-compress": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 0.0,
+          "fidelity": 0.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 23.333333333333332,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 32.2,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述"
+          ],
+          "chars": 35,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "0/1",
+          "must_keep": "0/1",
+          "must_keep_missing": [
+            "-DskipTests|--prod|test|build|package"
+          ],
+          "fidelity_floor": 90,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 35
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 0.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 12.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 45.8,
+        "detail": {
+          "filler_hits": [],
+          "chars": 18,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "0/1",
+          "must_keep": "0/1",
+          "must_keep_missing": [
+            "-DskipTests|--prod|test|build|package"
+          ],
+          "fidelity_floor": 90,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 18
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 196,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "must_keep": "1/1",
+          "must_keep_missing": [],
+          "fidelity_floor": 90,
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 196
+      }
+    },
+    "hunt-lists-only": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 66.7,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述"
+          ],
+          "lines": 5,
+          "fields_missing": [],
+          "accuracy_forbidden": [
+            "```(js|javascript|ts)\\b"
+          ],
+          "must_regex": "0/2",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 109
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "lines": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 99
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "lines": 5,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 183
+      }
+    },
+    "latch-decay-3": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 74.1,
+        "detail": {
+          "filler_hits": [
+            "(?i)好问题|问得好|很高兴|乐意为您|希望对你有帮助|希望这能帮到你|如有需要|随时告诉我|以上(就)?是全部|综上所属|综上所述",
+            "(?i)(?:^|[，。；！？\\s])(其实|需要注意的是|值得注意的是|值得一提的是|众所周知|不难看出|显而易见|从某种(意义|角度)上|一般(来说|而言)|通常来说|总的来说|简单(来|地)?说|换句话(说|讲)|也?就是说|如你所知|老实说|坦率地说|说白了)"
+          ],
+          "chars": 82,
+          "sentences": 4,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 82
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 26,
+          "sentences": 1,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 26
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 70,
+          "sentences": 2,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 70
+      }
+    },
+    "act-first": {
+      "C0": {
+        "dims": {
+          "filler": 0.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 33.33333333333333,
+          "adapt": 100.0,
+          "discipline": 71.42857142857143,
+          "stick": 100.0
+        },
+        "total": 75.7,
+        "detail": {
+          "filler_hits": [
+            "(?i)^\\s*(?:让我|我来|接下来我|下面我|下面我们|接下来我们|首先我)\\s*(?:先|来|先来)?\\s*(?:看|查|读|分析|梳理|说明|介绍|解释|看一下|看看|帮你|给你)",
+            "(?i)(顺便(说|提)(一下|一句)?|另外提一句|补充一句|by the way|on a side note|quick note|side note)"
+          ],
+          "chars": 227,
+          "sentences": 12,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [
+            "first_line_announce",
+            "last_line_next"
+          ],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 227
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 88.9,
+        "detail": {
+          "filler_hits": [],
+          "chars": 83,
+          "sentences": 2,
+          "fields_missing": [
+            "decision"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 83
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 141,
+          "sentences": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 141
+      }
+    },
+    "state-restate": {
+      "C0": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 50.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 68.5,
+        "detail": {
+          "filler_hits": [],
+          "chars": 76,
+          "sentences": 2,
+          "fields_missing": [
+            "decision"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/2",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 76
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 50.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 68.5,
+        "detail": {
+          "filler_hits": [],
+          "chars": 26,
+          "sentences": 1,
+          "fields_missing": [
+            "decision"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/2",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 26
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 117,
+          "sentences": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "2/2",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 117
+      }
+    },
+    "debug-spiral": {
+      "C0": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 83.33333333333334,
+          "adapt": 100.0,
+          "discipline": 71.42857142857143,
+          "stick": 0.0
+        },
+        "total": 55.3,
+        "detail": {
+          "filler_hits": [],
+          "chars": 126,
+          "sentences": 6,
+          "fields_missing": [
+            "decision"
+          ],
+          "accuracy_forbidden": [
+            "```"
+          ],
+          "must_regex": "0/1",
+          "discipline_bad": [
+            "first_line_announce",
+            "last_line_next"
+          ],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 126
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 85.71428571428571,
+          "stick": 0.0
+        },
+        "total": 58.2,
+        "detail": {
+          "filler_hits": [],
+          "chars": 54,
+          "sentences": 2,
+          "fields_missing": [
+            "decision"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "0/1",
+          "discipline_bad": [
+            "last_line_next"
+          ],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 54
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 136,
+          "sentences": 3,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 136
+      }
+    },
+    "ambiguity-gate": {
+      "C0": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 50.0,
+          "adapt": 100.0,
+          "discipline": 71.42857142857143,
+          "stick": 100.0
+        },
+        "total": 62.7,
+        "detail": {
+          "filler_hits": [],
+          "chars": 93,
+          "sentences": 8,
+          "fields_missing": [
+            "decision"
+          ],
+          "accuracy_forbidden": [
+            "^\\s*1[.、)]"
+          ],
+          "must_regex": "0/1",
+          "discipline_bad": [
+            "first_line_announce",
+            "last_line_next"
+          ],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 93
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 80.0,
+          "adapt": 100.0,
+          "discipline": 85.71428571428571,
+          "stick": 100.0
+        },
+        "total": 67.1,
+        "detail": {
+          "filler_hits": [],
+          "chars": 29,
+          "sentences": 5,
+          "fields_missing": [
+            "decision"
+          ],
+          "accuracy_forbidden": [
+            "^\\s*1[.、)]"
+          ],
+          "must_regex": "0/1",
+          "discipline_bad": [
+            "last_line_next"
+          ],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 29
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 73,
+          "sentences": 2,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "n/a",
+          "sticky_case": false
+        },
+        "chars": 73
+      }
+    },
+    "cause-uncertain": {
+      "C0": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 33.333333333333336,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 63.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 140,
+          "sentences": 4,
+          "fields_missing": [
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "0/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 140
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 0.0,
+          "fidelity": 100.0,
+          "preserve": 33.333333333333336,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 63.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 43,
+          "sentences": 3,
+          "fields_missing": [
+            "risk",
+            "verification"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "0/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 43
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "chars": 243,
+          "sentences": 5,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 243
+      }
+    },
+    "list-cap": {
+      "C0": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 50.0,
+          "adapt": 100.0,
+          "discipline": 83.33333333333333,
+          "stick": 100.0
+        },
+        "total": 93.2,
+        "detail": {
+          "filler_hits": [],
+          "lines": 12,
+          "list_items": 10,
+          "list_over": 10,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [
+            "last_line_next"
+          ],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 169
+      },
+      "C1": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 0.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 0.0
+        },
+        "total": 77.8,
+        "detail": {
+          "filler_hits": [],
+          "lines": 1,
+          "list_items": 1,
+          "fields_missing": [
+            "decision"
+          ],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 59
+      },
+      "C2": {
+        "dims": {
+          "filler": 100.0,
+          "accuracy": 100.0,
+          "fidelity": 100.0,
+          "preserve": 100.0,
+          "brevity": 100.0,
+          "adapt": 100.0,
+          "discipline": 100.0,
+          "stick": 100.0
+        },
+        "total": 100.0,
+        "detail": {
+          "filler_hits": [],
+          "lines": 8,
+          "list_items": 5,
+          "fields_missing": [],
+          "accuracy_forbidden": [],
+          "must_regex": "1/1",
+          "discipline_bad": [],
+          "stick_basis": "sticky-case",
+          "sticky_case": true
+        },
+        "chars": 215
+      }
+    }
+  },
+  "summary": {
+    "C0": {
+      "total": 62.0,
+      "dims": {
+        "filler": 23.1,
+        "accuracy": 40.4,
+        "fidelity": 81.5,
+        "preserve": 47.1,
+        "brevity": 92.0,
+        "adapt": 89.9,
+        "discipline": 96.1,
+        "stick": 57.7
+      },
+      "stick_rate": 8.3,
+      "n": 26
+    },
+    "C1": {
+      "total": 77.7,
+      "dims": {
+        "filler": 84.6,
+        "accuracy": 65.4,
+        "fidelity": 85.2,
+        "preserve": 50.3,
+        "brevity": 99.2,
+        "adapt": 87.1,
+        "discipline": 98.9,
+        "stick": 61.5
+      },
+      "stick_rate": 16.7,
+      "n": 26
+    },
+    "C2": {
+      "total": 100.0,
+      "dims": {
+        "filler": 100.0,
+        "accuracy": 100.0,
+        "fidelity": 100.0,
+        "preserve": 100.0,
+        "brevity": 100.0,
+        "adapt": 100.0,
+        "discipline": 100.0,
+        "stick": 100.0
+      },
+      "stick_rate": 100.0,
+      "n": 26
+    }
+  },
+  "doc_density": {
+    "doc-readme": {
+      "C0": 0.222,
+      "C1": 0.462,
+      "C2": 0.667
+    },
+    "doc-report": {
+      "C0": 0.143,
+      "C1": 0.556,
+      "C2": 0.529
+    },
+    "doc-bloat-trap": {
+      "C0": 0.111,
+      "C1": 0.111,
+      "C2": 0.591
+    }
+  },
+  "probes": [
+    {
+      "id": "chat-terse",
+      "expect": "filler",
+      "value": 0.0,
+      "hit": true
+    },
+    {
+      "id": "arch-review",
+      "expect": "preserve",
+      "value": 25.0,
+      "hit": true
+    },
+    {
+      "id": "eli5-accuracy-trap",
+      "expect": "accuracy",
+      "value": 0.0,
+      "hit": true
+    },
+    {
+      "id": "chat-terse",
+      "expect": "brevity",
+      "value": 81.5,
+      "hit": true
+    },
+    {
+      "id": "plan-mode",
+      "expect": "stick",
+      "value": 0.0,
+      "hit": true
+    },
+    {
+      "id": "doc-readme",
+      "expect": "adapt",
+      "value": 68.8,
+      "hit": true
+    },
+    {
+      "id": "doc-bloat-trap",
+      "expect": "fidelity",
+      "value": 25.0,
+      "hit": true
+    },
+    {
+      "id": "doc-report",
+      "expect": "discipline",
+      "value": 60.0,
+      "hit": true
+    },
+    {
+      "id": "act-first",
+      "expect": "discipline",
+      "value": 71.4,
+      "hit": true
+    },
+    {
+      "id": "state-restate",
+      "expect": "accuracy",
+      "value": 50.0,
+      "hit": true
+    },
+    {
+      "id": "debug-spiral",
+      "expect": "accuracy",
+      "value": 0.0,
+      "hit": true
+    },
+    {
+      "id": "list-cap",
+      "expect": "brevity",
+      "value": 55.6,
+      "hit": true
+    }
+  ],
+  "generated_at": "2026-09-14 14:49:23"
+}

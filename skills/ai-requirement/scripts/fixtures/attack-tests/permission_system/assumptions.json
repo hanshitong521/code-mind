@@ -1,0 +1,9 @@
+[
+  {
+    "id": "ASM-301",
+    "statement": "假设部门嵌套层级 ≤ 3",
+    "risk": "HIGH",
+    "source": "MODEL_INFERENCE",
+    "status": "UNVERIFIED"
+  }
+]

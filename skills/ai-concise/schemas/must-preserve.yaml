@@ -1,0 +1,30 @@
+# P1-06 — fields that compression must not drop (semantic presence required)
+# v4: DOC / PLAN 模式加入；Fidelity Gate 另见 references/compression-modes.md
+must_preserve:
+  - decision
+  - constraint
+  - evidence
+  - risk
+  - verification
+
+modes:
+  CHAT:
+    allow_omit: [constraint, verification]
+    never_omit: [decision]
+  CODE:
+    never_omit: [decision, risk, verification]
+  ARCH:
+    never_omit: [decision, constraint, evidence, risk, verification]
+  HANDOFF:
+    never_omit: [decision, constraint, evidence, risk, verification]
+  INCIDENT:
+    never_omit: [evidence, risk, verification]
+  DOC:
+    # 删水不删骨：结构、数字、依据、决策与风险必须留下
+    never_omit: [decision, evidence, risk]
+    never_drop_shapes: [headings, tables, numbers, citations, code_blocks]
+    min_fact_density: 0.5   # 承重行（含数字/路径/命令/表格）÷ 非空行，下限
+  PLAN:
+    never_omit: [goal, steps, affected_files, decision, verification, risk, rollback]
+    never_drop_shapes: [steps, affected_files, rollback]
+    prose_budget_lines: 20

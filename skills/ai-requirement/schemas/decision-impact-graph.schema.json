@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "requirement-mind/decision-impact-graph",
+  "title": "Decision Impact Graph (.requirementmind/decision-graph.json)",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["decision_id", "decision", "status", "impact"],
+    "properties": {
+      "decision_id": { "type": "string" },
+      "decision": { "type": "string" },
+      "status": { "enum": ["FROZEN", "SUPERSEDED"] },
+      "superseded_by": { "type": ["string", "null"] },
+      "impact": {
+        "type": "object",
+        "properties": {
+          "modules": { "type": "array", "items": { "type": "string" } },
+          "files": { "type": "array", "items": { "type": "string" } },
+          "tests": { "type": "array", "items": { "type": "string" } },
+          "legacy": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "decisions.json 旧版 impact 字符串列表"
+          }
+        }
+      }
+    }
+  }
+}

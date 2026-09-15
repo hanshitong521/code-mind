@@ -1,0 +1,9 @@
+[
+  {
+    "id": "ASM-101",
+    "statement": "假设游标分页 UI 可接受",
+    "risk": "HIGH",
+    "source": "MODEL_INFERENCE",
+    "status": "UNVERIFIED"
+  }
+]

@@ -1,0 +1,76 @@
+# CodeHealthMind -- shared Semgrep rules (language-agnostic / cross-language).
+#
+# NOTE ON VERIFICATION: Semgrep has no official Windows build and cannot be
+# installed in the reference environment used to develop this project.  These
+# rules were authored against the Semgrep rule schema but have NOT been executed
+# against a real `semgrep` binary here.  The adapter reports the provider as
+# UNAVAILABLE on such hosts and the gate records a tool gap -- it never pretends
+# these rules ran.  Verify with `semgrep --validate --config rules/` on a Linux
+# or macOS host before relying on them.
+#
+# Every rule ships a positive case and a negative case in
+# `test/fixtures/semgrep/` (see docs/rule-authoring.md).
+
+rules:
+  - id: chm.common.todo-marker
+    languages: [generic]
+    severity: INFO
+    message: >-
+      TODO/FIXME/HACK marker left in the change set. Either finish it or turn it
+      into a tracked issue reference.
+    metadata:
+      chm_category: DEAD_CODE
+      chm_rule: CHM-COMMON-SG-TODO-MARKER
+      confidence: MEDIUM
+    pattern-regex: '\b(TODO|FIXME|HACK|XXX)\b\s*[:\-]'
+
+  - id: chm.common.commented-out-code
+    languages: [generic]
+    severity: INFO
+    message: >-
+      Commented-out code. Delete it; the version control history already keeps it.
+    metadata:
+      chm_category: DEAD_CODE
+      chm_rule: CHM-COMMON-SG-COMMENTED-CODE
+      confidence: LOW
+    pattern-regex: '^\s*(//|#)\s*(if|for|while|return|def |function |public |private |const |let |var )\b.*[;{)]\s*$'
+
+  - id: chm.common.hardcoded-secret
+    languages: [generic]
+    severity: ERROR
+    message: >-
+      Looks like a hardcoded credential. Move it to a secret store; this is also
+      a secret-leak risk if it reaches a model context.
+    metadata:
+      chm_category: ERROR_HANDLING
+      chm_rule: CHM-COMMON-SG-HARDCODED-SECRET
+      confidence: HIGH
+    pattern-regex: '(?i)(password|passwd|pwd|secret|api[_-]?key|access[_-]?key|token)\s*[:=]\s*["''][^"'']{8,}["'']'
+
+  - id: chm.common.retry-without-limit
+    languages: [generic]
+    severity: WARNING
+    message: >-
+      Retry loop with no attempt cap or backoff. This amplifies a failing
+      dependency instead of containing it.
+    metadata:
+      chm_category: ERROR_HANDLING
+      chm_rule: CHM-COMMON-SG-RETRY-AMPLIFY
+      confidence: MEDIUM
+    patterns:
+      - pattern-either:
+          - pattern-regex: 'while\s*\(\s*true\s*\)'
+          - pattern-regex: 'for\s*\(\s*;\s*;\s*\)'
+      - pattern-not-regex: '(maxAttempts|maxRetries|max_retries|attempts\s*[<>]|backoff|Backoff)'
+
+  - id: chm.common.swallowed-error
+    languages: [generic]
+    severity: WARNING
+    message: >-
+      Error is caught and discarded. Convert it into a real failure signal or
+      record a metric -- silently continuing hides production incidents.
+    metadata:
+      chm_category: ERROR_HANDLING
+      chm_rule: CHM-COMMON-SG-SWALLOW
+      confidence: HIGH
+    pattern-regex: 'catch\s*\([^)]*\)\s*\{\s*\}'

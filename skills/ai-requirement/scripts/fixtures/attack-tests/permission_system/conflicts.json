@@ -1,0 +1,9 @@
+[
+  {
+    "id": "CON-301",
+    "left": "需求：跨部门只读",
+    "right": "RBAC 模型按角色-资源-动作，不支持\"角色 + 范围\"",
+    "severity": "BLOCKING",
+    "status": "OPEN"
+  }
+]

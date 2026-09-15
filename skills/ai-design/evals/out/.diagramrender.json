@@ -1,0 +1,85 @@
+{
+  "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\evals\\out\\a-flow.mmd::light::src": {
+    "hash": "3bc2b1dd894f54d4",
+    "out": "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\evals\\out\\assets\\a-flow.svg",
+    "layout": "dagre",
+    "budget": "7b4c41fd",
+    "audit": {
+      "layout": "dagre",
+      "kind": "flowchart-v2",
+      "supported": true,
+      "w": 344,
+      "h": 733,
+      "ratio": 0.47,
+      "nodes": 6,
+      "edges": 5,
+      "coverage": 0.212,
+      "islands": 0,
+      "longestLabel": 0,
+      "violations": []
+    }
+  },
+  "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\evals\\out\\b-seq.mmd::light::src": {
+    "hash": "9bd5f84d197efc58",
+    "out": "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\evals\\out\\assets\\b-seq.svg",
+    "layout": "dagre",
+    "budget": "7b4c41fd",
+    "audit": {
+      "layout": "dagre",
+      "kind": "sequence",
+      "supported": false,
+      "w": 678,
+      "h": 328,
+      "ratio": 2.07,
+      "nodes": 0,
+      "edges": 0,
+      "coverage": 0,
+      "islands": 0,
+      "longestLabel": 0,
+      "violations": []
+    }
+  },
+  "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\evals\\out\\c-arch.mmd::light::src": {
+    "hash": "d7a984262a7e5ed3",
+    "out": "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\evals\\out\\assets\\c-arch.svg",
+    "layout": "dagre",
+    "budget": "7b4c41fd",
+    "audit": {
+      "layout": "dagre",
+      "kind": "architecture",
+      "supported": false,
+      "w": 574,
+      "h": 383,
+      "ratio": 1.5,
+      "nodes": 0,
+      "edges": 0,
+      "coverage": 0,
+      "islands": 0,
+      "longestLabel": 0,
+      "violations": []
+    }
+  },
+  "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\evals\\out\\e-multi.md::light::src": {
+    "hash": "1e4036cde334abf2",
+    "out": "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\evals\\out\\assets\\e-multi.svg",
+    "layout": "elk",
+    "budget": "7b4c41fd",
+    "audit": {
+      "layout": "elk",
+      "kind": "flowchart-elk",
+      "supported": true,
+      "w": 259,
+      "h": 83,
+      "ratio": 3.14,
+      "nodes": 2,
+      "edges": 1,
+      "coverage": 0.824,
+      "islands": 0,
+      "longestLabel": 0,
+      "violations": [
+        "画布宽 259px < 320：塌成一根竖条",
+        "宽高比 3.14 越界 [0.32, 2.6]"
+      ]
+    }
+  }
+}

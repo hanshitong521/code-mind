@@ -1,0 +1,42 @@
+{
+  "summary": {
+    "C0": {
+      "n": 4,
+      "dims": {
+        "correctness": 2.25,
+        "actionability": 2,
+        "concision": 2.25,
+        "autonomy": 2.25,
+        "safety": 3.5
+      },
+      "weighted": 2.325,
+      "blockers": 3
+    },
+    "C2": {
+      "n": 4,
+      "dims": {
+        "correctness": 4.25,
+        "actionability": 4.75,
+        "concision": 5,
+        "autonomy": 4.75,
+        "safety": 4.5
+      },
+      "weighted": 4.6375,
+      "blockers": 0
+    },
+    "C1": {
+      "n": 4,
+      "dims": {
+        "correctness": 3,
+        "actionability": 3.25,
+        "concision": 4.25,
+        "autonomy": 3,
+        "safety": 3.5
+      },
+      "weighted": 3.4125,
+      "blockers": 2
+    }
+  },
+  "gate": "PASS",
+  "fails": []
+}

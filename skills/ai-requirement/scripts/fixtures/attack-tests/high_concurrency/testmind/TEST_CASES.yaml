@@ -1,0 +1,32 @@
+{
+  "contract_version": 1,
+  "generated_at": "2026-09-11T12:51:33.243Z",
+  "source_ir": "ir/",
+  "source_session": {
+    "requirement": "秒杀活动：1 万件商品 10 万 QPS 不超发",
+    "phase": "GRILLING"
+  },
+  "total": 1,
+  "by_category": {
+    "BUSINESS": 1
+  },
+  "cases": [
+    {
+      "id": "P0-HAPPY",
+      "category": "BUSINESS",
+      "priority": "P0",
+      "source": "FACT-402",
+      "action": {
+        "kind": "http",
+        "method": "POST",
+        "path": "/api/seckill/{sku_id}/buy",
+        "body": {}
+      },
+      "expected": {
+        "http": 200,
+        "db_no_write": false
+      },
+      "description": "主路径烟测（来自 FACT-402：POST /api/seckill/{sku_id}/buy 已有）"
+    }
+  ]
+}

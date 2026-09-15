@@ -1,0 +1,14 @@
+{
+  "code-mind\\docs\\diagram\\design.md": {
+    "hash": "3af843cf1ee22303",
+    "out": "code-mind\\docs\\diagram\\assets\\design.svg"
+  },
+  "code-mind\\docs\\diagram\\design.md::light::src": {
+    "hash": "15d8961446809559",
+    "out": "code-mind\\docs\\diagram\\assets\\design.svg"
+  },
+  "code-mind\\docs\\diagram\\design.md::dark::src": {
+    "hash": "a942692d4d7fe48c",
+    "out": "code-mind\\docs\\diagram\\assets\\variants\\design.src.dark.svg"
+  }
+}

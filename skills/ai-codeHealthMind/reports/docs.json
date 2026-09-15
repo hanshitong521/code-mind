@@ -1,0 +1,20 @@
+{
+  "required": [
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "SKILL.md",
+    ".codehealth.example.yml",
+    "docs/architecture.md",
+    "docs/finding-schema.md",
+    "docs/risk-model.md",
+    "docs/rule-authoring.md",
+    "docs/adr/ADR-001-language-and-dependencies.md",
+    "docs/adr/ADR-002-reference-project-usage.md",
+    "docs/adr/ADR-003-toolchain-availability-and-degradation.md"
+  ],
+  "missing": [],
+  "required_docs_present": 1.0,
+  "present_count": 12,
+  "total": 12
+}

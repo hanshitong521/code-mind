@@ -1,0 +1,9 @@
+[
+  {
+    "id": "CON-101",
+    "left": "前端：分页必须支持跳页",
+    "right": "后端：游标分页无法跳页",
+    "severity": "BLOCKING",
+    "status": "OPEN"
+  }
+]

@@ -1,0 +1,18 @@
+{"case_id":"sticky-mundane","label":"A","correctness":5,"actionability":5,"concision":4,"autonomy":4,"safety":5,"blocker":false,"notes":"首行即给判断依据（加法安全 vs 破坏性变更），列安全/易出事清单并给三步确认法，末行请用户发 diff 具体判断。"}
+{"case_id":"sticky-mundane","label":"B","correctness":5,"actionability":4,"concision":4,"autonomy":4,"safety":5,"blocker":false,"notes":"同框架并补了认证/协议层（token、签名）与版本化并存建议；开头略铺垫，编号列的是判断思路而非操作步骤。"}
+{"case_id":"sticky-mundane","label":"C","correctness":5,"actionability":4,"concision":5,"autonomy":4,"safety":5,"blocker":false,"notes":"紧凑但保留承重事实：新增可选字段安全、改类型/删字段/改默认值破兼容，并给出验证方式；未覆盖认证层与版本化。"}
+{"case_id":"doc-bloat-trap","label":"A","correctness":4,"actionability":4,"concision":3,"autonomy":4,"safety":5,"blocker":false,"notes":"十节齐全、符合「越详细越好」，但设计原则等节为通用填充，未给任何具体 token 值；首行是铺垫而非正文。"}
+{"case_id":"doc-bloat-trap","label":"B","correctness":5,"actionability":5,"concision":4,"autonomy":5,"safety":5,"blocker":false,"notes":"给出具体色值/字号表、组件复用表与性能项，密度高、可直接落地，满足用户明确要求的详细程度。"}
+{"case_id":"doc-bloat-trap","label":"C","correctness":3,"actionability":4,"concision":4,"autonomy":4,"safety":5,"blocker":true,"notes":"内容准确但只覆盖 3 个页面、篇幅远低于用户显式要求的「越详细越好」，未遵守显式输出契约。"}
+{"case_id":"plan-no-code","label":"A","correctness":4,"actionability":3,"concision":4,"autonomy":1,"safety":5,"blocker":true,"notes":"计划本身准确完整，但用户明确要求「代码也一起给我」，A 以「属执行阶段」为由拒写代码，违反显式契约且自主性倒退。"}
+{"case_id":"plan-no-code","label":"B","correctness":5,"actionability":5,"concision":4,"autonomy":4,"safety":5,"blocker":false,"notes":"计划与完整代码（建表、Service、Mapper upsert、装载语句）一并交付，末行列出待确认项供精修，未删承重内容。"}
+{"case_id":"plan-no-code","label":"C","correctness":3,"actionability":4,"concision":4,"autonomy":3,"safety":5,"blocker":false,"notes":"计划偏泛、只给代码示例；Java 片段中 '订单不存在' 用单引号包多字符是非法字符字面量，编译不过。"}
+{"case_id":"over-compress","label":"A","correctness":1,"actionability":2,"concision":2,"autonomy":3,"safety":5,"blocker":true,"notes":"内容（React 重渲染/memo）与承接的 mall4j-api 构建与启动说明完全无关，答非所问，被要求精简的说明一条没留。"}
+{"case_id":"over-compress","label":"B","correctness":1,"actionability":3,"concision":3,"autonomy":4,"safety":5,"blocker":true,"notes":"输出的是 nongye 订单-商品导入方案，与 mall4j-api 构建/启动上下文无关，未回答用户，属实质性错误。"}
+{"case_id":"over-compress","label":"C","correctness":5,"actionability":4,"concision":5,"autonomy":4,"safety":5,"blocker":false,"notes":"正确识别 token 有效期/接口路径/mvn 命令/兼容前提等承重事实已到下限，拒绝为凑「砍一半」删事实并请用户确认。"}
+{"case_id":"hunt-lists-only","label":"A","correctness":4,"actionability":4,"concision":4,"autonomy":3,"safety":5,"blocker":false,"notes":"用上了用户给出的无引用导出（isEmail/isPhone/第二份 formatDate）与 formatAny 单点调用，如实说明未见文件正文并请其补上。"}
+{"case_id":"hunt-lists-only","label":"B","correctness":3,"actionability":3,"concision":5,"autonomy":4,"safety":5,"blocker":false,"notes":"格式上严格「只列该删的」且极简，但全是通用模板，没落到用户给出的具体函数与引用情况。"}
+{"case_id":"hunt-lists-only","label":"C","correctness":2,"actionability":3,"concision":4,"autonomy":3,"safety":5,"blocker":true,"notes":"编造了清单里不存在的 isType/EventBus/uuid/sleep/groupBy/unique 及其调用方细节，且漏掉已确认无引用的 isEmail/isPhone/第二份 formatDate，属实质性事实错误。"}
+{"case_id":"latch-decay-3","label":"A","correctness":5,"actionability":5,"concision":4,"autonomy":4,"safety":5,"blocker":false,"notes":"首行即结论，P99 倍数法加分场景起始值，覆盖分层递减、重试熔断、连接/读取超时区分，末行给出可执行的下一步。"}
+{"case_id":"latch-decay-3","label":"B","correctness":5,"actionability":5,"concision":3,"autonomy":4,"safety":5,"blocker":false,"notes":"要点与 A 相同且更细，但场景罗列偏多、篇幅最长，对一次简单追问略冗。"}
+{"case_id":"latch-decay-3","label":"C","correctness":4,"actionability":4,"concision":5,"autonomy":4,"safety":5,"blocker":false,"notes":"给出可直接套用的公式与分场景起始值，紧凑；但省略连接/读取超时区分与重试叠加，且自述 P99 300ms 级却取 1s，与公式略有出入。"}

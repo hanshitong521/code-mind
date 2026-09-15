@@ -1,0 +1,67 @@
+{
+  "tools": [
+    {
+      "name": "native",
+      "available": true,
+      "version": "1.0.0",
+      "path": "chm.analyzers (in-process)",
+      "reason": null
+    },
+    {
+      "name": "javac",
+      "available": true,
+      "version": "1.8.0_351",
+      "path": "E:\\jdk\\bin\\javac.EXE",
+      "reason": null
+    },
+    {
+      "name": "pmd",
+      "available": true,
+      "version": "6.55.0",
+      "path": "E:\\workA\\A-skill\\A-github-skill-mcp\\.tools\\codehealth\\pmd-bin-6.55.0",
+      "reason": null
+    },
+    {
+      "name": "cpd",
+      "available": true,
+      "version": "6.55.0",
+      "path": "E:\\workA\\A-skill\\A-github-skill-mcp\\.tools\\codehealth\\pmd-bin-6.55.0",
+      "reason": null
+    },
+    {
+      "name": "spotbugs",
+      "available": true,
+      "version": "4.5.3",
+      "path": "E:\\workA\\A-skill\\A-github-skill-mcp\\.tools\\codehealth\\spotbugs-4.5.3\\lib\\spotbugs.jar",
+      "reason": null
+    },
+    {
+      "name": "semgrep",
+      "available": false,
+      "version": null,
+      "path": null,
+      "reason": "semgrep is not installed on this host (not in config, not on PATH)"
+    },
+    {
+      "name": "knip",
+      "available": true,
+      "version": "5.88.1",
+      "path": "E:\\workA\\A-skill\\A-github-skill-mcp\\.tools\\codehealth\\knip\\node_modules\\knip\\bin\\knip.js",
+      "reason": null
+    },
+    {
+      "name": "openrewrite",
+      "available": false,
+      "version": null,
+      "path": "E:\\apache-maven-3.9.14\\bin\\mvn.CMD",
+      "reason": "Maven runs but the OpenRewrite plugin is not in the local repository (C:\\Users\\Administrator\\.m2\\repository); 'org.openrewrite.maven:rewrite-maven-plugin' would have to be downloaded before any recipe could run"
+    },
+    {
+      "name": "test-runner",
+      "available": false,
+      "version": null,
+      "path": null,
+      "reason": "no test command configured (config.tools.test.args is empty)"
+    }
+  ]
+}

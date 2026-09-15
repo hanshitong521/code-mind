@@ -1,0 +1,11 @@
+{
+  "name": "mixed-project-fixture",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.27.2",
+    "moment": "^2.29.4",
+    "vue": "^2.7.14",
+    "vue-router": "^3.6.5"
+  }
+}

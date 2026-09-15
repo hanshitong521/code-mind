@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "requirement-mind/evidence-ledger",
+  "title": "Evidence Ledger (.requirementmind/evidence-ledger.json)",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "kind", "claim", "evidence_refs", "created_at"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^EL-\\d{3}$" },
+      "kind": { "enum": ["FACT", "DECISION", "TEST", "RESULT", "RISK"] },
+      "claim": { "type": "string" },
+      "evidence_refs": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 0,
+        "description": "path:line、FACT-/DEC-/EV- id、或外部报告名"
+      },
+      "linked_ids": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "关联的 DEC-/CH-/Q- 等"
+      },
+      "created_at": { "type": "string" }
+    }
+  }
+}

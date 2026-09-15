@@ -1,0 +1,14 @@
+---
+description: Session latch for concise-mind — read latch file; load skill when active:true.
+alwaysApply: true
+---
+
+# Concise-mind latch
+
+Triggers once: `/concise-mind` · `@concise-mind` · `简洁模式` · `别废话` · `说人话模式` — stays ON until `stop concise-mind` / `normal mode` / `关闭简洁` (`python scripts/latch.py off`).
+
+Each turn: read `.concise-mind.latch.json` (project root) else `~/.concise-mind/latch.json`.  
+`active:true` → load skill with **`Session-latched: true`** in frontmatter (`ai-concise/SKILL.md` or junction `concise-mind`).  
+`active:false` / missing → no extra compression. Unreadable latch → keep session state.
+
+Do not bulk-read `references/` — one file per chosen MODE only.

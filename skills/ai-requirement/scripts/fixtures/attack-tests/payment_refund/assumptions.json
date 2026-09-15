@@ -1,0 +1,16 @@
+[
+  {
+    "id": "ASM-001",
+    "statement": "假设回调超时上限 30s",
+    "risk": "HIGH",
+    "source": "MODEL_INFERENCE",
+    "status": "UNVERIFIED"
+  },
+  {
+    "id": "ASM-002",
+    "statement": "假设对账任务每日凌晨执行",
+    "risk": "MEDIUM",
+    "source": "MODEL_INFERENCE",
+    "status": "UNVERIFIED"
+  }
+]

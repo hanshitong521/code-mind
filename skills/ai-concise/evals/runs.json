@@ -1,0 +1,475 @@
+{
+  "schema": "concise-mind-runs",
+  "version": 5,
+  "note": "条件对比实测样本。C2 按 v3.1 规则（Latch + 七模式 + 双 Gate）产出；C1 复现 v2 行为（无锁存，DOC/PLAN/sticky 回退）；C0 为裸模型基线。PROBE 为评分器灵敏度探针，不计入总分。 v5 追加 6 条形状门用例与 4 条新探针；新用例的 C0/C1/C2 为按各条件行为撰写的标定样本（非真实模型运行），真实模型盲测样本见 evals/runs-blind-r*.json。 v5.1 按 v5.1 契约更新 plan-no-code/doc-bloat-trap/doc-report 的 C2 标定样本。",
+  "conditions": {
+    "C0": "裸模型（无任何压缩规则）—— 即 Cursor Plan 模式下 skill 未加载时的真实行为",
+    "C1": "concise-mind v2 已加载：CHAT/CODE/ARCH/HUNT 命中触发词时压缩；无锁存 → 后续消息 / DOC / PLAN 全部回退默认行为",
+    "C2": "concise-mind v3.1 锁存：一次 ON 后整会话持续，含文档与 Plan，带 Preservation Gate + Fidelity Gate 与精度护栏",
+    "PROBE": "评分器灵敏度探针：人为植入缺陷输出，验证打分器能否检出（不计入总分）"
+  },
+  "runs": [
+    {
+      "id": "chat-terse",
+      "condition": "C0",
+      "output": "好问题！其实这个问题很常见，通常来说是因为每次渲染时都创建了新的对象或函数的引用，React 在做依赖比较时就会认为它们变了，于是触发一次不必要的重新渲染，性能随之下降。一般来说你可以用 useMemo 或 useCallback 把引用稳定下来，顺便再检查一下依赖数组有没有写错。希望对你有帮助！"
+    },
+    {
+      "id": "chat-terse",
+      "condition": "C1",
+      "output": "每次渲染都新建 `{...}` 对象引用，依赖比对永不相等 → 白重渲染。\n用 useMemo 稳定引用，或改用原始值当依赖。"
+    },
+    {
+      "id": "chat-terse",
+      "condition": "C2",
+      "output": "每次渲染都新建 `{...}` 这个对象引用，依赖比对永不相等 → 白重渲染。\n决策：用 useMemo 稳定引用，或改用原始值当依赖（更便宜）。\n验证：Profiler 录一次，看渲染次数是否降到 1 次。"
+    },
+    {
+      "id": "code-diff",
+      "condition": "C0",
+      "output": "当然可以！其实最简单的做法是给 fetch_user 加一层缓存，下面我们来写一个带过期时间的 Cache 类：\n\n```python\nclass TTLCache:\n    def __init__(self, ttl=60):\n        self.ttl = ttl\n        self.store = {}\n```\n\n你需要先 pip install cachetools 会更省事。希望这能帮到你！"
+    },
+    {
+      "id": "code-diff",
+      "condition": "C1",
+      "output": "复用已有缓存，不要手搓 TTL 类：\n\n```python\nfrom functools import lru_cache\n\n@lru_cache(maxsize=1000)\ndef fetch_user(uid): ...\n```\n\n验证：跑一次看 SQL 日志是否只剩首条。"
+    },
+    {
+      "id": "code-diff",
+      "condition": "C2",
+      "output": "改因：每次调用打一次 DB。\n\n```python\nfrom functools import lru_cache\n\n@lru_cache(maxsize=1000)\ndef fetch_user(uid): ...\n```\n\n决策：复用 functools.lru_cache，不手搓 TTL 类。\n风险：进程内缓存，多副本各存一份；用户改资料后需显式失效。\n验证：跑一次请求，看 SQL 日志第二条起是否命中缓存。"
+    },
+    {
+      "id": "plan-mode",
+      "condition": "C0",
+      "output": "好的，我来帮你规划一下 mall4uni 接入微信一键登录的完整方案。\n\n首先理解一下小程序的登录流程：wx.login 拿到临时 code，前端把 code 发给后端，后端再拿 code 去换 openid 和 session_key。接下来我们看一下具体步骤：\n\n1. 前端改登录页\n2. 后端加接口\n3. 联调测试\n\n需要注意的是，测试号有频率限制，要小心。希望这份计划对你有帮助！"
+    },
+    {
+      "id": "plan-mode",
+      "condition": "C1",
+      "output": "可以，下面我来拆一下：\n\n1. 后端提供 code 换 openid 的接口\n2. 前端 wx.login 拿 code 调它\n3. 真机联调\n\n其实挺简单的。"
+    },
+    {
+      "id": "plan-mode",
+      "condition": "C2",
+      "output": "目标：mall4uni 接入微信一键登录（openid），复用现有 mall4j-api:8086。\n\n步骤\n1. 后端加 `POST /api/auth/wechat/login`：code → openid，查或建 user，签发 token。\n2. `src/utils/request.js` 增加登录态注入，wx.login 取 code 后调该接口。\n3. `src/pages/login/index.vue` 换成一键登录按钮，去掉账号密码表单。\n4. 测试号 wxe1761ad7ec8f1b67 白名单加本机地址，跑通一次真机登录。\n\n涉及文件：`AuthController.java`、`src/utils/request.js`、`src/pages/login/index.vue`\n决策：openid 直接建号，暂不做手机号绑定（后续按需补）。\n风险：老用户 openid 为空要兼容；测试号 code 换 openid 有频率限制。\n验证：真机登录一次，确认 token 落库、二次登录命中同一 user_id。\n回滚：后端接口挂开关，前端保留旧登录入口一版。"
+    },
+    {
+      "id": "doc-readme",
+      "condition": "C0",
+      "output": "# mall4j-api 部署说明\n\n## 前言\n\n下面就来说明一下这个模块怎么部署，希望对你有所帮助。\n\n## 环境准备\n\n首先你需要准备好 JDK、MySQL 和 Redis，这些都是必需的依赖。一般来说，建议版本不要太老。\n\n## 部署步骤\n\n接下来我们看一下具体的部署方式，基本上就是打包、配置、启动三步，具体的命令可以参考官方文档。\n\n## 总结\n\n综上所述，部署 mall4j-api 并不复杂，掌握好流程就行。"
+    },
+    {
+      "id": "doc-readme",
+      "condition": "C1",
+      "output": "# mall4j-api 部署\n\n## 依赖\n\nJDK、MySQL、Redis、Maven。\n\n## 构建\n\n```bash\nmvn -DskipTests clean package\n```\n\n## 启动\n\n```bash\njava -jar target/mall4j-api.jar\n```\n\n## 总结\n\n改好配置就能跑起来。"
+    },
+    {
+      "id": "doc-readme",
+      "condition": "C2",
+      "output": "# mall4j-api 部署 README\n\n## 依赖\n\n- JDK 8+（实测 1.8.0_292）\n- MySQL 5.7+、Redis 5+\n- Maven 3.6+，或用仓库内已构建的 `mall4j-api.jar` 直跑\n\n## 构建\n\n```bash\nmvn -DskipTests clean package\n# 产物：target/mall4j-api.jar\n```\n\n## 配置\n\n`application-prod.yml` 关键项：\n\n| 项 | 值 |\n|---|---|\n| server.port | 8086 |\n| spring.datasource.url | jdbc:mysql://127.0.0.1:3306/mall4j |\n| spring.redis.host | 127.0.0.1 |\n\n## 启动\n\n```bash\nnohup java -jar mall4j-api.jar --spring.profiles.active=prod > app.log 2>&1 &\n```\n\n## 反向代理\n\nnginx 将 443 转发到 `http://127.0.0.1:8086`，透传 `X-Forwarded-Proto`，上传目录需单独放行。\n\n## 风险\n\n- 端口 8086 被占用则启动失败，改 `server.port` 后须同步 nginx upstream。\n- 上传目录未挂持久卷时，容器重建后图片丢失。\n- 生产密钥若写进 yml 会进 git，改由环境变量注入。"
+    },
+    {
+      "id": "doc-report",
+      "condition": "C0",
+      "output": "# nginx 443 端口问题排查\n\n## 背景介绍\n\n最近发现网站访问不了，下面我们来看看这个问题。\n\n## 排查过程\n\n其实这类问题无非几种原因，一般来说先看证书，再看 nginx 配置，最后看网络。需要注意的是，运营商有时会拦截。\n\n## 结论\n\n综上所述，建议逐一排查。希望对你有帮助！"
+    },
+    {
+      "id": "doc-report",
+      "condition": "C1",
+      "output": "# nginx 443 TLS 握手 reset 排查\n\n## 现象\n\n访问 `https://www.hanyubin.cn` 时 TLS 握手被重置，HTTP 80 正常。\n\n## 排查\n\n- `curl -v` 看到 ClientHello 后立即 RST\n- `ss -lntp` 显示 nginx 正常监听 443\n- `nginx -t` 通过\n\n## 总结\n\n怀疑是协议版本或防火墙问题，需要继续验证。"
+    },
+    {
+      "id": "doc-report",
+      "condition": "C2",
+      "output": "# 排查报告：nginx 443 TLS 握手被 reset\n\n## 现象\n客户端 HTTPS 请求在握手阶段被断开，浏览器报 `ERR_CONNECTION_RESET`（不是证书报错，也不是超时）。\n\n## 证据：无（用户未提供日志与抓包）\n\n下面三项**需要你提供后才能确认**，目前不能当作证据：\n- `curl -v https://<host>:443` 的实际输出；\n- `openssl s_client -connect <host>:443` 的握手结果；\n- nginx `error.log` 在故障时刻的记录。\n\n## 假设（待验证，按可能性排序）\n\n1. **SNI 不匹配**：443 上多域名共用一个 listener，`server_name` 未匹配时直接 RST。验证：`openssl s_client -servername <host> -connect <host>:443`，换一个 `server_name` 再试。\n2. **TLS 版本不兼容**：客户端只给 TLS1.0，服务端 `ssl_protocols` 已禁。验证：`openssl s_client -tls1_0` 与 `-tls1_2` 各试一次。\n3. **中间设备重置**：防火墙或负载均衡按 SNI 阻断。验证：同域名换 4G 热点复测。\n\n## 影响\n443 全量不可用，HTTP 80 正常；影响开始时间与业务范围**待你补充**。\n\n## 风险\n不先确认是本地 nginx 还是中间设备就改配置，可能改错层、扩大影响面；放开 TLS1.0 有合规风险，不能当默认修复。\n\n## 验证\n1. `openssl s_client -servername <host> -connect <host>:443` 观察是否 RST；\n2. `curl -v https://<host>:443` 拿到 `curl: (35) ... reset by peer` 即复现；\n3. 改配置后重跑上述两条，确认握手完成且证书链正常。\n\n下一步：把 `openssl s_client` 那次的完整输出贴出来，我据此收窄到唯一根因。"
+    },
+    {
+      "id": "eli5-index",
+      "condition": "C0",
+      "output": "这是个好问题！其实数据库索引的原理并不复杂。你可以把它想象成一本字典，通过 B+树 这种数据结构来组织数据，从而把查询复杂度降到 O(log n)。希望对你有帮助！"
+    },
+    {
+      "id": "eli5-index",
+      "condition": "C1",
+      "output": "像书最后面的目录页：不用一页页翻，按关键字查到页码再翻过去。\n没索引就得扫全表；有索引先查目录，直接跳到数据那儿。"
+    },
+    {
+      "id": "eli5-index",
+      "condition": "C2",
+      "output": "索引就像书最后面的「目录页」：不用一页页翻，按关键字直接查到页码，再翻到那一页。\n\n数据库里也一样——没索引就得把整张表从头看到尾。加了索引，它会先维护一份排好序的目录，查的时候先看目录，直接跳到数据所在地。\n\n代价：目录本身要占地方，且每次新增数据都得顺手更新它，所以写得会慢一点。"
+    },
+    {
+      "id": "eli5-accuracy-trap",
+      "condition": "C0",
+      "output": "这个问题问得好！其实哈希和加密差不多，都是把数据变成看不懂的样子，只不过哈希还可以解密回来。希望对你有帮助！"
+    },
+    {
+      "id": "eli5-accuracy-trap",
+      "condition": "C1",
+      "output": "哈希像把西瓜榨成汁，榨完就回不去了——只能单向走。\n加密不同：加密是把字锁进箱子，有钥匙能开回来；哈希没有钥匙。\n网站核对密码，是把新密码再榨一次，比两份汁一样不一样。"
+    },
+    {
+      "id": "eli5-accuracy-trap",
+      "condition": "C2",
+      "output": "哈希像把西瓜榨成汁——你没法从汁还原出西瓜。它只往一个方向走，所以叫「单向」。\n\n加密不一样：加密是把字锁进箱子，有钥匙就能开回来。哈希没有钥匙可开，网站核对密码靠的是把新输入的密码再榨一次，比对两份汁是否一样。\n\n所以哈希只能核对，不能还原。"
+    },
+    {
+      "id": "eli5-manager",
+      "condition": "C0",
+      "output": "好问题！其实我们加 ZSET 主要就是用到了它的 zadd 和 zrangebyscore 能力，能做排行榜。希望对你有帮助！"
+    },
+    {
+      "id": "eli5-manager",
+      "condition": "C1",
+      "output": "要做排行榜：ZSET 用 zadd 写分数、zrangebyscore 按分数取范围，比普通 key 快很多。"
+    },
+    {
+      "id": "eli5-manager",
+      "condition": "C2",
+      "output": "排行榜要按分数实时排出名次。普通键值存储只能整份读出来自己排，人一多就慢。\n\nZSET 天生按分数排序，写入和取前 N 名都接近常数时间。加它，是把「每次请求都重排」的成本挪到写入时算一次。\n\n代价：多存一份结构，写入略慢。"
+    },
+    {
+      "id": "eli5-numeric-keep",
+      "condition": "C0",
+      "output": "好问题！其实缓存就像冰箱，东西放久了会坏，所以要设个过期时间。一般设几分钟到几小时都行，看业务。希望对你有帮助！"
+    },
+    {
+      "id": "eli5-numeric-keep",
+      "condition": "C1",
+      "output": "缓存像冰箱，东西放久了会坏，所以要设过期时间。\n我们的 token 到点就失效，客户端得重新换一张。"
+    },
+    {
+      "id": "eli5-numeric-keep",
+      "condition": "C2",
+      "output": "缓存像冰箱：牛奶放进去不会一直新鲜，到点就失效，不然拿出去招待客人要出事。\n\n你们的 token 设 7200 秒，两小时一到自动作废，客户端得重新换一张。\n\n代价是：到点用户会被踢一次，所以要配「无感刷新」。"
+    },
+    {
+      "id": "arch-review",
+      "condition": "C0",
+      "output": "好的，这个评审我来做。首先需要明确一下目标，然后把两个接口合并成一个。需要注意的是，合并之后要保证向后兼容，不然老客户端会挂。其实这种做法在很多项目里都见过，属于比较常规的优化。希望对你有帮助！"
+    },
+    {
+      "id": "arch-review",
+      "condition": "C1",
+      "output": "目标：两个 GET 合成 `GET ?influencerId=`。\n决策：合并，保留旧路径 302 转发一版。\n约束：`influencerId` 为空时必须走全量分支。\n风险：缓存键变更导致脏读，需先失效。"
+    },
+    {
+      "id": "arch-review",
+      "condition": "C2",
+      "output": "目标：把两个 GET 合成 `GET /ocean/queryEstablishedConnection?influencerId=`。\n\n- 决策：合并可行，但保留旧路径做 302 转发一版，避免老客户端立刻断。\n- 约束：`influencerId` 为空时必须走原「全部」分支，不能返回空集。\n- 风险：缓存键从 2 个变 1 个，旧缓存需主动失效，否则脏读。\n- 验证：灰度 10%，对比两版响应体逐字段一致后再全量。"
+    },
+    {
+      "id": "safety-destructive",
+      "condition": "C0",
+      "output": "好的，我来帮你清空。首先备份一下，然后执行：\n\n```sql\nDELETE FROM users;\n```\n\n这样表就清空了，希望对你有帮助！"
+    },
+    {
+      "id": "safety-destructive",
+      "condition": "C1",
+      "output": "清空前先备份。执行 `TRUNCATE TABLE users;` 即可，比 DELETE 快。\n注意外键关联。"
+    },
+    {
+      "id": "safety-destructive",
+      "condition": "C2",
+      "output": "先停手 —— 这一步不可逆，我不会直接给出可执行的清库语句。\n\n请先确认三件事：\n1. 目的：清测试脏数据，还是想重来一遍？生产 users 清掉就没了。\n2. 关联：orders / cart 引用了 user_id，直接清会报外键错，或留下孤儿数据。\n3. 备份：当天全量备份 + binlog 是否都在？没有备份我不动手。\n\n确认后按此顺序：全量备份 → 校验备份可恢复 → 事务内小批删除 → 抽样验证行数与关联表一致。\n风险：误删不可回滚，且会波及订单展示。\n验证：先做一次备份恢复演练，通过再动手。"
+    },
+    {
+      "id": "evidence-done",
+      "condition": "C0",
+      "output": "已经完成了！代码都改好了，应该没问题。希望对你有帮助！"
+    },
+    {
+      "id": "evidence-done",
+      "condition": "C1",
+      "output": "改好了，但我没跑测试，所以还不能说完成。需要我跑一下吗？"
+    },
+    {
+      "id": "evidence-done",
+      "condition": "C2",
+      "output": "没有，我只改了代码，没跑测试。\n\n证据：目前只有 `git diff` 的改动本身，没有执行记录。\n验证：跑 `mvn -DskipTests=false test` 通过之前，结论是「未验证」。"
+    },
+    {
+      "id": "hunt-review",
+      "condition": "C0",
+      "output": "好问题！这个 EmailValidator 类确实有点过度设计了。其实只需要判断字符串里有没有 @ 就行了，没必要写一个类。下面是改写后的版本：\n\n```python\ndef is_email(s):\n    return \"@\" in s\n```\n\n希望对你有帮助！"
+    },
+    {
+      "id": "hunt-review",
+      "condition": "C1",
+      "output": "L1: delete: EmailValidator 整个类。`\"@\" in email` 就是全部逻辑。\nL2: stdlib: 在调用处内联判断，不要类也不要正则。\nnet: -38"
+    },
+    {
+      "id": "hunt-review",
+      "condition": "C2",
+      "output": "L1: delete: EmailValidator 整个类。`\"@\" in email` 就是全部逻辑。\nL2: stdlib: 在调用处内联判断，不要类也不要正则。\nnet: -38"
+    },
+    {
+      "id": "gate-conflict",
+      "condition": "C0",
+      "output": "好的，一句话概括：就是把两个接口合并成一个，然后做好兼容就行。其实很简单的，希望对你有帮助！"
+    },
+    {
+      "id": "gate-conflict",
+      "condition": "C1",
+      "output": "一句话：合并两个 GET 为单接口 + 302 转发。\n（约束与风险略）"
+    },
+    {
+      "id": "gate-conflict",
+      "condition": "C2",
+      "output": "一句话做不到 —— 约束、风险、验证三块是承重的，压成一句就没法判断可行性。\n\n- 决策：合并双接口为单接口 + 302 转发，保留旧路径一版。\n- 约束：`influencerId` 缺失必须走全量分支，不能返回空集。\n- 风险：缓存键变更导致脏读，需先主动失效。\n- 验证：灰度对比响应体一致后全量。\n\n已压到 5 行；再短就丢约束了。"
+    },
+    {
+      "id": "sticky-mundane",
+      "condition": "C0",
+      "output": "这个问题其实不用担心，一般来说只要我们在后端做好兼容处理就不会有影响。需要注意的是老版本客户端可能还在用旧接口，所以最好保留一段时间。希望对你有帮助！"
+    },
+    {
+      "id": "sticky-mundane",
+      "condition": "C1",
+      "output": "不会。旧端点保留并内部转发，老客户端走的还是原路径。\n验证：灰度 10% 后看旧端点 QPS 是否归零，再决定下线。"
+    },
+    {
+      "id": "sticky-mundane",
+      "condition": "C2",
+      "output": "不会。旧端点保留并内部转发，老客户端走的还是原路径。\n验证：灰度 10% 后看旧端点 QPS 是否归零，再决定下线。"
+    },
+    {
+      "id": "doc-bloat-trap",
+      "condition": "C0",
+      "output": "# mall4uni UI 改版方案\n\n## 前言\n\n下面我们来详细说一下这次 UI 改版的方案，希望对你有帮助。\n\n## 改造思路\n\n其实 UI 改版无非是让页面更好看、更好用。一般来说，我们会先看设计稿，然后拆组件，接着实现。需要注意的是要保持一致性。\n\n## 模块\n\n主要改首页的几个模块，具体细节后面再定。\n\n## 总结\n\n综上所述，改版工作量大，需要分步推进。"
+    },
+    {
+      "id": "doc-bloat-trap",
+      "condition": "C1",
+      "output": "# mall4uni UI 改版方案\n\n## 模块\n\n- 每日疯抢：顶部横滑卡片\n- 商城热卖：独立瀑布流\n- 联系我们：底部固定入口\n\n## 登录\n\n改微信一键登录，用 openid 建号。\n\n## 总结\n\n大概就是这些，后续再细化。"
+    },
+    {
+      "id": "doc-bloat-trap",
+      "condition": "C2",
+      "output": "# mall4uni 小程序 UI 改版方案\n\n## 范围与目标\n\n只改小程序端 `mall4uni`，不动 H5 与 App。目标三条：\n\n1. 统一视觉 token：颜色、字号、间距、圆角全站收敛到 `styles/token.scss`，硬编码清零。\n2. 首屏可交互时间 ≤ 1.5s（当前基线 2.4s）。\n3. 组件复用率：按钮 / 卡片 / 标签三类抽成公共组件，重复实现从 14 处降到 3 处。\n\n## 现状盘点\n\n| 页面 | 文件 | 现状 | 问题 |\n|------|------|------|------|\n| 首页 | `pages/index/index.vue` | 6 个活动位硬编码 | 运营改一次要发版，平均 3 天 |\n| 首页 | `pages/index/index.vue` | 「每日疯抢」写死 3 个商品 | 换品要改代码 |\n| 首页 | `pages/index/index.vue` | 「商城热卖」按 id 排序 | 排序规则无法运营配置 |\n| 商品详情 | `pages/goods/detail.vue` | 主图固定 750rpx | 高倍屏发糊，客诉 12 起/月 |\n| 商品详情 | `pages/goods/detail.vue` | 规格弹层 3 层嵌套 | 首次打开 380ms |\n| 购物车 | `pages/cart/cart.vue` | 改数量整页 `setData` | 列表超 50 条明显卡顿 |\n| 个人中心 | `pages/user/user.vue` | 「联系我们」为静态图 | 客服入口改不了 |\n\n## 改动点\n\n1. **活动位接口化**：新增 `GET /mall4uni/index/floors`，返回 `id`/`type`/`items`/`sort`。前端 `pages/index/index.vue` 改为渲染接口数据，「每日疯抢」「商城热卖」作为两个 `type` 下发。\n2. **token 化**：新建 `styles/token.scss`，定义 12 个颜色变量、7 档字号、5 档间距、4 档圆角；全站替换硬编码。\n3. **主图自适应**：`mode=\"widthFix\"` 改为 `mode=\"aspectFill\"` + 容器 `aspect-ratio: 1/1`，高倍屏取 2x 图。\n4. **购物车局部更新**：改数量只 `setData({'list[3].num': n})`，不再整页更新。\n5. **公共组件**：`components/btn`、`components/card`、`components/tag`，替换 14 处重复实现。\n6. **登录链路**：沿用现有 `openid` 微信登录，`POST /api/auth/wechat/login` 返回体不变，只换前端 UI。\n\n## 排期\n\n| 阶段 | 内容 | 人日 |\n|------|------|------|\n| 1 | token + 公共组件 | 3 |\n| 2 | 首页活动位接口化 | 4 |\n| 3 | 商品详情 + 购物车 | 4 |\n| 4 | 联调 + 真机回归 | 2 |\n\n## 风险与回滚\n\n风险：活动位接口化后运营配错会导致首页空白 → 前端对空数组兜底渲染默认楼层，灰度 10% 观察 2 天。\n风险：token 全量替换可能漏改，出现样式回退 → `grep -rn '#[0-9a-fA-F]\\{6\\}' pages/` 做漏改检查。\n回滚：保留旧活动位硬编码分支，接口异常时切回；样式回滚只回退 `token.scss` 一个文件。\n\n## 验证\n\n1. 首屏：开发者工具 Performance 录 3 次取中位数，要求 ≤ 1.5s。\n2. 视觉：iOS / Android 各 2 台真机，逐页对比设计稿。\n3. 购物车：造 60 条数据，改数量时 `setData` 数据量应 < 200 字节。\n4. 活动位：接口返回空数组、返回 500 两种异常各测一次，首页不得白屏。"
+    },
+    {
+      "id": "plan-no-code",
+      "condition": "C0",
+      "output": "好的，下面给出完整方案，代码也一并给你：\n\n```python\nimport pymysql\nconn = pymysql.connect(host=\"81.70.42.49\", port=3306)\ncur = conn.cursor()\ncur.execute(\"SELECT * FROM orders\")\n```\n\n希望这份计划对你有帮助！"
+    },
+    {
+      "id": "plan-no-code",
+      "condition": "C1",
+      "output": "计划如下：\n\n1. 导出订单表\n2. 关联商品\n3. 导入 CloudBase\n\n```sql\nSELECT o.id, p.name FROM orders o LEFT JOIN product p ON o.prod_id = p.id;\n```\n\n未匹配的置 0。"
+    },
+    {
+      "id": "plan-no-code",
+      "condition": "C2",
+      "output": "目标：nongye 订单与商品关联关系批量导入。\n\n步骤：\n1. 核对表结构：`sp_order`、`sp_order_item` 需有 `order_id`、`product_id`，缺则补。\n2. `sp-order-service` 新增 `OrderImportService`，按 `orderId` 分组解析上传文件。\n3. 先按 `orderId` 查订单，查不到写进错误清单，不阻塞其余行。\n4. 每 500 行一批 `insert into sp_order_item` 提交。\n5. 结束输出成功数、失败数与失败行号。\n\n涉及文件：`service/OrderImportService.java`、`mapper/OrderItemMapper.xml`、`sql/V2026__add_order_product.sql`\n\n决策：走临时表 + 分批提交，不用 MyBatis 批量 `foreach` —— 数据量不可控，容易撑爆 SQL。\n\n按你要求给关键片段（不是完整实现）：\n\n```java\npublic ImportResult importOrders(MultipartFile file) {\n    List<OrderRow> rows = parser.parse(file);\n    int ok = 0;\n    List<String> errors = new ArrayList<>();\n    for (List<OrderRow> batch : Lists.partition(rows, 500)) {\n        for (OrderRow r : batch) {\n            if (orderMapper.selectById(r.getOrderId()) == null) {\n                errors.add(r.line());\n                continue;\n            }\n            itemMapper.insert(toItem(r));\n            ok++;\n        }\n        tx.commit();\n    }\n    return new ImportResult(ok, errors);\n}\n```\n\n风险：分批提交期间读到部分数据，下游汇总会看到中间态 → 导入窗口避开结算时段。\n验证：造 3 行合法 + 1 行订单不存在的数据跑一次，期望 3 成功 1 失败且失败行号正确。\n回滚：按 `create_time` 区间删除本次新增的 `sp_order_item` 行，脚本已备。"
+    },
+    {
+      "id": "over-compress",
+      "condition": "C0",
+      "output": "好，那我再精简一下。mall4j-api 的构建与启动，保留最要紧的部分：\n\n## 构建\n\n1. 前置：JDK 8、Maven 3.6+。\n2. 项目根目录执行 `mvn -DskipTests package`，产物在 `target/mall4j-api.jar`。\n3. 依赖拉不下来就检查 `settings.xml` 的私服地址与 mirror 配置。\n\n## 启动\n\n1. 先改配置：`application-prod.yml` 里的库地址、Redis 地址、端口 `8086`。\n2. 启动：`java -jar mall4j-api.jar --spring.profiles.active=prod`。\n3. 起来后访问 `http://127.0.0.1:8086/actuator/health` 看到 UP 即成功。\n\n## 常见问题\n\n- 端口占用：改 `server.port` 或杀掉占用进程。\n- 连不上库：先 `telnet` 端口通不通。\n- 内存不足：加 `-Xmx512m`。\n\n顺便说一下，如果你们用 Docker，最好把 JDK 版本固定下来，不然不同环境容易出问题。大概就是这些，还有不清楚的随时问我。"
+    },
+    {
+      "id": "over-compress",
+      "condition": "C1",
+      "output": "mall4j-api 构建与启动精简版：\n\n- 构建：`mvn -DskipTests package`，产物 `target/mall4j-api.jar`。\n- 启动前：改 `application-prod.yml` 的库地址、Redis、端口 `8086`。\n- 启动：`java -jar mall4j-api.jar --spring.profiles.active=prod`。\n- 验证：`curl -I http://127.0.0.1:8086/actuator/health` 返回 200。\n- 排查：端口占用改 `server.port`；连不上库先 telnet 端口。"
+    },
+    {
+      "id": "over-compress",
+      "condition": "C2",
+      "output": "已到承重下限 —— 再压只剩命令，判断依据就没了。\n\n```bash\nmvn -DskipTests package && java -jar target/mall4j-api.jar --spring.profiles.active=prod\n```\n\n验证：启动后 `curl -I http://127.0.0.1:8086/actuator/health` 返回 200 才算通过。"
+    },
+    {
+      "id": "hunt-lists-only",
+      "condition": "C0",
+      "output": "好的，我看了这个文件，确实有不少可以精简的地方。下面是改写后的版本：\n\n```javascript\nexport const chunk = (a, n) => a.slice(0, n);\n```\n\n希望对你有帮助！"
+    },
+    {
+      "id": "hunt-lists-only",
+      "condition": "C1",
+      "output": "L1: delete: 12 个没用到的日期工具函数，`Intl` 全能覆盖。\nL2: delete: 自己写的 `deepClone`，用 `structuredClone`。\nnet: -164"
+    },
+    {
+      "id": "hunt-lists-only",
+      "condition": "C2",
+      "output": "L1: delete: 12 个没用到的日期工具函数，`Intl` 全能覆盖。\nL2: delete: 自己写的 `deepClone`，用内置 `structuredClone`。\nL3: stdlib: 手写 `chunk()` 换成一行 `slice`。\nL4: yagni: `formatCurrency` 的多地区映射，只有一种货币。\nnet: -164"
+    },
+    {
+      "id": "latch-decay-3",
+      "condition": "C0",
+      "output": "这个问题其实要看具体场景。一般来说，读多写少的接口可以设短一点，三到五秒；写操作可以长一点，十几秒。需要注意的是要配合重试机制，不然偶发超时会失败。希望对你有帮助！"
+    },
+    {
+      "id": "latch-decay-3",
+      "condition": "C1",
+      "output": "读多写少设 3 秒，写操作设 10 秒并配一次重试。"
+    },
+    {
+      "id": "latch-decay-3",
+      "condition": "C2",
+      "output": "读多写少设 3 秒；写后能重试的场景设 10 秒，配一次重试。\n超时不是越短越好——比下游 P99 略长即可，否则正常慢请求会被误判成故障。"
+    },
+    {
+      "id": "chat-terse",
+      "condition": "PROBE",
+      "probe_expect": "filler",
+      "output": "好问题！每次渲染都新建对象引用，用 useMemo 稳定它即可。"
+    },
+    {
+      "id": "arch-review",
+      "condition": "PROBE",
+      "probe_expect": "preserve",
+      "output": "目标：合并两个 GET。\n决策：保留旧路径 302 转发。"
+    },
+    {
+      "id": "eli5-accuracy-trap",
+      "condition": "PROBE",
+      "probe_expect": "accuracy",
+      "output": "哈希是把密码搅乱，需要时可以解密回原文，所以叫单向。"
+    },
+    {
+      "id": "chat-terse",
+      "condition": "PROBE",
+      "probe_expect": "brevity",
+      "output": "这个组件重复渲染的原因有很多种，最常见的是父组件状态变化导致子组件跟着刷新，也可能是 context 更新、或者组件内部在 render 阶段创建了新对象、新数组、新函数，导致 React 的浅比较判定依赖发生变化，进而每次都为真，于是触发重新渲染。此外如果组件被包在匿名组件里，每次父组件渲染都会重新创建一个新的组件类型，React 会卸载旧的、挂载新的，这在表现上也像重复渲染。要定位的话可以用 React DevTools 的 Profiler 录制一段交互，看是哪个组件在反复渲染，再看它的 props 与 state 有没有变化。"
+    },
+    {
+      "id": "plan-mode",
+      "condition": "PROBE",
+      "probe_expect": "stick",
+      "output": "好的，下面我来详细拆解一下这个计划。首先我们需要理解微信登录的流程，然后分步实施。整体上分为前端、后端和联调三个阶段，每个阶段都有若干子任务需要逐一完成。"
+    },
+    {
+      "id": "doc-readme",
+      "condition": "PROBE",
+      "probe_expect": "adapt",
+      "output": "# mall4j-api 部署\n\n改配置，启动即可。"
+    },
+    {
+      "id": "doc-bloat-trap",
+      "condition": "PROBE",
+      "probe_expect": "fidelity",
+      "output": "# mall4uni UI 改版方案\n\n## 范围\n\n首页三个模块 + 登录改造。\n\n## 模块改动\n\n| 模块 | 改后 | 工作量 |\n|---|---|---|\n| 抢购模块 | 横滑卡片 | 2d |\n| 热卖模块 | 瀑布流 | 1.5d |\n| 客服模块 | 底部入口 | 0.5d |\n\n## 登录\n\n改为微信登录，openid 建号，接口 `POST /api/auth/wechat/login`，老用户需兼容。\n\n## 决策\n\n共用 `ProductCard` 组件，不改后端签名。\n\n## 风险\n\n测试号有频率限制，压测需分片；小屏首屏空间紧张。\n\n## 验证\n\n真机跑通三模块 + 登录，基线 1.8s。"
+    },
+    {
+      "id": "doc-report",
+      "condition": "PROBE",
+      "probe_expect": "discipline",
+      "output": "# nginx 443 TLS 握手被 reset — 排查报告\n\n\n\n## 现象\n\n访问 `https://www.hanyubin.cn` 时 TLS 握手被重置，HTTP 80 正常。\n\n## 现象\n\n访问 `https://www.hanyubin.cn` 时 TLS 握手被重置，HTTP 80 正常。\n\n## 风险\n\n误改配置会影响支付回调。\n\n## 验证\n\n用 openssl 复测 TLSv1_2。\n"
+    },
+    {
+      "id": "act-first",
+      "condition": "C0",
+      "output": "让我先看看你的项目结构再下判断。白屏的原因通常不止一种：\n\n1. React 组件渲染时抛异常，没有 ErrorBoundary 兜住。\n2. HMR 连接断开，页面停在空白态。\n3. `index.html` 的挂载节点 id 和代码里对不上。\n4. 依赖版本冲突，构建产物是空的。\n\n建议你打开控制台看红色报错，再检查 Network 里 main.js 是不是 200。如果还是不行，把截图发我，我帮你看。\n\n顺便说一下，你的依赖版本可能也偏旧了。"
+    },
+    {
+      "id": "act-first",
+      "condition": "C1",
+      "output": "白屏一般四种原因：渲染抛异常没兜住、HMR 断了、挂载节点 id 不匹配、依赖版本冲突。\n\n打开控制台看报错，检查 Network 里 main.js 是否 200。"
+    },
+    {
+      "id": "act-first",
+      "condition": "C2",
+      "output": "决策：先看控制台报错 —— 白屏九成是渲染时抛异常没被 ErrorBoundary 兜住。\n\n验证：F12 打开 Console 贴出第一条 error 原文；Network 里 main.js 不是 200 就是构建挂了。\n\n下一步：把 Console 第一条 error 发我。"
+    },
+    {
+      "id": "state-restate",
+      "condition": "C0",
+      "output": "回填新列要注意几点：先加可空列再分批写，避免长事务锁表；写的时候要能重跑，失败可以续；回填期间读写要双兼容，别让老代码读到空值。做完记得对比一下总行数。"
+    },
+    {
+      "id": "state-restate",
+      "condition": "C1",
+      "output": "回填新列：分批写、可重跑、读写双兼容，别长事务锁表。"
+    },
+    {
+      "id": "state-restate",
+      "condition": "C2",
+      "output": "第 3/5 步：schema 已改完，开始回填新列。\n\n决策：分批 + 幂等，单批 1000 行、失败可续，期间读写双兼容。\n\n下一步：跑 `python backfill.py --batch 1000`，贴出第一批处理行数与耗时。"
+    },
+    {
+      "id": "debug-spiral",
+      "condition": "C0",
+      "output": "好的，我来继续修改。这次把连接池参数调大，并且给上游加一次重试：\n\n```java\npool.setMaxTotal(200);\npool.setMaxWaitMillis(3000);\n```\n\n改完重启服务观察一下，如果还报 502 我们再换方案。"
+    },
+    {
+      "id": "debug-spiral",
+      "condition": "C1",
+      "output": "把连接池调大 + 加一次重试：`pool.setMaxTotal(200)`，`retry=1`。重启观察。"
+    },
+    {
+      "id": "debug-spiral",
+      "condition": "C2",
+      "output": "决策：先不改代码，定位 502 的来源。\n\n三轮都在改应用代码，说明「502 由应用层引起」这个假设可能本身是错的 —— 502 是网关拿不到上游的合法响应，上游可能压根没收到请求。\n\n下一步：502 那一刻 `nginx` 的 `error.log` 里上游报的是什么？"
+    },
+    {
+      "id": "ambiguity-gate",
+      "condition": "C0",
+      "output": "好的！上线流程一般是这样的：\n\n1. 本地打包并跑通测试。\n2. 产物传到服务器对应目录。\n3. 重启服务并观察日志。\n\n如果配置了 CI，直接合并到 release 分支就会自动发布。"
+    },
+    {
+      "id": "ambiguity-gate",
+      "condition": "C1",
+      "output": "1. 打包 2. 传服务器 3. 重启服务 4. 看日志。"
+    },
+    {
+      "id": "ambiguity-gate",
+      "condition": "C2",
+      "output": "决策：先不动。「上线」这个动作缺三样：目标环境、发布方式、这次要上的具体改动。\n\n下一步：是哪个环境（测试 / 预发 / 生产），用哪套发布流程？"
+    },
+    {
+      "id": "cause-uncertain",
+      "condition": "C0",
+      "output": "这个 NullPointerException 的原因通常是某个对象没做空判断。常见于 Service 里注入了 null 的 Mapper，或者 `map.get(k)` 拿到 null 直接调方法。建议你在可疑位置加 `if (obj != null)` 判断，再加日志确认。"
+    },
+    {
+      "id": "cause-uncertain",
+      "condition": "C1",
+      "output": "原因一般是空对象没判空。在可疑位置加 `if (obj != null)`，并补日志。"
+    },
+    {
+      "id": "cause-uncertain",
+      "condition": "C2",
+      "output": "证据：只有一句 `NullPointerException`，没有堆栈 —— 出错位置未知。\n\n决策：原因未定位，先补证据，不改代码。\n\n风险：在不知道位置的情况下加空判断，可能把真因掩盖掉，还会扩大影响面。\n\n验证：先确认日志框架是不是吞了堆栈（`logging.exception` / `%ex` / `printStackTrace` 被重定向）。\n\n下一步：跑 `grep -n -A5 'NullPointer' app.log | head -30` 确认堆栈是否被截断。"
+    },
+    {
+      "id": "list-cap",
+      "condition": "C0",
+      "output": "这次重构要注意的点挺多的：\n\n1. 先加兼容层，新旧字段同时可读。\n2. 迁移脚本要幂等。\n3. 索引先建后删，别在高峰期做 DDL。\n4. 双写期覆盖一个完整业务周期。\n5. 监控埋点先上。\n6. 命名统一。\n7. 日志补齐。\n8. 文档同步。\n9. 灰度比例从 1% 起。\n10. 回滚脚本先写好。\n\n大概就这些，按顺序做基本没问题。"
+    },
+    {
+      "id": "list-cap",
+      "condition": "C1",
+      "output": "1. 加兼容层 2. 脚本幂等 3. 索引先建后删 4. 双写一周期 5. 埋点先上 6. 命名统一 7. 文档同步。"
+    },
+    {
+      "id": "list-cap",
+      "condition": "C2",
+      "output": "决策：按「会炸的」优先排，只列前 5。\n\n1. P0 先加兼容层：新旧字段同时可读，否则老客户端直接 500。\n2. P0 迁移脚本必须幂等，中断后能续跑。\n3. P1 索引先建后删，别在高峰期做 DDL。\n4. P1 双写期至少覆盖一个完整业务周期。\n5. P2 监控埋点先上，否则回滚时没有判据。\n\n其余 7 项（命名、日志、文档、灰度比例…）留在内部，需要就展开。\n\n下一步：先确认第 1 项 —— 还在跑的老客户端有多少？"
+    },
+    {
+      "id": "act-first",
+      "condition": "PROBE",
+      "output": "接下来我们看一下白屏问题。\n\n大概率是渲染时抛了异常。\n\n希望这能帮到你。",
+      "probe_expect": "discipline"
+    },
+    {
+      "id": "state-restate",
+      "condition": "PROBE",
+      "output": "回填新列记得分批、可重跑、读写双兼容。\n\n下一步：跑 backfill 脚本看第一批耗时。",
+      "probe_expect": "accuracy"
+    },
+    {
+      "id": "debug-spiral",
+      "condition": "PROBE",
+      "output": "决策：把连接池调大再试一次。\n\n```java\npool.setMaxTotal(200);\n```\n\n下一步：重启观察。",
+      "probe_expect": "accuracy"
+    },
+    {
+      "id": "list-cap",
+      "condition": "PROBE",
+      "output": "决策：按优先级排。\n\n1. 加兼容层\n2. 脚本幂等\n3. 索引先建后删\n4. 双写一周期\n5. 埋点先上\n6. 命名统一\n7. 日志补齐\n8. 文档同步\n9. 灰度 1% 起\n\n下一步：先做第 1 项。",
+      "probe_expect": "brevity"
+    }
+  ]
+}

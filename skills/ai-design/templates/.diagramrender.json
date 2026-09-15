@@ -1,0 +1,140 @@
+{
+  "code-mind\\skills\\ai-design\\templates\\architecture.md::light::src": {
+    "hash": "b53b4ad692623fcf",
+    "out": "code-mind\\skills\\ai-design\\templates\\assets\\architecture.svg"
+  },
+  "code-mind\\skills\\ai-design\\templates\\design.md::light::src": {
+    "hash": "3616750575243802",
+    "out": "code-mind\\skills\\ai-design\\templates\\assets\\design.svg"
+  },
+  "code-mind\\skills\\ai-design\\templates\\er.md::light::src": {
+    "hash": "b5ee44a87145b9b9",
+    "out": "code-mind\\skills\\ai-design\\templates\\assets\\er.svg"
+  },
+  "code-mind\\skills\\ai-design\\templates\\flowchart.md::light::src": {
+    "hash": "d3f32f36bf136cdc",
+    "out": "code-mind\\skills\\ai-design\\templates\\assets\\flowchart.svg"
+  },
+  "code-mind\\skills\\ai-design\\templates\\sequence.md::light::src": {
+    "hash": "68c8ab79d89e6eb2",
+    "out": "code-mind\\skills\\ai-design\\templates\\assets\\sequence.svg"
+  },
+  "code-mind\\skills\\ai-design\\templates\\state.md::light::src": {
+    "hash": "23e8846261cff6ce",
+    "out": "code-mind\\skills\\ai-design\\templates\\assets\\state.svg"
+  },
+  "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\architecture.md::light::src": {
+    "hash": "b54cfad9d0780459",
+    "out": "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\assets\\architecture.svg",
+    "layout": "dagre",
+    "audit": {
+      "layout": "dagre",
+      "kind": "architecture",
+      "supported": false,
+      "w": 592,
+      "h": 447,
+      "ratio": 1.33,
+      "nodes": 0,
+      "edges": 0,
+      "coverage": 0,
+      "islands": 0,
+      "longestLabel": 0,
+      "violations": []
+    }
+  },
+  "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\design.md::light::src": {
+    "hash": "a040915ce39049f2",
+    "out": "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\assets\\design.svg",
+    "layout": "dagre",
+    "audit": {
+      "layout": "dagre",
+      "kind": "architecture",
+      "supported": false,
+      "w": 984,
+      "h": 535,
+      "ratio": 1.84,
+      "nodes": 0,
+      "edges": 0,
+      "coverage": 0,
+      "islands": 0,
+      "longestLabel": 0,
+      "violations": []
+    }
+  },
+  "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\er.md::light::src": {
+    "hash": "5055a3f0b3b72604",
+    "out": "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\assets\\er.svg",
+    "layout": "dagre",
+    "audit": {
+      "layout": "dagre",
+      "kind": "er",
+      "supported": false,
+      "w": 526,
+      "h": 859,
+      "ratio": 0.61,
+      "nodes": 0,
+      "edges": 0,
+      "coverage": 0,
+      "islands": 0,
+      "longestLabel": 0,
+      "violations": []
+    }
+  },
+  "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\flowchart.md::light::src": {
+    "hash": "0e269b39772c3dec",
+    "out": "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\assets\\flowchart.svg",
+    "layout": "elk",
+    "audit": {
+      "layout": "elk",
+      "kind": "flowchart-elk",
+      "supported": true,
+      "w": 413,
+      "h": 786,
+      "ratio": 0.53,
+      "nodes": 7,
+      "edges": 6,
+      "coverage": 0.221,
+      "islands": 0,
+      "longestLabel": 0,
+      "violations": []
+    }
+  },
+  "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\sequence.md::light::src": {
+    "hash": "d49ea50174d57f37",
+    "out": "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\assets\\sequence.svg",
+    "layout": "dagre",
+    "audit": {
+      "layout": "dagre",
+      "kind": "sequence",
+      "supported": false,
+      "w": 1138,
+      "h": 646,
+      "ratio": 1.76,
+      "nodes": 0,
+      "edges": 0,
+      "coverage": 0,
+      "islands": 0,
+      "longestLabel": 0,
+      "violations": []
+    }
+  },
+  "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\state.md::light::src": {
+    "hash": "1dd8b19084663655",
+    "out": "E:\\workA\\A-skill\\A-github-skill-mcp\\code-mind\\skills\\ai-design\\templates\\assets\\state.svg",
+    "layout": "dagre",
+    "audit": {
+      "layout": "dagre",
+      "kind": "stateDiagram",
+      "supported": false,
+      "w": 340,
+      "h": 565,
+      "ratio": 0.6,
+      "nodes": 0,
+      "edges": 0,
+      "coverage": 0,
+      "islands": 0,
+      "longestLabel": 0,
+      "violations": []
+    }
+  }
+}

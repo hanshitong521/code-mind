@@ -1,0 +1,204 @@
+# CodeHealthMind -- Java Semgrep rules.
+#
+# Verification status: see rules/common/team-conventions.yml header.  Semgrep is
+# not installable on Windows, so these are schema-correct but not executed here.
+# The `pmd-ruleset.xml` in this directory IS verified against PMD 6.55.0 and is
+# the primary Java evidence source; these rules only add project-shaped patterns
+# that PMD cannot express.
+
+rules:
+  - id: chm.java.update-without-where
+    languages: [java]
+    severity: ERROR
+    message: >-
+      UPDATE without a WHERE clause rewrites every row. This is a data-loss
+      class defect; make the predicate explicit.
+    metadata:
+      chm_category: DATABASE
+      chm_rule: CHM-JAVA-SG-UPDATE-NO-WHERE
+      confidence: HIGH
+      severity_class: CRITICAL
+    patterns:
+      - pattern-regex: '(?i)\bupdate\s+\w+\s+set\b'
+      - pattern-not-regex: '(?i)\bwhere\b'
+
+  - id: chm.java.delete-without-where
+    languages: [java]
+    severity: ERROR
+    message: >-
+      DELETE without a WHERE clause deletes every row.
+    metadata:
+      chm_category: DATABASE
+      chm_rule: CHM-JAVA-SG-DELETE-NO-WHERE
+      confidence: HIGH
+      severity_class: CRITICAL
+    patterns:
+      - pattern-regex: '(?i)\bdelete\s+from\s+\w+'
+      - pattern-not-regex: '(?i)\bwhere\b'
+
+  - id: chm.java.query-in-loop
+    languages: [java]
+    severity: WARNING
+    message: >-
+      Query inside a loop: the classic N+1. Prefetch in one batch and index it.
+    metadata:
+      chm_category: DATABASE
+      chm_rule: CHM-JAVA-SG-NPLUS1
+      confidence: MEDIUM
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              for (...) {
+                ...
+              }
+          - pattern-inside: |
+              while (...) {
+                ...
+              }
+      - pattern-either:
+          - pattern: $MAPPER.selectById(...)
+          - pattern: $MAPPER.selectOne(...)
+          - pattern: $MAPPER.selectList(...)
+          - pattern: $REPO.findById(...)
+          - pattern: $JDBC.queryForObject(...)
+
+  - id: chm.java.remote-call-in-transaction
+    languages: [java]
+    severity: ERROR
+    message: >-
+      Remote call inside a transaction holds a database connection for the whole
+      round trip. Move the call outside the transactional boundary.
+    metadata:
+      chm_category: DATABASE
+      chm_rule: CHM-JAVA-SG-TX-REMOTE-CALL
+      confidence: MEDIUM
+    patterns:
+      - pattern-inside: |
+          @Transactional
+          $RET $METHOD(...) {
+            ...
+          }
+      - pattern-either:
+          - pattern: $REST.getForObject(...)
+          - pattern: $REST.postForObject(...)
+          - pattern: $REST.exchange(...)
+          - pattern: $FEIGN.$M(...)
+          - pattern: $HTTP.execute(...)
+
+  - id: chm.java.return-null-from-catch
+    languages: [java]
+    severity: WARNING
+    message: >-
+      Returning null from a catch block pushes a NullPointerException onto the
+      caller and erases the original failure.
+    metadata:
+      chm_category: ERROR_HANDLING
+      chm_rule: CHM-JAVA-SG-CATCH-RETURN-NULL
+      confidence: MEDIUM
+    patterns:
+      - pattern: |
+          catch ($E $e) {
+            ...
+            return null;
+          }
+      - pattern-not-inside: |
+          Optional<$T> $METHOD(...) {
+            ...
+          }
+
+  - id: chm.java.unclosed-resource
+    languages: [java]
+    severity: WARNING
+    message: >-
+      Stream/reader opened without try-with-resources and without an explicit
+      close. This leaks a file descriptor on the error path.
+    metadata:
+      chm_category: RESOURCE_SAFETY
+      chm_rule: CHM-JAVA-SG-UNCLOSED-RESOURCE
+      confidence: MEDIUM
+    patterns:
+      - pattern-either:
+          - pattern: new FileInputStream(...)
+          - pattern: new FileOutputStream(...)
+          - pattern: new BufferedReader(...)
+          - pattern: new FileReader(...)
+          - pattern: new FileWriter(...)
+      - pattern-not-inside: |
+          try ($RES $r = ...) {
+            ...
+          }
+      - pattern-not-inside: |
+          $RET $METHOD(...) {
+            ...
+            $RES $r = ...;
+            ...
+            $r.close();
+            ...
+          }
+
+  - id: chm.java.executor-per-call
+    languages: [java]
+    severity: ERROR
+    message: >-
+      Creating a thread pool per invocation. Under load this exhausts threads and
+      memory; use a managed, bounded pool.
+    metadata:
+      chm_category: RESOURCE_SAFETY
+      chm_rule: CHM-JAVA-SG-EXECUTOR-PER-CALL
+      confidence: HIGH
+    patterns:
+      - pattern-either:
+          - pattern: Executors.newFixedThreadPool(...)
+          - pattern: Executors.newCachedThreadPool()
+          - pattern: Executors.newSingleThreadExecutor()
+          - pattern: new Thread(...)
+      - pattern-not-inside: |
+          class $C {
+            static final $T $F = Executors.newFixedThreadPool(...);
+            ...
+          }
+
+  - id: chm.java.mutable-singleton-state
+    languages: [java]
+    severity: WARNING
+    message: >-
+      Mutable non-thread-safe collection held by a Spring singleton. Concurrent
+      requests will corrupt it.
+    metadata:
+      chm_category: CONCURRENCY
+      chm_rule: CHM-JAVA-SG-SHARED-MUTABLE
+      confidence: MEDIUM
+    patterns:
+      - pattern-inside: |
+          @Service
+          class $C {
+            ...
+          }
+      - pattern-either:
+          - pattern: private HashMap<$K, $V> $F = ...;
+          - pattern: private ArrayList<$T> $F = ...;
+          - pattern: private HashSet<$T> $F = ...;
+          - pattern: private StringBuilder $F = ...;
+      - pattern-not: private final $T $F = ...;
+
+  - id: chm.java.single-impl-interface
+    languages: [java]
+    severity: INFO
+    message: >-
+      Interface with a single implementation and no framework boundary. Confirm
+      there is a real reason (test seam, RPC boundary, second impl planned)
+      before keeping the indirection.
+    metadata:
+      chm_category: WRONG_ABSTRACTION
+      chm_rule: CHM-JAVA-SG-SINGLE-IMPL
+      confidence: LOW
+    patterns:
+      - pattern: |
+          interface $I {
+            ...
+          }
+      - pattern-not-inside: |
+          @FeignClient(...)
+          interface $I {
+            ...
+          }

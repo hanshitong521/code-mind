@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "requirement-mind/change-budget",
+  "title": "Change Budget (.requirementmind/change-budget.json)",
+  "type": "object",
+  "required": ["files", "modules", "database", "new_service", "task_level", "updated_at"],
+  "properties": {
+    "files": { "type": "integer", "minimum": 0 },
+    "modules": { "type": "integer", "minimum": 0 },
+    "database": { "type": "boolean" },
+    "new_service": { "type": "boolean" },
+    "task_level": { "enum": ["L0", "L1", "L2", "L3"] },
+    "rationale": { "type": "string" },
+    "updated_at": { "type": "string" }
+  }
+}

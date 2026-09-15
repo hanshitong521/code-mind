@@ -1,0 +1,194 @@
+{
+  "generated_by": "scripts/acceptance.py",
+  "score_model": "spec §60 (100 points)",
+  "total": 5.0,
+  "max_total": 100,
+  "measured_dimensions": 1,
+  "not_measured_dimensions": [
+    "Correctness / Gate",
+    "Dead Code Precision",
+    "High-risk Recall",
+    "Duplication / Abstraction",
+    "Deterministic Evidence",
+    "Multi-Agent Isolation",
+    "False Positive Control",
+    "Failure Degradation",
+    "Token Efficiency",
+    "Performance",
+    "Repair Verification"
+  ],
+  "dimensions": [
+    {
+      "dimension": "Correctness / Gate",
+      "weight": 15,
+      "score": 0.0,
+      "status": "NOT_MEASURED",
+      "artefact": "gate.json",
+      "criteria": [],
+      "reason": "evidence artefact reports/gate.json is absent"
+    },
+    {
+      "dimension": "Dead Code Precision",
+      "weight": 10,
+      "score": 0.0,
+      "status": "NOT_MEASURED",
+      "artefact": "false-positive.json",
+      "criteria": [],
+      "reason": "evidence artefact reports/false-positive.json is absent"
+    },
+    {
+      "dimension": "High-risk Recall",
+      "weight": 10,
+      "score": 0.0,
+      "status": "NOT_MEASURED",
+      "artefact": "false-negative.json",
+      "criteria": [],
+      "reason": "evidence artefact reports/false-negative.json is absent"
+    },
+    {
+      "dimension": "Duplication / Abstraction",
+      "weight": 10,
+      "score": 0.0,
+      "status": "NOT_MEASURED",
+      "artefact": "golden.json",
+      "criteria": [],
+      "reason": "evidence artefact reports/golden.json is absent"
+    },
+    {
+      "dimension": "Deterministic Evidence",
+      "weight": 10,
+      "score": 0.0,
+      "status": "NOT_MEASURED",
+      "artefact": "determinism.json",
+      "criteria": [],
+      "reason": "evidence artefact reports/determinism.json is absent"
+    },
+    {
+      "dimension": "Multi-Agent Isolation",
+      "weight": 8,
+      "score": 0.0,
+      "status": "NOT_MEASURED",
+      "artefact": "multi-agent.json",
+      "criteria": [],
+      "reason": "evidence artefact reports/multi-agent.json is absent"
+    },
+    {
+      "dimension": "False Positive Control",
+      "weight": 8,
+      "score": 0.0,
+      "status": "NOT_MEASURED",
+      "artefact": "false-positive.json",
+      "criteria": [],
+      "reason": "evidence artefact reports/false-positive.json is absent"
+    },
+    {
+      "dimension": "Failure Degradation",
+      "weight": 7,
+      "score": 0.0,
+      "status": "NOT_MEASURED",
+      "artefact": "fault-injection.json",
+      "criteria": [],
+      "reason": "evidence artefact reports/fault-injection.json is absent"
+    },
+    {
+      "dimension": "Token Efficiency",
+      "weight": 7,
+      "score": 0.0,
+      "status": "NOT_MEASURED",
+      "artefact": "token-benchmark.json",
+      "criteria": [],
+      "reason": "evidence artefact reports/token-benchmark.json is absent"
+    },
+    {
+      "dimension": "Performance",
+      "weight": 5,
+      "score": 0.0,
+      "status": "NOT_MEASURED",
+      "artefact": "performance.json",
+      "criteria": [],
+      "reason": "evidence artefact reports/performance.json is absent"
+    },
+    {
+      "dimension": "Repair Verification",
+      "weight": 5,
+      "score": 0.0,
+      "status": "NOT_MEASURED",
+      "artefact": "repair.json",
+      "criteria": [],
+      "reason": "evidence artefact reports/repair.json is absent"
+    },
+    {
+      "dimension": "Docs / Operability",
+      "weight": 5,
+      "score": 5.0,
+      "status": "MEASURED",
+      "artefact": "docs.json",
+      "criteria": [
+        {
+          "metric": "required_docs_present",
+          "threshold": 1.0,
+          "direction": "min",
+          "value": 1.0,
+          "met": true,
+          "reason": "ok"
+        }
+      ],
+      "reason": ""
+    }
+  ],
+  "hard_indicators": [
+    {
+      "indicator": "HIGH/CRITICAL recall >= 95%",
+      "status": "UNVERIFIED",
+      "value": null
+    },
+    {
+      "indicator": "HIGH+ false positive <= 3%",
+      "status": "UNVERIFIED",
+      "value": null
+    },
+    {
+      "indicator": "no silent PASS on tool failure",
+      "status": "UNVERIFIED",
+      "value": null
+    },
+    {
+      "indicator": "context isolation actually in effect",
+      "status": "UNVERIFIED",
+      "value": null
+    },
+    {
+      "indicator": "token usage clearly below whole-repo review",
+      "status": "UNVERIFIED",
+      "value": null
+    },
+    {
+      "indicator": "same commit produces a stable gate",
+      "status": "UNVERIFIED",
+      "value": null
+    },
+    {
+      "indicator": "no auto-delete of code with dynamic entry points",
+      "status": "UNVERIFIED",
+      "value": null
+    },
+    {
+      "indicator": "reviewer cannot manufacture an evidence-free HIGH",
+      "status": "UNVERIFIED",
+      "value": null
+    },
+    {
+      "indicator": "repair always re-runs the gate",
+      "status": "UNVERIFIED",
+      "value": null
+    },
+    {
+      "indicator": "no secret reaches the LLM context",
+      "status": "UNVERIFIED",
+      "value": null
+    }
+  ],
+  "suites": {},
+  "readiness": "TRIAL_ONLY",
+  "interpretation": "no hard failure, but some evidence is missing or the score is < 95"
+}

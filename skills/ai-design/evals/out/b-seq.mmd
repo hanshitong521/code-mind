@@ -1,0 +1,9 @@
+sequenceDiagram
+  autonumber
+  actor U as 👤 用户
+  participant API as 🔧 服务
+  participant DB as 💾 数据库
+  U->>API: 请求
+  API->>DB: 查询
+  DB-->>API: 返回
+  API-->>U: 响应
