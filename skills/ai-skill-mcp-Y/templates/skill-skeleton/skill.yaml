@@ -1,0 +1,39 @@
+# skill.yaml — 统一技能清单契约（references/spec-v2.md §8 / references/spec-v1.md §17）
+# 复制到 skills/<SKILL_NAME>/skill.yaml 后替换全部 <...> 占位符。
+# 校验: python skills/ai-skill-mcp-Y/scripts/manifest_validate.py --path skills/<SKILL_NAME>/skill.yaml
+# 注意: 替换前 id 含 <> 必然 FAIL（pattern 不允许），这是预期。
+# 注册表派生字段（status / score / root_lines / root_words / refs / bundled / hash / path）由
+# registry build 从 SKILL.md 与文件系统派生，禁在此重复声明（禁双真源；references/spec-v2.md §14.2）。
+
+id: <SKILL_NAME>                 # 稳定 skill_id，与目录名一致，禁改；pattern ^[A-Za-z0-9][A-Za-z0-9._-]*$
+name: <SKILL_NAME>               # 展示名，可与 id 不同（例：ai-design → DiagramMind）
+version: 0.1.0                   # 语义化 major.minor.patch，须与 VERSION 文件一致
+kind: skill                      # 本契约只登记 skill
+owner: <OWNER>                   # 能力归属 owner（对齐 ../../shared/capability-registry.yaml）
+
+description: >-                  # 只答「何时用 / 何时不用」；与 SKILL.md frontmatter 逐字一致
+  Use when <TRIGGER>. Not for <STOP_LIST>.
+category: backend                # backend | frontend | data | infra | governance | docs | test
+tags: []                         # 小写检索标签；用于 overlap 检测与规则路由
+
+triggers:
+  include:                       # 正向：slash 命令、别名、中文短语
+    - <TRIGGER>
+  exclude:                       # 负向：命中即硬排除并记录理由
+    - <STOP_LIST>
+
+cost:
+  context_tokens_estimate: 0     # 命中后 L1 根文档的估算 token（口径 references/token-loading.md §3）
+  runtime_class: standard        # cheap | standard | expensive；expensive 默认不常驻
+
+risk:
+  level: low                     # low | medium | high | critical
+  destructive: false             # true → 存在写/删/改生产状态的动作，需二次权限检查
+
+loading:
+  mode: on-demand                # always=常驻 L0 | on-demand=命中才加载 L1 | deep=仅执行时读 L2
+
+verification:
+  required: true                 # true → 改动必须过四类测试 + Evidence Gate（references/testmind.md）
+
+security_permissions: [read]     # read | write | execute | admin | network；write 仅限 .skillmind/ 生成物

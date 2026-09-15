@@ -35,3 +35,6 @@ runtime-context.local.yaml
 .codeartsdoer/
 .codegraph/
 .merkle-snapshot.json
+
+# SkillMind 生成物（注册表 / 评分记录 / 遥测），由 scripts/skillmind.py 产出
+.skillmind/

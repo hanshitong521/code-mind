@@ -97,11 +97,22 @@ if (!LAYOUTS.includes(OPT.layout)) {
   process.exitCode = 1;
 }
 
+// 找到系统 Chrome 就优先用（比 puppeteer 自带的 Chromium 启动更快、也不占额外下载）
 const CHROME = [
+  // Windows
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe',
   'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
+  // macOS
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+  '/Applications/Chromium.app/Contents/MacOS/Chromium',
+  // Linux
+  '/usr/bin/google-chrome',
+  '/usr/bin/chromium',
+  '/usr/bin/chromium-browser',
+  '/snap/bin/chromium',
 ].find((p) => existsSync(p));
 
 // ── 工具链定位 ───────────────────────────────────────────
@@ -296,34 +307,43 @@ export function auditFigure(svg) {
     }
   }
 
+  // codes 与 violations 一一对应：elk 只对「布局能救」的码有意义（见 ELK_CAN_FIX）
   const violations = [];
+  const codes = [];
+  const hit = (code, msg) => { codes.push(code); violations.push(msg); };
   if (W > BUDGET.maxWidth) {
-    violations.push(`画布宽 ${Math.round(W)}px > ${BUDGET.maxWidth}（文档里字号会被压到 ~${Math.round(15 * 900 / W)}px）`);
+    hit('width', `画布宽 ${Math.round(W)}px > ${BUDGET.maxWidth}（文档里字号会被压到 ~${Math.round(15 * 900 / W)}px）`);
   }
-  if (W && W < BUDGET.minWidth) violations.push(`画布宽 ${Math.round(W)}px < ${BUDGET.minWidth}：塌成一根竖条`);
+  if (W && W < BUDGET.minWidth) hit('narrow', `画布宽 ${Math.round(W)}px < ${BUDGET.minWidth}：塌成一根竖条`);
   if (ratio && (ratio < BUDGET.minRatio || ratio > BUDGET.maxRatio)) {
-    violations.push(`宽高比 ${ratio.toFixed(2)} 越界 [${BUDGET.minRatio}, ${BUDGET.maxRatio}]`);
+    hit('ratio', `宽高比 ${ratio.toFixed(2)} 越界 [${BUDGET.minRatio}, ${BUDGET.maxRatio}]`);
   }
   if (supported) {
-    if (boxes.length > BUDGET.maxNodes) violations.push(`节点 ${boxes.length} > ${BUDGET.maxNodes}（该砍信息进表）`);
-    if (edges > BUDGET.maxEdges) violations.push(`边 ${edges} > ${BUDGET.maxEdges}`);
+    if (boxes.length > BUDGET.maxNodes) hit('nodes', `节点 ${boxes.length} > ${BUDGET.maxNodes}（该砍信息进表）`);
+    if (edges > BUDGET.maxEdges) hit('edges', `边 ${edges} > ${BUDGET.maxEdges}`);
     if (boxes.length && coverage < BUDGET.minCoverage) {
-      violations.push(`图被拉散：节点只占内容区 ${(coverage * 100).toFixed(0)}%`);
+      hit('coverage', `图被拉散：节点只占内容区 ${(coverage * 100).toFixed(0)}%`);
     }
-    if (islands) violations.push(`存在 ${islands} 处孤岛空档`);
+    if (islands) hit('islands', `存在 ${islands} 处孤岛空档`);
     const longest = labels.reduce((a, b) => (b.length > a.length ? b : a), '');
     if (longest.length > BUDGET.maxLabelChars) {
-      violations.push(`最长标签 ${longest.length} 字 > ${BUDGET.maxLabelChars}：「${longest.slice(0, 16)}…」`);
+      hit('label', `最长标签 ${longest.length} 字 > ${BUDGET.maxLabelChars}：「${longest.slice(0, 16)}…」`);
     }
   }
 
   return {
-    kind, supported,
+    kind, supported, codes,
     w: Math.round(W), h: Math.round(H), ratio: Number(ratio.toFixed(2)),
     nodes: boxes.length, edges, coverage: Number(coverage.toFixed(3)), islands,
     longestLabel: labels.reduce((a, b) => (b.length > a.length ? b : a), '').length,
     violations,
   };
+}
+
+// 换布局引擎能改善的违规码；其余（节点/边/标签超量）只能砍内容
+const ELK_CAN_FIX = new Set(['width', 'narrow', 'ratio', 'coverage', 'islands']);
+function canElkFix(a) {
+  return (a.codes || []).some((c) => ELK_CAN_FIX.has(c));
 }
 
 function scoreAudit(a) {
@@ -391,6 +411,18 @@ async function renderOnce(browser, renderMermaid, job, theme, layout) {
   return Buffer.from(r.data).toString('utf8');
 }
 
+// 审计不达标时，顺手把「为什么」说清楚 —— 省掉一轮「猜原因 → 改 DSL → 重渲」
+let _lintDsl = null;
+async function lintHints(text) {
+  if (OPT.json) return [];
+  try {
+    if (!_lintDsl) {
+      _lintDsl = (await import(pathToFileURL(join(__dirname, 'lint.mjs')).href)).lintDsl;
+    }
+    return _lintDsl(text) || [];
+  } catch { return []; }   // lint 挂了不影响出图
+}
+
 async function renderMermaidJobs(jobs, log, rows, warnings) {
   const { renderMermaid, pptr } = await openToolchain();
   log(`启动 Chrome（1 次，服务 ${jobs.length} 张图）…`);
@@ -416,6 +448,13 @@ async function renderMermaidJobs(jobs, log, rows, warnings) {
           }
         } catch (e) {
           warnings.push(`${basename(job.src)}: elk 复算失败（${String(e.message).slice(0, 80)}），保留 dagre`);
+        }
+      }
+
+      if (audit && audit.violations.length) {
+        for (const i of (await lintHints(job.text)).slice(0, 6)) {
+          log(`        ${i.sev === 'fail' ? '✗' : '!'} ${i.code} ${i.rule}${i.detail ? ` — ${i.detail}` : ''}`);
+          log(`            → ${i.fix}`);
         }
       }
 
@@ -539,6 +578,7 @@ async function main() {
       `layout-elk   : ${t.elk || '❌ 未安装（--layout elk/auto 不可用）'}`,
       `主题          : ${OPT.theme}  bg=${OPT.bg}  layout=${OPT.layout}`,
       `主题文件      : ${OPT.theme === 'none' ? '(不用)' : (existsSync(join(ASSETS, OPT.theme === 'dark' ? 'mermaid-theme-dark.json' : 'mermaid-theme.json')) ? '✅' : '⚠️ 缺失')}`,
+      `预检 lint     : ${existsSync(join(__dirname, 'lint.mjs')) ? '✅ scripts/lint.mjs（渲染前先跑它）' : '⚠️ 缺失'}`,
     ];
     console.log(lines.join('\n'));
     if (targets.length === 0) return;

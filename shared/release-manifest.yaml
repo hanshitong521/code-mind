@@ -48,6 +48,16 @@ skills:
     version: 1.0.0
     schema_version: 1
     editable: true
+  ai-skill-mcp-Y:
+    status: CANONICAL_LOCAL
+    source_repo: ai-programming-docs
+    source_ref: WORKING_TREE
+    source_path: skills/ai-skill-mcp-Y
+    artifact_path: skills/ai-skill-mcp-Y
+    content_hash: sha256:0ea3e2250b87bf7b6cbf950baa218cfd3ad724fe315dd70f56395bf88a8da84c
+    version: 2.0.1
+    schema_version: 1
+    editable: true
   ai-requirement:
     status: VENDORED_RELEASE_COPY
     source_repo: hanshitong521/requirement-mind
@@ -105,3 +115,7 @@ hash:
     exclude:
     - .gitignore
     - evals.json
+    # OS 生成的目录元数据（macOS Finder / Windows 资源管理器）：与源码无关，
+    # 算进 content_hash 会让「Finder 看过一眼」就产生假 DRIFT。
+    - .DS_Store
+    - Thumbs.db

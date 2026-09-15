@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>task-routing.md · 图预览</title>
+<style>
+  :root{--bg:#ffffff;--fg:#1f2328;--mut:#6b7280;--bd:#e5e7eb}
+  *{box-sizing:border-box}
+  body{margin:0;padding:24px;background:var(--bg);color:var(--fg);
+       font:14px/1.6 'Segoe UI','Microsoft YaHei',system-ui,-apple-system,sans-serif}
+  .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+  button{border:1px solid var(--bd);background:transparent;color:var(--fg);
+         padding:6px 14px;border-radius:6px;cursor:pointer;font:inherit}
+  button:hover{border-color:#9aa3af}
+  button.on{background:#2563eb;border-color:#2563eb;color:#fff}
+  .hint{color:var(--mut);font-size:12px;margin-left:auto}
+  #stage{overflow:auto;border:1px solid var(--bd);border-radius:10px;padding:16px;background:var(--bg)}
+  #stage svg{max-width:100%;height:auto}
+  .err{color:#b71c1c;white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;font-size:13px}
+  body.dark{--bg:#0d1117;--fg:#e6edf3;--mut:#8b949e;--bd:#30363d}
+</style></head><body>
+<div class="bar">
+  <strong>task-routing.md</strong>
+  <button id="bDir">换个方向</button>
+  <button id="bZoom">放大</button>
+  <span class="hint">预览（CDN 渲染）· 正式交付请跑 render.mjs --strict</span>
+</div>
+<div id="stage"><em style="color:var(--mut)">正在加载 mermaid…</em></div>
+<script type="module">
+const DSL = "flowchart TB\n    classDef entry     fill:#fde8e8,stroke:#e07272,color:#7a1f1f,stroke-width:1.5px\n    classDef decision  fill:#fdf2e0,stroke:#dda94f,color:#5c3c07,stroke-width:1.5px\n    classDef step      fill:#e8f0fe,stroke:#5b8fd6,color:#173a6b,stroke-width:1.5px\n    classDef done      fill:#e6f6ec,stroke:#5aa877,color:#14452a,stroke-width:1.5px\n    classDef blocker   fill:#ffebee,stroke:#c62828,color:#b71c1c,stroke-width:2px\n\n    A[\"👤 用户一句话\"]:::entry\n    B{\"🚦 这是什么活\"}:::decision\n    C[\"📝 把需求问清楚\"]:::step\n    D{\"🚦 需求 Gate\"}:::decision\n    E[\"🎨 画出系统长什么样\"]:::step\n    F[\"🔧 最小改动写代码\"]:::step\n    G{\"🧪 自检全绿了吗\"}:::decision\n    H{\"🧭 图还对得上代码吗\"}:::decision\n    I[\"📦 交付并记进脑子\"]:::done\n    K1[\"🛑 规格和代码打架<br/><span class='s'>整单打回，不许偷改</span>\"]:::blocker\n    K2[\"🕳️ 看着像 bug 其实是设计<br/><span class='s'>命中就一个字都不改</span>\"]:::step\n\n    A --> B\n    B -->|\"说不清\"| C\n    B -->|\"改代码 / 修 bug\"| F\n    C --> D\n    D -->|\"没过\"| C\n    D -->|\"过了\"| E\n    E --> F\n    F --> G\n    G -->|\"没绿\"| F\n    G -->|\"绿了\"| H\n    H -->|\"漂了\"| E\n    H -->|\"没漂\"| I\n    F --> K1\n    F --> K2\n";
+const CFG = {"theme":"base","themeVariables":{"fontFamily":"'Segoe UI', 'Microsoft YaHei', system-ui, -apple-system, sans-serif","fontSize":"15px","background":"#ffffff","primaryColor":"#e8f0fe","primaryTextColor":"#1f2933","primaryBorderColor":"#7ba7e8","secondaryColor":"#f6f8fc","secondaryTextColor":"#1f2933","secondaryBorderColor":"#cbd5e1","tertiaryColor":"#ffffff","tertiaryTextColor":"#1f2933","tertiaryBorderColor":"#dbe3ec","lineColor":"#94a3b8","textColor":"#1f2933","mainBkg":"#e8f0fe","nodeBorder":"#7ba7e8","nodeTextColor":"#1f2933","clusterBkg":"#f4f8fd","clusterBorder":"#c7d6ea","titleColor":"#334155","edgeLabelBackground":"#ffffff","labelBackground":"#ffffff","errorBkgColor":"#fee2e2","errorTextColor":"#991b1b","actorBkg":"#e8f0fe","actorBorder":"#7ba7e8","actorTextColor":"#1f2933","actorLineColor":"#94a3b8","signalColor":"#475569","signalTextColor":"#1f2933","labelBoxBkgColor":"#f6f8fc","labelBoxBorderColor":"#cbd5e1","labelTextColor":"#1f2933","loopTextColor":"#1f2933","noteBkgColor":"#fef3c7","noteBorderColor":"#fcd34d","noteTextColor":"#78350f","activationBkgColor":"#dbeafe","activationBorderColor":"#7ba7e8","sequenceNumberColor":"#ffffff","pie1":"#7ba7e8","pie2":"#93c5a0","pie3":"#f0b775","pie4":"#c4a2e8","pie5":"#e8a2a2","pie6":"#7fd1d1","pieTitleTextColor":"#1f2933","pieSectionTextColor":"#1f2933","pieLegendTextColor":"#1f2933","pieStrokeColor":"#ffffff","classText":"#1f2933","fillType0":"#e8f0fe","fillType1":"#eaf7ee","fillType2":"#fdf3e3","fillType3":"#f3eafd","fillType4":"#e6f6f6","fillType5":"#fdeaea","fillType6":"#eef1f6","fillType7":"#e8f0fe","archEdgeColor":"#94a3b8","archEdgeArrowColor":"#94a3b8","archEdgeWidth":"2","archGroupBorderColor":"#c7d6ea","archGroupBorderWidth":"2px"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":46,"rankSpacing":58,"padding":14,"diagramPadding":16,"useMaxWidth":false,"defaultRenderer":"dagre"},"sequence":{"useMaxWidth":false,"diagramMarginX":24,"diagramMarginY":16,"actorMargin":60,"width":170,"height":56,"boxMargin":12,"boxTextMargin":6,"noteMargin":12,"messageMargin":40,"mirrorActors":false,"bottomMarginAdj":4,"wrap":true},"state":{"useMaxWidth":false,"nodeSpacing":55,"rankSpacing":58},"er":{"useMaxWidth":false,"diagramPadding":16,"layoutDirection":"TB","minEntityWidth":120,"minEntityHeight":70,"entityPadding":14},"architecture":{"useMaxWidth":false,"padding":18},"themeCSS":".node rect, .node circle, .node polygon, .node path { rx: 8; ry: 8; } .node rect { filter: drop-shadow(0 1px 1px rgba(15,23,42,.07)); } .cluster rect { rx: 10; ry: 10; } .cluster-label text, .cluster-label .nodeLabel, .cluster-label span { font-size: 15px; font-weight: 600; letter-spacing: .2px; color: #334155; } .edgeLabel { padding: 2px 7px; border-radius: 6px; font-size: 13px; } .edgeLabel rect { rx: 6; ry: 6; opacity: .94; } .flowchart-link { stroke-width: 1.6px; } .nodeLabel .s { font-size: 13px; font-weight: 400; color: #64748b; }"};
+const ALT = {"theme":"base","themeVariables":{"fontFamily":"'Segoe UI', 'Microsoft YaHei', system-ui, -apple-system, sans-serif","fontSize":"15px","background":"#0d1117","primaryColor":"#1b2b45","primaryTextColor":"#e6edf3","primaryBorderColor":"#4d7cc7","secondaryColor":"#161b22","secondaryTextColor":"#e6edf3","secondaryBorderColor":"#30363d","tertiaryColor":"#0d1117","tertiaryTextColor":"#e6edf3","tertiaryBorderColor":"#30363d","lineColor":"#7d8590","textColor":"#e6edf3","mainBkg":"#1b2b45","nodeBorder":"#4d7cc7","nodeTextColor":"#e6edf3","clusterBkg":"#141b24","clusterBorder":"#3a4553","titleColor":"#cbd5e1","edgeLabelBackground":"#0d1117","labelBackground":"#0d1117","actorBkg":"#1b2b45","actorBorder":"#4d7cc7","actorTextColor":"#e6edf3","actorLineColor":"#7d8590","signalColor":"#c9d1d9","signalTextColor":"#e6edf3","labelBoxBkgColor":"#161b22","labelBoxBorderColor":"#30363d","labelTextColor":"#e6edf3","loopTextColor":"#e6edf3","noteBkgColor":"#3b2f0b","noteBorderColor":"#8a6d1f","noteTextColor":"#f0d98c","activationBkgColor":"#1f3a5f","activationBorderColor":"#4d7cc7","sequenceNumberColor":"#0d1117","pie1":"#4d7cc7","pie2":"#5fa87a","pie3":"#c99a52","pie4":"#9a7cc7","pie5":"#c77c7c","pie6":"#5aa8a8","pieTitleTextColor":"#e6edf3","pieSectionTextColor":"#0d1117","pieLegendTextColor":"#e6edf3","pieStrokeColor":"#0d1117","classText":"#e6edf3","fillType0":"#1b2b45","fillType1":"#17301f","fillType2":"#332a12","fillType3":"#2a1f3d","fillType4":"#122e2e","fillType5":"#331a1a","fillType6":"#1a1f27","fillType7":"#1b2b45","archEdgeColor":"#7d8590","archEdgeArrowColor":"#7d8590","archEdgeWidth":"2","archGroupBorderColor":"#3a4553","archGroupBorderWidth":"2px"},"flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":46,"rankSpacing":58,"padding":14,"diagramPadding":16,"useMaxWidth":false,"defaultRenderer":"dagre"},"sequence":{"useMaxWidth":false,"diagramMarginX":24,"diagramMarginY":16,"actorMargin":60,"width":170,"height":56,"boxMargin":12,"boxTextMargin":6,"noteMargin":12,"messageMargin":40,"mirrorActors":false,"bottomMarginAdj":4,"wrap":true},"state":{"useMaxWidth":false,"nodeSpacing":55,"rankSpacing":58},"er":{"useMaxWidth":false,"diagramPadding":16,"layoutDirection":"TB","minEntityWidth":120,"minEntityHeight":70,"entityPadding":14},"architecture":{"useMaxWidth":false,"padding":18},"themeCSS":".node rect, .node circle, .node polygon, .node path { rx: 8; ry: 8; } .node rect { filter: drop-shadow(0 1px 1px rgba(0,0,0,.45)); } .cluster rect { rx: 10; ry: 10; } .cluster-label text, .cluster-label .nodeLabel, .cluster-label span { font-size: 15px; font-weight: 600; letter-spacing: .2px; color: #cbd5e1; } .edgeLabel { padding: 2px 7px; border-radius: 6px; font-size: 13px; } .edgeLabel rect { rx: 6; ry: 6; opacity: .94; } .flowchart-link { stroke-width: 1.6px; } .nodeLabel .s { font-size: 13px; font-weight: 400; color: #8b949e; }"};
+let dark = false;
+let lr = false, zoom = 1;
+const stage = document.getElementById('stage');
+
+async function loadMermaid() {
+  const urls = [
+    'https://unpkg.com/mermaid@11.4.1/dist/mermaid.min.js',
+    'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js',
+    'https://registry.npmmirror.com/mermaid/11.4.1/files/dist/mermaid.min.js',
+  ];
+  for (const u of urls) {
+    try { return (await import(u)).default; } catch (e) { /* 换下一个源 */ }
+  }
+  throw new Error('三个 CDN 都加载失败：本页需要联网');
+}
+function cfgFor() {
+  const c = dark ? ALT : CFG;
+  return { ...c, startOnLoad: false, securityLevel: 'loose' };
+}
+function flipDir(t) {
+  const lines = t.split('\n');
+  const i = lines.findIndex((l) => /^\s*flowchart\b/.test(l));
+  if (i === -1) return t;
+  const want = lr ? 'LR' : 'TD';
+  lines[i] = /\b(TB|TD|BT|LR|RL)\b/.test(lines[i])
+    ? lines[i].replace(/\b(TB|TD|BT|LR|RL)\b/, want)
+    : lines[i].replace(/\s*$/, '') + ' ' + want;
+  return lines.join('\n');
+}
+async function draw() {
+  try {
+    const m = await loadMermaid();
+    m.initialize(cfgFor());
+    const { svg } = await m.render('g' + Date.now(), flipDir(DSL));
+    stage.innerHTML = svg;
+    stage.firstChild.style.transformOrigin = 'top left';
+    stage.firstChild.style.transform = 'scale(' + zoom + ')';
+    document.body.classList.toggle('dark', dark);
+  } catch (e) {
+    stage.innerHTML = '<div class="err">' + String(e && e.message || e) + '</div>';
+  }
+}
+document.getElementById('bDir').onclick = () => { lr = !lr; draw(); };
+document.getElementById('bZoom').onclick = (e) => {
+  zoom = zoom >= 1.5 ? 0.75 : zoom + 0.25;
+  e.target.textContent = '缩放 ' + Math.round(zoom * 100) + '%';
+  draw();
+};
+draw();
+</script></body></html>

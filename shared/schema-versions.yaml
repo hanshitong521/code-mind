@@ -87,6 +87,77 @@ contracts:
       - ai-requirement
     breaking_history: []
 
+  # ── SkillMind Ultimate V2.0（skill_id: ai-skill-mcp-Y）────────────────
+  # 契约 key 必须等于文件内 schema_name（validate_bundle.py §5 强校验）。
+  skillmind-skill-manifest:
+    file: skills/ai-skill-mcp-Y/schemas/skill-manifest.schema.json
+    schema_version: 1
+    major: 1
+    minor: 0
+    status: ACTIVE
+    compatible_consumers:
+      - ai-skill-mcp-Y
+      - manifest_validate.py
+    breaking_history: []
+
+  skillmind-registry:
+    file: skills/ai-skill-mcp-Y/schemas/registry.schema.json
+    schema_version: 1
+    major: 1
+    minor: 0
+    status: ACTIVE
+    compatible_consumers:
+      - ai-skill-mcp-Y
+      - registry_build.py
+    breaking_history: []
+
+  skillmind-route-request:
+    file: skills/ai-skill-mcp-Y/schemas/route-request.schema.json
+    schema_version: 1
+    major: 1
+    minor: 0
+    status: ACTIVE
+    compatible_consumers:
+      - ai-skill-mcp-Y
+      - router.py
+    breaking_history: []
+
+  skillmind-route-result:
+    file: skills/ai-skill-mcp-Y/schemas/route-result.schema.json
+    schema_version: 1
+    major: 1
+    minor: 0
+    status: ACTIVE
+    compatible_consumers:
+      - ai-skill-mcp-Y
+      - router.py
+      - token-mind
+    breaking_history: []
+
+  skillmind-score-record:
+    file: skills/ai-skill-mcp-Y/schemas/score-record.schema.json
+    schema_version: 1
+    major: 1
+    minor: 0
+    status: ACTIVE
+    compatible_consumers:
+      - ai-skill-mcp-Y
+      - score.py
+      - test-mind
+    breaking_history: []
+
+  skillmind-telemetry-event:
+    file: skills/ai-skill-mcp-Y/schemas/telemetry-event.schema.json
+    schema_version: 1
+    major: 1
+    minor: 0
+    status: ACTIVE
+    compatible_consumers:
+      - ai-skill-mcp-Y
+      - telemetry.py
+      - token-mind
+    breaking_history: []
+
 # ── Consumer 最低支持版本（不满足则 BLOCKED）────────────────────────
 consumer_requirements:
   install.ps1:

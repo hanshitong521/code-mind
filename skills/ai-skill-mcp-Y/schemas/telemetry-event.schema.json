@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "skillmind-telemetry-event.schema.json",
+  "title": "SkillMind Telemetry Event",
+  "schema_name": "skillmind-telemetry-event",
+  "schema_version": 1,
+  "description": "SkillMind V2.0 遥测事件契约（spec-v2 §14.5 / §23）。一行一个 JSON，落盘 <repo>/.skillmind/telemetry.jsonl。写盘前必须脱敏（见 references/observability.md）。additionalProperties=true：允许扩展字段，但扩展字段同样受脱敏管辖，不得承载原始敏感值。",
+  "type": "object",
+  "required": [
+    "ts",
+    "session_id",
+    "agent_id",
+    "skill_id",
+    "triggered",
+    "success"
+  ],
+  "properties": {
+    "schema_name": {
+      "type": "string",
+      "const": "skillmind-telemetry-event",
+      "description": "契约身份；缺省时由消费方按 skillmind-telemetry-event 处理。"
+    },
+    "schema_version": {
+      "type": "integer",
+      "const": 1,
+      "minimum": 1
+    },
+    "ts": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$",
+      "description": "事件时间，ISO8601（推荐 UTC，Z 结尾）。"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "会话标识；缺此字段无法判定上下文串味。"
+    },
+    "agent_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "调用方 Agent（cursor / claude-code / codex / local）。"
+    },
+    "project_id": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "项目标识；缺此字段无法判定项目串数据。"
+    },
+    "task_id": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "任务标识；同一任务的多次事件用同一 task_id 串联。"
+    },
+    "skill_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "被调用技能 id（registry.json 的 skill_id，稳定不改）。"
+    },
+    "tool_id": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "被调用 MCP tool 名；纯技能级事件可空串。"
+    },
+    "triggered": {
+      "type": "boolean",
+      "description": "技能是否真的被触发（false = 只参与打分但未命中）。"
+    },
+    "trigger_reason": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "命中理由（tag / trigger / 硬过滤旁证）；用于解释路由。"
+    },
+    "context_tokens_loaded": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "本次为触发技能额外载入的上下文 token。"
+    },
+    "result_tokens": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "本次产出 token。"
+    },
+    "call_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "本次任务对该技能/工具的调用次数；与重试上限联动，防重试风暴。"
+    },
+    "cache_hit": {
+      "type": "boolean",
+      "description": "是否命中缓存（未重复加载/重复调用）。"
+    },
+    "latency_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "端到端延迟毫秒。"
+    },
+    "success": {
+      "type": "boolean",
+      "description": "任务是否成功；与 rework / error_class 交叉验证。"
+    },
+    "rework": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "返工次数；>0 表示一次没做对。"
+    },
+    "p0_evidence_retained": {
+      "type": "boolean",
+      "description": "P0 证据是否保留（断言/异常/SQLState/traceId/权限结果/验收判据）。false = P0 证据丢失，Hard Gate FAIL，summary 必须显式告警。"
+    },
+    "error_class": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200,
+      "description": "错误分类（Timeout / PermissionDenied / SchemaViolation / ToolError / ...）；成功时为 null。"
+    },
+    "correlation_id": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "跨 Agent/跨 MCP 的关联 id；缺此字段无法把一次请求的所有调用串起来。"
+    }
+  },
+  "additionalProperties": true
+}

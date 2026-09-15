@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "skillmind/score-record.schema.json",
+  "title": "SkillMind Score Record",
+  "description": "评分记录契约（spec-v2 §3.3 / §14.4）。metrics 为原始指标，必须与 score/subscores 同报；禁止只存分数。",
+  "schema_name": "skillmind-score-record",
+  "schema_version": 1,
+  "type": "object",
+  "required": [
+    "schema_name",
+    "schema_version",
+    "skill_id",
+    "recorded_at",
+    "metrics",
+    "baseline",
+    "subscores",
+    "weights",
+    "score",
+    "grade"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_name": {
+      "const": "skillmind-score-record"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "skill_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "recorded_at": {
+      "type": "string",
+      "description": "ISO8601 记录时间。"
+    },
+    "metrics": {
+      "type": "object",
+      "description": "原始指标（原样保留，含未参与打分的字段如 bug_escape）。",
+      "required": ["success_rate", "accuracy", "token_avg", "time_avg", "stability"],
+      "additionalProperties": true,
+      "properties": {
+        "success_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "任务成功 / 总调用。"
+        },
+        "accuracy": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "无返工 / 无 bug escape。"
+        },
+        "token_avg": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "单次平均 token 消耗。"
+        },
+        "time_avg": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "单次平均耗时（秒）。"
+        },
+        "stability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "方差小 / 无 crash。"
+        },
+        "bug_escape": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "description": "对比基线；未提供时为默认 {token_avg:3000, time_avg:20}。",
+      "required": ["token_avg", "time_avg"],
+      "additionalProperties": true,
+      "properties": {
+        "token_avg": {"type": "number", "exclusiveMinimum": 0},
+        "time_avg": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "baseline_defaulted": {
+      "type": "boolean",
+      "default": false,
+      "description": "true = 本次未提供 baseline，使用 spec §14.4 默认基线。"
+    },
+    "subscores": {
+      "type": "object",
+      "description": "五项分项得分，均为 0–100。",
+      "required": ["success_rate", "accuracy", "token_efficiency", "speed", "stability"],
+      "additionalProperties": false,
+      "properties": {
+        "success_rate": {"type": "number", "minimum": 0, "maximum": 100},
+        "accuracy": {"type": "number", "minimum": 0, "maximum": 100},
+        "token_efficiency": {"type": "number", "minimum": 0, "maximum": 100},
+        "speed": {"type": "number", "minimum": 0, "maximum": 100},
+        "stability": {"type": "number", "minimum": 0, "maximum": 100}
+      }
+    },
+    "weights": {
+      "type": "object",
+      "required": ["success_rate", "accuracy", "token_efficiency", "speed", "stability"],
+      "additionalProperties": false,
+      "properties": {
+        "success_rate": {"const": 0.4},
+        "accuracy": {"const": 0.3},
+        "token_efficiency": {"const": 0.15},
+        "speed": {"const": 0.1},
+        "stability": {"const": 0.05}
+      }
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "加权总分，保留两位小数。"
+    },
+    "grade": {
+      "type": "string",
+      "enum": [
+        "Production Grade",
+        "Strong",
+        "Usable",
+        "Review Before Release",
+        "Redesign or Disable"
+      ],
+      "description": "分档：95–100 生产级 / 90–94 强 / 80–89 可用待优化 / 70–79 上线前复查 / <70 重设计或禁用。"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

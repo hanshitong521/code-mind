@@ -1,0 +1,110 @@
+[
+  {
+    "id": "RT-01",
+    "class": "positive",
+    "task": "改一个 MyBatis SQL",
+    "project_type": "backend",
+    "expect_top": "ai-code",
+    "expect_not": ["ai-skill-mcp-Y", "ai-requirement"],
+    "note": "最典型的后端实现任务。ai-code category=backend 命中项目类型；ai-skill-mcp-Y 的 description 写着 Not for Java/SQL，其 exclude 与否定从句都必须把它挡掉，否则就是典型的跨域误触发。"
+  },
+  {
+    "id": "RT-02",
+    "class": "positive",
+    "task": "审计一下 skill 的触发器，MCP tool 暴露太多了",
+    "project_type": null,
+    "expect_top": "ai-skill-mcp-Y",
+    "expect_not": ["ai-code", "ai-requirement"],
+    "note": "治理域任务：关键词 skill/mcp + 触发词 审计MCP 双命中。考察中文 bigram 与混排触发词（审计MCP）的匹配能力，以及 project_type 自动推断为 governance。"
+  },
+  {
+    "id": "RT-03",
+    "class": "positive",
+    "task": "澄清需求并冻结",
+    "project_type": null,
+    "expect_top": "ai-requirement",
+    "expect_not": ["ai-code", "ai-design"],
+    "note": "WHAT 阶段任务。触发词 澄清需求 以完整短语命中；链应装配到 requirement 阶段（capability requirement.clarify → owner requirement-mind → ai-requirement）。"
+  },
+  {
+    "id": "RT-04",
+    "class": "negative",
+    "task": "查 192.168.1.202 日志",
+    "project_type": null,
+    "expect_top": null,
+    "expect_not": ["ai-skill-mcp-Y", "ai-code", "ai-requirement", "ai-design"],
+    "note": "负例：日志排查不属于本仓任何技能职责。ai-skill-mcp-Y 的 Not for 里明确含 查日志，其触发词与关键词都必须被否定从句过滤掉；结果应为「无命中 + 告警」，禁止硬凑一个推荐。"
+  },
+  {
+    "id": "RT-05",
+    "class": "positive",
+    "task": "diff 太胖了，说人话",
+    "project_type": null,
+    "expect_top": "ai-concise",
+    "expect_not": ["ai-skill-mcp-Y", "ai-requirement"],
+    "note": "输出风格类 overlay 技能。触发词 说人话 命中；ai-code 靠 description 里的 diff 关键词也会拿到分，但不得反超。"
+  },
+  {
+    "id": "RT-06",
+    "class": "boundary",
+    "task": "一直修不好",
+    "project_type": null,
+    "expect_top": "ai-code",
+    "expect_not": ["ai-concise", "ai-design"],
+    "note": "边界：口语化的 bug 场景，无任何标签/触发词直接命中，只能靠 project_type=backend 与 category 匹配兜住。验证「弱信号也要给出可解释推荐」。"
+  },
+  {
+    "id": "RT-07",
+    "class": "positive",
+    "task": "画个架构图",
+    "project_type": null,
+    "expect_top": "ai-design",
+    "expect_not": ["ai-code", "ai-skill-mcp-Y"],
+    "note": "设计阶段任务。触发词 架构图 + description 关键词 架构/构图 命中；链应装配到 design 阶段。"
+  },
+  {
+    "id": "RT-08",
+    "class": "boundary",
+    "task": "skill 大扫除，把 AGENTS.md 瘦身",
+    "project_type": null,
+    "expect_top": "ai-skill-mcp-Y",
+    "expect_not": ["ai-code", "ai-concise"],
+    "note": "治理域边界：AGENTS.md 是注册表 tags 里的整词，必须按整词命中；中文 大扫除/瘦身 是它的 trig 词。验证标签与触发词两条通道同时可用。"
+  },
+  {
+    "id": "RT-09",
+    "class": "conflict",
+    "task": "审计 skill 触发器，然后改 ai-code 的 SKILL.md",
+    "project_type": null,
+    "expect_top": "ai-skill-mcp-Y",
+    "expect_not": ["ai-design", "ai-requirement"],
+    "note": "冲突：任务同时含治理意图与实现意图。ai-code 靠 skill_id 整词 + /ai-code 触发词也能拿高分，但治理意图更明确，ai-skill-mcp-Y 必须居首。链上应同时出现 coding 与 verification 两段。"
+  },
+  {
+    "id": "RT-10",
+    "class": "boundary",
+    "task": "需求已冻结，按 design.md 实现",
+    "project_type": null,
+    "expect_top": "ai-code",
+    "expect_not": ["ai-skill-mcp-Y", "ai-concise"],
+    "note": "边界：出现「需求」字样但 WHAT 已完成（已冻结），不该再走 requirement 阶段，也不该被 ai-requirement 反超。验证 PHASE_DONE_MARKERS 与「多 token 触发词需 ≥2 命中」两条防误触发规则。"
+  },
+  {
+    "id": "RT-11",
+    "class": "negative",
+    "task": "帮我写一个 React 组件页面",
+    "project_type": null,
+    "expect_top": null,
+    "expect_not": ["ai-skill-mcp-Y", "ai-requirement", "ai-concise", "ai-design"],
+    "note": "负例：前端任务，本仓 6 个技能里没有 frontend 类能力。只有 history/context 这类「质量分」而无任何相关性信号的技能不得进榜。"
+  },
+  {
+    "id": "RT-12",
+    "class": "positive",
+    "task": "代码写完了，帮我看看有没有死代码和重复",
+    "project_type": null,
+    "expect_top": "ai-codeHealthMind",
+    "expect_not": ["ai-requirement", "ai-concise"],
+    "note": "代码健康 Gate。触发词 死代码/重复 命中；category=test → verification 阶段，链上应落在 verification。"
+  }
+]

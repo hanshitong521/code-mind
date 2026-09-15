@@ -1,0 +1,282 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "schema_name": "skillmind-registry",
+  "schema_version": 1,
+  "title": "SkillMind Registry (registry.json)",
+  "description": "SkillMind Ultimate V2.0 注册表契约（spec-v2 §3.1 / §14.2）。由 scripts/registry_build.py 机械生成，是路由、评分、验证的唯一输入真源。禁: 手改 registry.json；禁: 在注册表里存个人记忆或项目敏感数据（spec-v2 §6）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_name",
+    "schema_version",
+    "generated_at",
+    "root",
+    "sources",
+    "skills",
+    "rules",
+    "mcps",
+    "overlap",
+    "stats"
+  ],
+  "properties": {
+    "schema_name": {
+      "type": "string",
+      "enum": ["skillmind-registry"]
+    },
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "description": "ISO8601 UTC（生成时间不参与哈希，故不影响 DRIFT 判定）"
+    },
+    "root": {
+      "type": "string",
+      "description": "扫描根绝对路径"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "本次消费的控制面文件（相对仓根）"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "skill_id",
+          "name",
+          "path",
+          "dir",
+          "description",
+          "category",
+          "tags",
+          "version",
+          "status",
+          "score",
+          "owner",
+          "load_mode",
+          "risk",
+          "destructive",
+          "always_apply",
+          "root_lines",
+          "root_words",
+          "refs",
+          "triggers",
+          "bundled",
+          "hash",
+          "source"
+        ],
+        "properties": {
+          "skill_id": {
+            "type": "string",
+            "description": "稳定 id = skill 目录名，禁改"
+          },
+          "name": {
+            "type": "string",
+            "description": "frontmatter.name；缺省回落目录名"
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^skills/[^/]+/SKILL\\.md$",
+            "description": "根 SKILL.md，相对仓根"
+          },
+          "dir": {
+            "type": "string",
+            "pattern": "^skills/[^/]+$",
+            "description": "skill 目录，相对仓根"
+          },
+          "description": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["backend", "frontend", "data", "infra", "governance", "docs", "test"]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "version": {
+            "type": ["string", "null"],
+            "description": "frontmatter > skill.yaml > release-manifest.version；三处皆无则 null（禁臆造）"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "testing", "verified", "deprecated", "blocked"]
+          },
+          "score": {
+            "type": ["number", "null"],
+            "description": "由 score.py 写入 .skillmind/scores.json；无记录即 null"
+          },
+          "owner": {
+            "type": ["string", "null"],
+            "description": "capability-registry.capabilities[].skill 命中者 > release-manifest.source_repo > skill.yaml.owner"
+          },
+          "load_mode": {
+            "type": "string",
+            "enum": ["always", "on-demand", "deep"]
+          },
+          "risk": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          },
+          "destructive": {
+            "type": "boolean"
+          },
+          "always_apply": {
+            "type": "boolean",
+            "description": "load_mode == always，即常驻 L0"
+          },
+          "root_lines": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "root_words": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "references/ 下文件，相对 skill 目录"
+          },
+          "triggers": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["include", "exclude"],
+            "properties": {
+              "include": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "exclude": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "bundled": {
+            "type": "boolean",
+            "description": "出现在 release-manifest.skills 或 deploy.bundle.yaml.skills 即 true"
+          },
+          "hash": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "description": "_common.hash_tree(skill_dir, manifest_exclude())，与 scripts/_release_lib.py 逐字节等价"
+          },
+          "source": {
+            "type": "string",
+            "enum": ["release-manifest", "filesystem"]
+          }
+        }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "always_apply", "lines"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^.*\\.mdc$"
+          },
+          "always_apply": {
+            "type": "boolean"
+          },
+          "lines": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "description": ".cursor/rules/**/*.mdc 中 alwaysApply: true 的常驻规则"
+    },
+    "mcps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "tools", "standing"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "tools": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "standing": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "仅在仓库存在 MCP 清单时填充；无清单则为空数组（禁臆造）"
+    },
+    "overlap": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["a", "b", "shared_tags", "severity"],
+        "properties": {
+          "a": {
+            "type": "string"
+          },
+          "b": {
+            "type": "string"
+          },
+          "shared_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["info", "warn"]
+          }
+        }
+      },
+      "description": "标签交集 ≥2 或 description 关键词交叉 → 一条；≥3 共享标签 = warn"
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["skills", "verified", "always_apply_rules", "bundled"],
+      "properties": {
+        "skills": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verified": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "always_apply_rules": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bundled": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

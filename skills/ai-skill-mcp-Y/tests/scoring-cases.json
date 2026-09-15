@@ -1,0 +1,128 @@
+[
+  {
+    "id": "SC-01",
+    "metrics": {
+      "success_rate": 0.95,
+      "accuracy": 0.93,
+      "token_avg": 2500,
+      "time_avg": 15,
+      "stability": 0.98
+    },
+    "baseline": {
+      "token_avg": 3000,
+      "time_avg": 20
+    },
+    "expect_score": 95.8,
+    "note": "spec §14.4 的示例输入。subscores = 95/93/100/100/98（token 与速度均优于基线，clamp01 封顶 100）→ 95×0.4+93×0.3+100×0.15+100×0.1+98×0.05 = 95.8。注意：§14.4 示例里写的 96.2 与公式手算不符（差 0.4），以 §3.3 公式为准。"
+  },
+  {
+    "id": "SC-02",
+    "metrics": {
+      "success_rate": 0.9,
+      "accuracy": 0.9,
+      "token_avg": 3000,
+      "time_avg": 20,
+      "stability": 0.9
+    },
+    "baseline": null,
+    "expect_score": 92.5,
+    "note": "未提供 baseline → 回落默认 {token_avg:3000, time_avg:20} 并标注 baseline_defaulted=true。token 与速度恰好等于基线 → 100/100。90×0.4+90×0.3+100×0.15+100×0.1+90×0.05 = 92.5。"
+  },
+  {
+    "id": "SC-03",
+    "metrics": {
+      "success_rate": 0.8,
+      "accuracy": 0.8,
+      "token_avg": 6000,
+      "time_avg": 40,
+      "stability": 0.8
+    },
+    "baseline": {
+      "token_avg": 3000,
+      "time_avg": 20
+    },
+    "expect_score": 72.5,
+    "note": "双倍 token、双倍耗时 → token_efficiency = 3000/6000 = 50，speed = 20/40 = 50。80×0.4+80×0.3+50×0.15+50×0.1+80×0.05 = 72.5，落在「70–79 上线前复查」。"
+  },
+  {
+    "id": "SC-04",
+    "metrics": {
+      "success_rate": 1.0,
+      "accuracy": 1.0,
+      "token_avg": 1000,
+      "time_avg": 5,
+      "stability": 1.0
+    },
+    "baseline": {
+      "token_avg": 3000,
+      "time_avg": 20
+    },
+    "expect_score": 100.0,
+    "note": "满分上界：三项比例类取 1.0，两项均值类 3 倍/4 倍优于基线但 clamp01 封顶，不得出现 >100 的分数。"
+  },
+  {
+    "id": "SC-05",
+    "metrics": {
+      "success_rate": 0.0,
+      "accuracy": 0.0,
+      "token_avg": 100000,
+      "time_avg": 1000,
+      "stability": 0.0
+    },
+    "baseline": {
+      "token_avg": 3000,
+      "time_avg": 20
+    },
+    "expect_score": 0.65,
+    "note": "下界附近：token_efficiency = 3.0，speed = 2.0，加权后 3.0×0.15+2.0×0.10 = 0.65。验证「比例项不为 0 时总分仍可非零」且两位小数取整正确。"
+  },
+  {
+    "id": "SC-06",
+    "metrics": {
+      "success_rate": 0.99,
+      "accuracy": 0.97,
+      "token_avg": 1200,
+      "time_avg": 8,
+      "stability": 0.95
+    },
+    "baseline": {
+      "token_avg": 3000,
+      "time_avg": 20
+    },
+    "expect_score": 98.45,
+    "note": "强于基线但非满分：99/97/100/100/95 → 39.6+29.1+15+10+4.75 = 98.45。验证两位小数不被四舍五入吞掉。"
+  },
+  {
+    "id": "SC-07",
+    "metrics": {
+      "success_rate": 0.7,
+      "accuracy": 0.75,
+      "token_avg": 4000,
+      "time_avg": 25,
+      "stability": 0.85
+    },
+    "baseline": {
+      "token_avg": 3000,
+      "time_avg": 20
+    },
+    "expect_score": 74.0,
+    "note": "混合档：70/75/75/80/85 → 28+22.5+11.25+8+4.25 = 74.0，落在「70–79 上线前复查」。"
+  },
+  {
+    "id": "SC-08",
+    "metrics": {
+      "success_rate": 0.85,
+      "accuracy": 0.8,
+      "token_avg": 2000,
+      "time_avg": 10,
+      "stability": 0.9,
+      "bug_escape": 0.02
+    },
+    "baseline": {
+      "token_avg": 3000,
+      "time_avg": 20
+    },
+    "expect_score": 87.5,
+    "note": "85/80/100/100/90 → 34+24+15+10+4.5 = 87.5，落在「80–89 可用待优化」。额外验证 bug_escape 等未参与打分的原始指标必须原样保留在 record.metrics 里（§3.3 禁只存分数）。"
+  }
+]

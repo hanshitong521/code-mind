@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "skillmind/route-request.schema.json",
+  "title": "SkillMind Route Request",
+  "description": "Router 的输入契约（spec-v2 §3.2 / §14.1）。任务原文必填；其余为可选信号，缺省由 Router 自行推断。",
+  "schema_name": "skillmind-route-request",
+  "schema_version": 1,
+  "type": "object",
+  "required": ["schema_name", "schema_version", "task"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_name": {
+      "const": "skillmind-route-request"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "task": {
+      "type": "string",
+      "minLength": 1,
+      "description": "用户任务原文（不做预清洗，Router 自行分词）。"
+    },
+    "project_type": {
+      "type": ["string", "null"],
+      "enum": ["backend", "frontend", "data", "infra", "governance", "docs", "test", "requirement", null],
+      "description": "项目/任务域；缺省时由任务关键词推断。"
+    },
+    "risk": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"],
+      "default": "low",
+      "description": "任务风险等级；critical 且技能 risk=high 时降级为候选并告警（§9.2）。"
+    },
+    "complexity": {
+      "type": "string",
+      "enum": ["L0", "L1", "L2", "L3"],
+      "default": "L1",
+      "description": "任务复杂度；L2/L3 时链装配强制从 requirement 阶段起算。"
+    },
+    "top": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50,
+      "default": 5,
+      "description": "推荐条数上限。"
+    },
+    "min_confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.12,
+      "description": "入选 recommended 的最低 route_score；低于阈值的技能视为未命中。"
+    },
+    "method": {
+      "type": "string",
+      "enum": ["rule+tag", "embedding", "llm"],
+      "default": "rule+tag",
+      "description": "路由级别（§3.2 四级演进）。同一时刻只启用一级；L2/L3 未实现时回落 L1 并告警。"
+    },
+    "registry": {
+      "type": ["string", "null"],
+      "description": "registry.json 路径；缺省 <repo_root>/.skillmind/registry.json。"
+    },
+    "root": {
+      "type": ["string", "null"],
+      "description": "仓根；缺省 _common.repo_root()。"
+    },
+    "confirm_risk": {
+      "type": "boolean",
+      "default": false,
+      "description": "人工确认高风险技能，解除 §9.2 的 critical/high 降级。"
+    },
+    "json": {
+      "type": "boolean",
+      "default": false,
+      "description": "输出通道开关（CLI 侧消费，不参与路由计算）。"
+    }
+  }
+}

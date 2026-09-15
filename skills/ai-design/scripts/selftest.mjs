@@ -122,8 +122,48 @@ flowchart TD
 \`\`\`
 `);
 
+// ── 0. DSL 预检（零依赖，先跑） ──────────────────────────
+console.log('--- 0. lint.mjs 渲染前预检 ---');
+{
+  const { lintDsl } = await import(pathToFileURL(join(SCRIPTS, 'lint.mjs')).href);
+  const codes = (dsl) => lintDsl(dsl).map((i) => i.code);
+
+  const clean = codes(`flowchart TD
+  A["👤 用户下单"] --> B{"🚦 库存够吗"}
+  B -->|"✅ 够"| C["📦 扣库存"] --> D["💾 落库"]
+  B -->|"⛔ 不够"| E["📝 提示缺货"]
+`);
+  check('健康流程图零违规', clean.length === 0, clean.join(','));
+
+  check('检出图里写代码', codes('flowchart TD\n  A["CouponTask.java:61 触发"] --> B["发券"]\n').includes('P11'));
+  check('检出标签超长', codes(`flowchart TD\n  A["这是一段特别特别特别特别特别特别长的业务说明文字标签测试内容"] --> B["下一步"]\n`).includes('P04'));
+  check('检出尖括号', codes('flowchart TD\n  A<危险> --> B["下一步"]\n').includes('P05'));
+  check('检出 subgraph 跨带边', codes(`flowchart TD
+  subgraph S1["上游"]
+    A["取数"]
+  end
+  subgraph S2["下游"]
+    B["写库"]
+  end
+  A --> B
+`).includes('P07'));
+  check('检出节点超预算', codes(
+    Array.from({ length: 15 }, (_, i) => `  N${i}["步骤${i}"]`).join(' --> ').replace(/^/, 'flowchart LR\n'),
+  ).includes('P02'));
+  check('产品名 CamelCase 不误报', !codes('flowchart TD\n  A["RequirementMind 冻结需求"] --> B["出图"]\n').includes('P12'));
+  check(':::class 速记不被当成节点', !codes(`flowchart TD
+  A["开始"]:::actor --> B["结束"]:::done
+  classDef actor fill:#fde8e8
+  classDef done fill:#e6f6ec
+`).includes('P02'));
+
+  const rl = run(LINT, [OUT]);
+  check('lint CLI 退出码 0（样例目录）', rl.status === 0, `exit=${rl.status} ${rl.out.trim().slice(0, 160)}`);
+  check('lint 不启 Chrome（<2s）', rl.ms < 2000, `${rl.ms} ms`);
+}
+
 // ── 1. 工具链 ────────────────────────────────────────────
-console.log('--- 1. 工具链 ---');
+console.log('\n--- 1. 工具链 ---');
 const chk = run(RENDER, ['--check']);
 check('render.mjs --check 退出码 0', chk.status === 0, `exit=${chk.status}`);
 for (const key of ['Chrome', 'mermaid-cli', 'puppeteer']) {

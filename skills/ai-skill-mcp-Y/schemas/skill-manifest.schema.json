@@ -1,0 +1,161 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "schema_name": "skillmind-skill-manifest",
+  "schema_version": 1,
+  "title": "SkillMind Skill Manifest (skill.yaml)",
+  "description": "SkillMind Ultimate V2.0 统一技能清单契约（spec-v2 §8 / §17）。每个 skill 根目录一份 skill.yaml，声明身份、触发、成本、风险、加载与验证要求。校验器：scripts/manifest_validate.py（最小 JSON Schema 子集，零第三方依赖）。禁: 在 skill.yaml 写密钥、生产连接串、整段日志；禁: 用 skill.yaml 取代 SKILL.md 根文档。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "version",
+    "kind",
+    "owner",
+    "description",
+    "category",
+    "tags",
+    "triggers",
+    "cost",
+    "risk",
+    "loading",
+    "verification",
+    "security_permissions"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+      "description": "稳定 skill_id，与目录名一致，禁改（spec-v2 §3.1）"
+    },
+    "name": {
+      "type": "string",
+      "description": "产品名 / 展示名，可与 id 不同（例：ai-design → DiagramMind）"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "语义化版本 major.minor.patch，须与 VERSION 文件一致"
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["skill", "mcp", "tool", "rule"],
+      "description": "资源种类（spec-v2 §17 统一元数据协议）。本 skill 的 skill.yaml 取 skill；mcp/tool/rule 预留给后续统一登记。"
+    },
+    "owner": {
+      "type": "string",
+      "description": "能力归属 owner（与 shared/capability-registry.yaml 的 exclusive_owners 对齐）"
+    },
+    "description": {
+      "type": "string",
+      "description": "触发面描述：只回答「何时用 / 何时不用」。禁写完整工作流（spec-v2 §15 反模式）"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["backend", "frontend", "data", "infra", "governance", "docs", "test"],
+      "description": "项目类型归属，路由打分要素之一（spec-v2 §9.1）"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "检索标签，小写；用于 overlap 检测与规则路由"
+    },
+    "triggers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["include", "exclude"],
+      "description": "触发词契约；include 命中加分，exclude 命中硬排除并记录理由（spec-v2 §9.2）",
+      "properties": {
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "正向触发词：slash 命令、别名、中文短语"
+        },
+        "exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "负向触发词：命中即排除，必须写明理由"
+        }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_tokens_estimate", "runtime_class"],
+      "description": "上下文与运行成本声明（TokenMind 预算输入，spec-v2 §5）",
+      "properties": {
+        "context_tokens_estimate": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200000,
+          "description": "命中后 L1 根文档的估算 token"
+        },
+        "runtime_class": {
+          "type": "string",
+          "enum": ["cheap", "standard", "expensive"],
+          "description": "运行开销档；expensive 默认不常驻"
+        }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "destructive"],
+      "description": "风险声明；critical 且无人工确认时路由降级为候选（spec-v2 §9.2）",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"]
+        },
+        "destructive": {
+          "type": "boolean",
+          "description": "true 表示存在写/删/改生产状态的动作，需二次权限检查"
+        }
+      }
+    },
+    "loading": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "description": "三级加载策略（spec-v2 §5）",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["always", "on-demand", "deep"],
+          "description": "always=常驻 L0；on-demand=命中才加载 L1；deep=仅执行时按需读 L2"
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required"],
+      "description": "验证要求（spec-v2 §7）",
+      "properties": {
+        "required": {
+          "type": "boolean",
+          "description": "true 表示改动必须过 TestMind 四类测试 + Evidence Gate"
+        }
+      }
+    },
+    "security_permissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["read", "write", "execute", "admin", "network"]
+      },
+      "description": "供应链权限声明（spec-v2 §10）。read=只读；write 仅限 .skillmind/ 生成物；execute/admin/network 须显式理由"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "spec-v2 §17 扩展字段自由区：dependencies / conflicts / supersedes / cacheability / freshness / p0_evidence_policy 等。顶层 additionalProperties=false 保证核心字段不漂移；可选能力一律进本对象，避免每加一个字段就升 schema 版本。"
+    }
+  }
+}

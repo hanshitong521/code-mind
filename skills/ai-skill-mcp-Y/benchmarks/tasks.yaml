@@ -1,0 +1,273 @@
+# benchmarks/tasks.yaml — SkillMind Ultimate V2.0 基准任务集
+#
+# 用途：同任务 A/B 的成本与质量基线（spec-v2 §7 / §13；spec-v1 §24）。
+# 用法：benchmarks/runner.md ｜ 方法论：benchmarks/README.md
+#
+# baseline 语义 = **未启用 SkillMind 的现状值**（V1 治理路径：全量常驻 + 人工挑技能 + 重复读）。
+#   tokens     : 单次任务完成的总上下文消耗（输入 + 输出，含重复读、含被丢弃的试错）
+#   tool_calls : 单次任务完成的工具/命令调用总数（含重复调用、含失败重试）
+#   latency_ms : 单次任务从发起到验收通过的墙钟耗时（含人工等待）
+# 改 baseline 必须同 PR 附真实 run 记录来源；禁止为了指标好看调低 baseline。
+# 覆盖要求：8 类 kind 全覆盖；L0/L1/L2/L3 全覆盖；真实工程语境，禁止凑数。
+
+schema_name: skillmind-benchmark-tasks
+schema_version: 1
+skill_id: ai-skill-mcp-Y
+owner: ai-programming-docs
+updated_for: SkillMind Ultimate V2.0
+protocol:
+  repeat: 3
+  report: median
+  fixed:
+    - repo_commit
+    - model_version
+    - task_input
+    - acceptance
+    - environment
+  record_randomness: true
+  forbidden:
+    - 只统计容易压缩的 build log
+    - 只报压缩率
+    - 只报 tokens 不报 rework 与 evidence_retention
+tasks:
+
+  - id: BM-01
+    level: L0
+    kind: small-change
+    task: >
+      BrandMapper.xml 的 selectByPrimaryKey 用的是 SELECT *，库表近期加了两列，
+      返回体变胖且下游 DTO 映射报警告。改成显式列清单，复用文件里已有的
+      Base_Column_List，不改方法签名、不改返回结构、不动调用方。
+    acceptance: >
+      mvn -q compile 通过；Base_Column_List 覆盖实体全部非瞬态字段（grep 实体字段名逐一
+      对账，缺一即 FAIL）；BrandMapperTest#selectByPrimaryKey 单测绿；
+      对同一主键跑一次 SELECT 探针，返回列名集合与改造前逐项一致。
+    risk: low
+    baseline: {tokens: 9000, tool_calls: 6, latency_ms: 42000}
+
+  - id: BM-02
+    level: L0
+    kind: small-change
+    task: >
+      品牌审核列表页（Vue2）的「导出」按钮与同页其他操作按钮文案、图标、禁用态不一致。
+      统一复用页内已有的 export-btn 组件写法，不新建组件、不改接口、不改权限。
+    acceptance: >
+      npm run lint 通过；npm run build 通过；改动只落在该页面模板与局部样式；
+      grep 确认未新增组件文件；人工比对按钮区域截图，禁用态与主色与其他按钮一致。
+    risk: low
+    baseline: {tokens: 11000, tool_calls: 7, latency_ms: 55000}
+
+  - id: BM-03
+    level: L1
+    kind: feature
+    task: >
+      品牌审核列表增加「审核人」筛选条件：后端 MyBatis 动态 SQL 加一个可选条件，
+      前端 Vue2 加下拉框。必须复用现有分页参数结构与权限注解，不新增查询入口。
+    acceptance: >
+      新增/扩展单测覆盖三态：不传（结果与改造前逐行一致）、传有效值（结果与手工 SQL 一致）、
+      传空串（等同不传）；权限矩阵 admin 与 operator 各跑 1 条；
+      新增条件在 EXPLAIN 中命中现有索引，无新增全表扫描。
+    risk: medium
+    baseline: {tokens: 48000, tool_calls: 24, latency_ms: 240000}
+
+  - id: BM-04
+    level: L1
+    kind: feature
+    task: >
+      sj-log 日志查询接口增加按业务 id 精确检索的可选参数。默认不传时必须与现状完全等价，
+      避免误改导致全量扫描。前端只在高级筛选里暴露该输入框。
+    acceptance: >
+      不传参时对同一时间窗的结果与改造前逐行一致（行数 + 首末行 id 比对）；
+      传参时命中唯一业务 id；慢查询日志无新增全表扫描；接口入参校验拒绝非预期格式。
+    risk: medium
+    baseline: {tokens: 52000, tool_calls: 26, latency_ms: 260000}
+
+  - id: BM-05
+    level: L2
+    kind: debug
+    task: >
+      生产报案：品牌被驳回后再次提交同名品牌，列表里仍显示「已驳回」，用户认为状态没更新。
+      需先判定这是不是缺陷，再决定是否改码。
+    acceptance: >
+      先按 F1 假阳性分类核对设计是否允许回流（驳回后再提交 → 同业务主键回待审）；
+      报案主键在**当前可查库**中 SELECT 命中；日志中存在**同一 id** 的写路径记录；
+      给出根因一句话；结论只能是「非缺陷（附设计引用）」或「缺陷（附改动面）」二选一，禁含糊。
+    risk: medium
+    baseline: {tokens: 96000, tool_calls: 38, latency_ms: 480000}
+
+  - id: BM-06
+    level: L2
+    kind: debug
+    task: >
+      定时对账任务偶发「批次金额不平」，每次只留一行 WARN，无堆栈，非必现。
+      需要定位到具体批次并判断是数据问题还是代码问题。
+    acceptance: >
+      产出可复现的反馈环（一条命令对准用户原话症状，不是「接口 200」）；
+      定位到具体批次 id 并贴出该批次的明细查询结果；
+      明确区分数据问题与代码问题并给出对应证据；不改码结案也必须给出完整证据链。
+    risk: high
+    baseline: {tokens: 130000, tool_calls: 48, latency_ms: 720000}
+
+  - id: BM-07
+    level: L2
+    kind: database
+    task: >
+      给 t_brand_audit 增加 audit_operator 列，回填历史数据的操作人，并补一个能覆盖
+      列表查询的联合索引。要求整个变更可回滚，不得长时间锁表。
+    acceptance: >
+      DDL 与回滚 DDL 成对提交；回填前后 COUNT 与按天分组分布一致（回填只补列不改行数）；
+      EXPLAIN 证明新索引被列表查询命中；DDL 语句不含全表 UPDATE 长事务；
+      回滚 DDL 在测试库真实执行过一次并验证列已删除。
+    risk: high
+    baseline: {tokens: 110000, tool_calls: 42, latency_ms: 600000}
+
+  - id: BM-08
+    level: L2
+    kind: database
+    task: >
+      定位一条线上 30s 慢查询并给出改写方案。禁止「直接加索引」了事，
+      需要说明为什么慢、为什么这样改能快、以及为什么不新增冗余索引。
+    acceptance: >
+      改写前后 EXPLAIN 贴出对比（type / key / rows / Extra）；
+      改写后结果集与旧 SQL 逐行一致（COUNT + 关键列校验和）；
+      不新增与现有索引前缀重复的索引；结论写明适用数据量与退化条件。
+    risk: medium
+    baseline: {tokens: 88000, tool_calls: 34, latency_ms: 420000}
+
+  - id: BM-09
+    level: L2
+    kind: cross-module
+    task: >
+      新增「品牌审核通过后自动同步到商品库」链路，跨审核模块、商品模块与 MQ 消费者。
+      要求重复投递不产生重复数据，失败重试有界。
+    acceptance: >
+      三处接缝的入参/出参契约写明并与实际代码一致（字段名逐一核对）；
+      幂等验证：同一消息投递 3 次，商品库记录数不变；
+      重试有上限且失败可查；端到端一条链路真实跑通并贴出各环节输出；
+      单模块自测绿不得替代端到端结论。
+    risk: high
+    baseline: {tokens: 160000, tool_calls: 56, latency_ms: 900000}
+
+  - id: BM-10
+    level: L2
+    kind: cross-module
+    task: >
+      前端 Vue2 表单字段重命名，需同步后端 DTO 字段与 MyBatis resultMap 映射。
+      不能只改一端导致提交或回显失效。
+    acceptance: >
+      新字段名在 FE 模板、BE DTO、Mapper XML 三处一致；
+      grep 旧字段名残留为零（含测试夹具与注释）；
+      提交方向与回显方向各验证一次，回显值与原字段语义一致。
+    risk: medium
+    baseline: {tokens: 76000, tool_calls: 30, latency_ms: 360000}
+
+  - id: BM-11
+    level: L1
+    kind: test-fix
+    task: >
+      修复三个长期红的单测。经核对是断言过期（契约已变更），不是代码缺陷。
+      需要按当前契约更新断言并注明依据。
+    acceptance: >
+      每个断言改动都注明依据来源（契约文件 / FROZEN 决策 / 接口文档）；
+      测试全绿且无 @Ignore；禁止通过删除断言或放宽为 assertTrue(true) 让测试变绿；
+      贴出真实执行输出与退出码。
+    risk: low
+    baseline: {tokens: 34000, tool_calls: 18, latency_ms: 150000}
+
+  - id: BM-12
+    level: L2
+    kind: test-fix
+    task: >
+      为品牌审核状态机补一个单测矩阵：正向边、回流边、非法边、重复提交、终态后列表可见性。
+      每条写路径场景要求 API 与 DB 双断言。
+    acceptance: >
+      矩阵每行写明 precondition（含环境）与断言点；裁剪项必须写 skip_reason；
+      API 断言与 DB 断言成对出现，禁止只有 code=200；
+      回流被设计允许时记 PASS(expected_lifecycle) 而不是当缺陷开修；
+      真实跑过并贴出输出。
+    risk: medium
+    baseline: {tokens: 92000, tool_calls: 40, latency_ms: 480000}
+
+  - id: BM-13
+    level: L2
+    kind: log-heavy
+    task: >
+      从约 500MB 的 sj-log 中定位某订单「库存扣减成功但订单未落库」的时段与根因。
+      日志跨多主机多级别，禁止把整段日志读进上下文。
+    acceptance: >
+      给出主机分流依据（先定主机再查日志）；
+      定位用的 grep 关键字与时间窗可被第三方复现；
+      结论附**同一业务 id** 的证据行；
+      上下文内日志片段总量受控（只留命中行及必要上下文），不出现整段日志粘贴。
+    risk: high
+    baseline: {tokens: 210000, tool_calls: 62, latency_ms: 1080000}
+
+  - id: BM-14
+    level: L3
+    kind: log-heavy
+    task: >
+      大促期间 15 分钟窗口内，某接口出现只占约 1% 流量的 500。
+      需要在多主机、多级别日志中定位触发条件，并给出可复现的过滤管道。
+    acceptance: >
+      产出可复现的 grep/awk 管道（可直接粘贴执行）；
+      区分 error 行与真实写路径缺失（仅有 add 无 update 属于未达写路径）；
+      结论包含 error_class 分类与触发条件（入参特征 / 时段 / 主机）；
+      给出「未覆盖边」声明，单次重放成功不得宣称全链路无问题。
+    risk: high
+    baseline: {tokens: 300000, tool_calls: 84, latency_ms: 1500000}
+
+  - id: BM-15
+    level: L2
+    kind: cross-domain
+    task: >
+      需求已 FROZEN，但实现代码与 FROZEN 决策不一致。需要判定是改代码还是回
+      RequirementMind 重新决策，不能私自改业务口径。
+    acceptance: >
+      引用 FROZEN 决策的具体条目与出处文件；
+      结论二选一：输出 DEVELOPMENT_BLOCKER 回 RM，或给出改码方案并说明与 FROZEN 一致；
+      禁止在 ai-code 内私裁口径；若判为阻塞，须给出所需补充决策的清单。
+    risk: medium
+    baseline: {tokens: 82000, tool_calls: 32, latency_ms: 400000}
+
+  - id: BM-16
+    level: L3
+    kind: cross-domain
+    task: >
+      一个故障同时涉及 Java 服务、SQL 数据、Vue2 页面与运维配置，用户只给了一段现象描述。
+      需要在一条排查链里给出根因与最小修复面。
+    acceptance: >
+      四个域各自给出结论并附证据（服务：日志/堆栈；数据：SELECT；页面：契约字段；运维：配置项）；
+      跨域结论互不矛盾（同一字段名、同一状态语义）；
+      修复面最小且可回滚，回滚步骤写明；
+      无法验证的部分标「不可验证」并说明缺什么，禁止当事实陈述。
+    risk: critical
+    baseline: {tokens: 380000, tool_calls: 96, latency_ms: 1800000}
+
+  - id: BM-17
+    level: L0
+    kind: small-change
+    task: >
+      项目 AGENTS.md 里有一条导航路径指向已经移动的文件，新成员按它找不到东西。
+      修正该路径，不新增必读清单条目。
+    acceptance: >
+      新路径在仓库中真实存在（ls 命中）；
+      改动不超过 1 行且只改路径本身；
+      AGENTS.md 未新增「必读」条目（导航是地图不是清单）；
+      diff 中无顺手格式化噪声。
+    risk: low
+    baseline: {tokens: 7000, tool_calls: 5, latency_ms: 30000}
+
+  - id: BM-18
+    level: L3
+    kind: feature
+    task: >
+      为 SkillMind 增加跨项目技能推荐能力：既要提升多义任务与跨域任务的召回，
+      又要保证项目数据不跨项目泄漏，且不得引入第二套 Router。
+    acceptance: >
+      隔离测试：A 项目的经验数据不出现在 B 项目的推荐理由中；
+      召回与准确在固定任务集上同时不低于规则层基线；
+      代码中不存在第二处路由决策实现（全仓 grep 路由入口唯一）；
+      推荐结果每条带 reasons，硬过滤先于打分；
+      高风险项在无人工确认时降级为候选并告警。
+    risk: high
+    baseline: {tokens: 260000, tool_calls: 72, latency_ms: 1200000}

@@ -2,6 +2,31 @@
 
 **规则：没渲染成功 + 没通过构图审计，不算出图。** 只贴 DSL 源码不算交付。
 
+## 渲染前先跑 lint（省时间，不是可选项）
+
+```bash
+node scripts/lint.mjs docs/diagram/          # 预检：零依赖、毫秒级、不启 Chrome
+node scripts/lint.mjs docs/diagram/ --json   # 机器可读
+node scripts/lint.mjs docs/diagram/ --strict # warn 也算失败（CI 用）
+```
+
+**为什么**：一张图从「写 DSL」到「能交付」，最贵的不是 Chrome，是**改完再渲的那一整轮**。lint 在渲染前用纯字符串把
+超预算、mermaid 三大静默陷阱、以及图里的代码味一次说清，把「渲染 → 审计失败 → 猜原因 → 改 → 重渲」的多轮压成一轮。
+审计不过时 `render.mjs` 也会**自动附 lint 原因**，照着改即可。
+
+| 码 | 严重度 | 查什么 |
+|----|--------|--------|
+| P01 | fail | 没声明方向 |
+| P02 / P03 | fail | 节点 >12 / 边 >14 |
+| P04 | fail | 单行标签 >26 字 |
+| P05 | fail | 图块里除 `<br/>`/`<span>` 外有尖括号 |
+| P06 | fail | 显示名含括号却没加引号 |
+| P07 | fail | `subgraph` 跨带连边（direction 会静默失效） |
+| P11 | fail | 图里写了代码（类名 / `path:line` / URL / SQL） |
+| P12 | warn | 标签疑似标识符（产品名可加进 `.diagramlint-allow.txt`） |
+| P13 / P14 | fail | 节点 ID 不合法 / 用了保留字 |
+| P08 / P09 / P10 | warn | 孤立节点会竖堆 / LR 超 7 层会超宽 / TB 超 8 层会塌竖条 |
+
 ## 用法
 
 ```bash
@@ -18,7 +43,7 @@ node scripts/render.mjs docs/diagram/ --json                 # 机器可读结�
 | `--theme light\|dark\|none` | 主题，默认 `light`；`none` = Mermaid 原始默认样式 |
 | `--bg <color>` | 背景，默认随主题（`#ffffff` / `#0d1117`） |
 | `--direction tb\|lr` | 强制流程图方向；**只对 `flowchart` 生效**，其余图型忽略并告警 |
-| `--layout auto\|dagre\|elk` | 布局引擎。`auto`（默认）= dagre 先算，**审计不达标才**追加 elk 复算取优 |
+| `--layout auto\|dagre\|elk` | 布局引擎。`auto`（默认）= dagre 先算，**审计不达标才**追加 elk 复算取优；**只对布局类违规**（宽/比例/留白/孤岛）复算，节点·边·标签超量属内容问题，换引擎救不了 → 直接跳过，省一整轮渲染 |
 | `--strict` | 任一图审计超标 → 退出码 1 |
 | `--no-audit` | 关掉审计输出 |
 | `--variants` | 产出 `主题(浅/深) × 方向(竖/横)` 网格 → `assets/variants/`，供查看页切换 |

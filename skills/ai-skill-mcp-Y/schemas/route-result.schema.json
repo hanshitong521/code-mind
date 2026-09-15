@@ -1,0 +1,167 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "skillmind/route-result.schema.json",
+  "title": "SkillMind Route Result",
+  "description": "Router 的输出契约（spec-v2 §9 / §14.3）。每条推荐必须带可解释 reasons；excluded 必须带排除理由。",
+  "schema_name": "skillmind-route-result",
+  "schema_version": 1,
+  "type": "object",
+  "required": [
+    "schema_name",
+    "schema_version",
+    "task",
+    "method",
+    "confidence",
+    "recommended",
+    "chain",
+    "excluded",
+    "warnings"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_name": {
+      "const": "skillmind-route-result"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "description": "ISO8601 生成时间。"
+    },
+    "task": {
+      "type": "string",
+      "minLength": 1
+    },
+    "method": {
+      "type": "string",
+      "enum": ["rule+tag", "embedding", "llm"],
+      "description": "实际生效的路由级别；请求 L2/L3 但未实现时回落 rule+tag 并在 warnings 说明。"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "整体置信度 = 首选推荐的 route_score；无推荐时为 0。"
+    },
+    "recommended": {
+      "type": "array",
+      "description": "按 route_score 降序的推荐列表（已过硬过滤与阈值）。",
+      "items": {
+        "type": "object",
+        "required": ["skill_id", "confidence", "reasons"],
+        "additionalProperties": false,
+        "properties": {
+          "skill_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "该技能的 route_score（0–1，未做人为拉伸）。"
+          },
+          "reasons": {
+            "type": "array",
+            "minItems": 1,
+            "description": "可解释理由，形如 tag:java / keyword:需求 / trigger:/ai-code / category:backend / history:96.2 / context:root_lines=51。",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "category": {
+            "type": ["string", "null"]
+          },
+          "status": {
+            "type": ["string", "null"]
+          },
+          "breakdown": {
+            "type": "object",
+            "description": "分项得分（§9.1 五项），用于复算与审计。",
+            "additionalProperties": false,
+            "properties": {
+              "tag": {"type": "number", "minimum": 0, "maximum": 1},
+              "trigger": {"type": "number", "minimum": 0, "maximum": 1},
+              "category": {"type": "number", "minimum": 0, "maximum": 1},
+              "history": {"type": "number", "minimum": 0, "maximum": 1},
+              "context": {"type": "number", "minimum": 0, "maximum": 1}
+            }
+          }
+        }
+      }
+    },
+    "chain": {
+      "type": "array",
+      "description": "执行链：只由注册表 category/phase 与 capability-registry 阶段映射装配，禁硬编码 skill 名。",
+      "items": {
+        "type": "object",
+        "required": ["order", "phase", "skill_id", "why"],
+        "additionalProperties": false,
+        "properties": {
+          "order": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "phase": {
+            "type": "string",
+            "enum": ["requirement", "design", "coding", "verification"]
+          },
+          "skill_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "why": {
+            "type": "string",
+            "minLength": 1,
+            "description": "装配依据，如 capability code.implement → ai-code / category=backend → phase coding。"
+          }
+        }
+      }
+    },
+    "excluded": {
+      "type": "array",
+      "description": "被硬过滤排除的技能与理由（§9.2）。",
+      "items": {
+        "type": "object",
+        "required": ["skill_id", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "skill_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "description": "V2 扩展：归一后的输入信号，便于复现与审计。",
+      "additionalProperties": false,
+      "properties": {
+        "project_type": {"type": ["string", "null"]},
+        "project_type_source": {"type": "string", "enum": ["explicit", "inferred"]},
+        "risk": {"type": "string"},
+        "complexity": {"type": "string"},
+        "top": {"type": "integer", "minimum": 1},
+        "min_confidence": {"type": "number"},
+        "registry": {"type": ["string", "null"]},
+        "registry_generated_at": {"type": ["string", "null"]},
+        "candidates": {"type": "integer", "minimum": 0},
+        "matched": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

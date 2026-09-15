@@ -1,0 +1,60 @@
+# skill.yaml — ai-skill-mcp-Y（SkillMind Ultimate V2.0）
+# 契约：skills/ai-skill-mcp-Y/schemas/skill-manifest.schema.json（spec-v2 §8 / §17）
+# 校验：python3 scripts/manifest_validate.py --path skills/ai-skill-mcp-Y/skill.yaml
+# 禁: 写入密钥/生产连接串/整段日志；禁: 用本文件取代 SKILL.md 根文档。
+
+id: ai-skill-mcp-Y
+name: SkillMind
+version: 2.0.1
+kind: skill
+owner: ai-programming-docs
+description: >-
+  SkillMind — AI 技能运行层：Skill 注册 · 动态发现 · 智能路由 · 评分 · 生命周期 ·
+  MCP 网关 · Token 分级加载 · 自动验证 · 长期进化。Use when skillmind、优化skill、
+  审计MCP、AGENTS瘦身、技能路由、skill评分、误触发治理。Not for 业务编码、/ai-code、
+  需求冻结、查日志、对账。
+
+category: governance
+tags:
+  - skillmind
+  - registry
+  - skill-router
+  - mcp-gateway
+  - token-budget
+  - skill-score
+  - skill-evolution
+  - governance
+
+triggers:
+  include:
+    - skillmind
+    - 优化skill
+    - 审计MCP
+    - AGENTS瘦身
+    - 技能路由
+    - skill评分
+  exclude:
+    - /ai-code
+    - 写业务码
+    - 需求冻结
+    - 查日志
+    - 对账
+
+cost:
+  context_tokens_estimate: 1200
+  runtime_class: cheap
+
+risk:
+  level: low
+  destructive: false
+
+loading:
+  mode: on-demand
+
+verification:
+  required: true
+
+# read=审计与扫描；write 仅限 <repo>/.skillmind/ 生成物（registry.json 等），不触业务文件。
+security_permissions:
+  - read
+  - write
