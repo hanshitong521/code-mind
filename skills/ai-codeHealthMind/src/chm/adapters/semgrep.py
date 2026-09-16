@@ -96,8 +96,8 @@ class SemgrepAdapter(CliProvider):
         if bin_value and Path(bin_value).is_file():
             return bin_value
         env = os.environ.get(SEMGREP_ENV)
-        if env and Path(env).is_file():
-            return env
+        if env:
+            return env if Path(env).is_file() else None
         roots: list[Path] = []
         home = getattr(cfg, "home", None) if cfg is not None else None
         if home:

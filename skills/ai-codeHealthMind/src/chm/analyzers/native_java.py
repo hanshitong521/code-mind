@@ -792,7 +792,24 @@ def _tokenize(text: str) -> tuple[list[str], list[int]]:
             token = value
         tokens.append(token)
         lines.append(bisect.bisect_right(newlines, m.start()) + 1)
-    return tokens, lines
+    # ``Sample.Line`` and ``Line`` must tokenize the same for cross-file dup detection.
+    collapsed: list[str] = []
+    i = 0
+    while i < len(tokens):
+        if (
+            i + 2 < len(tokens)
+            and tokens[i] == "ID"
+            and tokens[i + 1] == "."
+            and tokens[i + 2] == "ID"
+        ):
+            collapsed.append("ID")
+            i += 3
+            while i + 1 < len(tokens) and tokens[i] == "." and tokens[i + 1] == "ID":
+                i += 2
+            continue
+        collapsed.append(tokens[i])
+        i += 1
+    return collapsed, lines
 
 
 def _camel_words(name: str) -> list[str]:
@@ -1149,7 +1166,10 @@ class _RepoIndex:
 
     def java_text(self, rel: str) -> str:
         if rel not in self.texts:
-            self.texts[rel] = read_text(self.root / rel, max_bytes=MAX_FILE_BYTES)
+            text = read_text(self.root / rel, max_bytes=MAX_FILE_BYTES)
+            # Windows checkouts and ``Path.write_text`` may persist CRLF; the
+            # skeleton/offset parsers assume LF-normalised newlines.
+            self.texts[rel] = text.replace("\r\n", "\n").replace("\r", "\n")
         return self.texts[rel]
 
     def noc_text(self, rel: str) -> str:
@@ -2600,8 +2620,14 @@ class JavaNativeAnalyzer(EvidenceProvider):
     def _rule_generic_catch(
         self, ctx: ScanContext, m: _JavaFile, out: list[RawFinding], whole: bool
     ) -> None:
-        for head, open_line, close_line, exc, body in self._catch_blocks(m):
-            if not re.match(r"^(?:Exception|Throwable|RuntimeException)\b", exc):
+        for span in self._catch_spans(m):
+            head = span.head_line
+            open_line = span.open_line
+            close_line = span.close_line
+            exc = span.param
+            body = span.body
+            exc_type = exc.split()[0] if exc else ""
+            if not re.match(r"^(?:Exception|Throwable|RuntimeException)\b", exc_type):
                 continue
             flattened = " ".join(body.split())
             if re.search(r"\bthrow\b", flattened):
@@ -2616,10 +2642,10 @@ class JavaNativeAnalyzer(EvidenceProvider):
                 out,
                 m.path,
                 "CHM-JAVA-NAT-GENERIC-CATCH",
-                f"Broad catch of '{exc}' without rethrow",
-                head + 1,
-                head + 1,
-                exc,
+                f"Broad catch of '{exc_type}' without rethrow",
+                open_line + 1,
+                close_line + 1,
+                exc_type,
                 Category.ERROR_HANDLING,
                 Severity.LOW,
                 0.75,
@@ -3805,11 +3831,14 @@ class JavaNativeAnalyzer(EvidenceProvider):
                 continue
             if re.fullmatch(r"[A-Za-z_$][\w$]*\s*(?:==|!=)\s*null", normalized):
                 continue
-            has_double_logic = normalized.count("&&") + normalized.count("||") >= 2
+            has_double_logic = normalized.count("&&") + normalized.count("||") >= 1
             has_state_literal = bool(
                 re.search(r"(?:==|!=)\s*(?:STR|NUM|true|false)", normalized)
             )
-            if not (has_double_logic or has_state_literal):
+            has_business_equals = ".equals(" in normalized and (
+                "&&" in normalized or "||" in normalized
+            )
+            if not (has_double_logic or has_state_literal or has_business_equals):
                 continue
             for path, line, method_name in sites:
                 if path not in models:

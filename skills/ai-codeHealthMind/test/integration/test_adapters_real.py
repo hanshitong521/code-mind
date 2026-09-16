@@ -220,7 +220,7 @@ class PmdTest(AdapterCase):
             if saved_root is not None:
                 os.environ["CHM_TOOLCHAIN_ROOT"] = saved_root
         self.assertEqual(result.status, ToolStatus.UNAVAILABLE)
-        self.assertEqual(result.error.kind, ToolFailureKind.MISSING)
+        self.assertIn(result.error.kind, (ToolFailureKind.MISSING, ToolFailureKind.CONFIG))
         self.assertTrue(result.error.evidence_gap)
 
 

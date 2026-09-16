@@ -69,6 +69,10 @@ triggers:
     - TestMind
     - 替代 SAST
     - 大规模重写业务
+    # 实现域「重复投递/重复提交/幂等」≠ 代码健康里的「重复代码」；禁误抢 BM-09/12
+    - 重复投递
+    - 重复提交
+    - 幂等验证
 
 cost:
   # 实测（_common.est_tokens 口径，根文档瘦身后）：136 行/1227 root_words/1617 tok → 53 行/697 root_words/814 tok

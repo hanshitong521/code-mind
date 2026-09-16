@@ -24,7 +24,7 @@ skills:
     source_ref: WORKING_TREE
     source_path: skills/ai-code
     artifact_path: skills/ai-code
-    content_hash: sha256:17eefa4bfb8b682cba7b4829d061b6cb5b623490613038e5b9fc3ddf3e2d04f3
+    content_hash: sha256:d99ce0ed60c9cba52402d8ea76817e99ef2952382bc7b1b7e37fa43356e62959
     version: 8.0.0
     schema_version: 1
     editable: true
@@ -34,7 +34,7 @@ skills:
     source_ref: WORKING_TREE
     source_path: skills/ai-design
     artifact_path: skills/ai-design
-    content_hash: sha256:5826e876934b9fabc0b0447e691666c26848a14e2e4ea9950258e641d54e0a62
+    content_hash: sha256:eea2301cec98bbd2e765bf12660536da2efff0948164f977100888e802f5c8f4
     version: 6.6.0
     schema_version: 1
     editable: true
@@ -44,7 +44,7 @@ skills:
     source_ref: WORKING_TREE
     source_path: skills/ai-codeHealthMind
     artifact_path: skills/ai-codeHealthMind
-    content_hash: sha256:704b6a34fdb33f649e84db6d5009bf535d5de2858ee27552f5313f8c4099327b
+    content_hash: sha256:de0cc8a5ff8da8a57e19bff8af81d3263ddea06c7df52cc8a1167e5ec76b4201
     version: 1.0.0
     schema_version: 1
     editable: true
@@ -54,7 +54,7 @@ skills:
     source_ref: WORKING_TREE
     source_path: skills/ai-skill-mcp-Y
     artifact_path: skills/ai-skill-mcp-Y
-    content_hash: sha256:32a60ac173346735cec7975004e6da9a5ce39c60c2ca03ab00f324ca4b9f38a9
+    content_hash: sha256:6e729eea06b68afa3d44d58f2316c7561ab900f31ffe49a1ccd3ec8f8d896e31
     version: 2.0.3
     schema_version: 1
     editable: true
@@ -64,7 +64,7 @@ skills:
     source_ref: null
     source_path: SKILL.md
     artifact_path: skills/ai-requirement
-    content_hash: sha256:c3870a1432c0ba7a4f80605f921ae158f2e53d46dc6dc2dfb0b3dc2c54de7786
+    content_hash: sha256:e765ac1439a3b0ebd23f4c7a91a3fd671078e2642912cc27aa690ecf54b26560
     version: null
     schema_version: 1
     editable: false
@@ -78,7 +78,7 @@ skills:
     source_ref: null
     source_path: SKILL.md
     artifact_path: skills/ai-concise
-    content_hash: sha256:b2f94eb37fefce06177d7e7c5c7be4d3ee67006992390713ba4b2d2c70920524
+    content_hash: sha256:df4216134a62f664fde6e8c6f6f45d1e62f4e9fee0542ce11ca3e27cbfa31b3c
     version: null
     schema_version: 1
     editable: false
@@ -100,7 +100,7 @@ shared_contracts:
     content_hash: sha256:309164b151732d01432a6b6d2c18d5521dd4cc39e7ef48b1548a1b925ee906b1
     schema_version: 1
   shared/schema-versions.yaml:
-    content_hash: sha256:266702bf75eec3d5de30dfaf71755e7add2ed8c863c18209e934a74da2b67fe6
+    content_hash: sha256:2c43acf9dbd52f5ddde97cb427ddfd3ca393daf613e12d64ff15dd6d299e540a
     schema_version: 1
 drift_verdicts:
 - PASS
@@ -115,7 +115,5 @@ hash:
     exclude:
     - .gitignore
     - evals.json
-    # OS 生成的目录元数据（macOS Finder / Windows 资源管理器）：与源码无关，
-    # 算进 content_hash 会让「Finder 看过一眼」就产生假 DRIFT。
     - .DS_Store
     - Thumbs.db

@@ -87,14 +87,18 @@ def apply_safe_fixes(
     """
     applied: list[str] = []
     refused: list[str] = []
+    deferred_non_safe: list[str] = []
 
     # group by file, edit bottom-up so line numbers stay valid
     by_file: dict[str, list[Finding]] = {}
     for f in findings:
         ok, reason = is_applicable(f, config)
         if not ok:
+            line = f"{f.id} {f.location.file}:{f.location.start_line} -- {reason}"
             if f.repair.repair_class is RepairClass.SAFE_AUTO_FIX:
-                refused.append(f"{f.id} {f.location.file}:{f.location.start_line} -- {reason}")
+                refused.append(line)
+            else:
+                deferred_non_safe.append(line)
             continue
         by_file.setdefault(f.location.file, []).append(f)
 
@@ -124,5 +128,8 @@ def apply_safe_fixes(
 
         if changed:
             target.write_text(newline.join(lines), encoding="utf-8")
+
+    if not applied and deferred_non_safe:
+        refused.extend(deferred_non_safe)
 
     return sorted(applied), sorted(refused)

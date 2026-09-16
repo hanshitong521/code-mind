@@ -52,6 +52,7 @@ Hard Gate(任一即 FAIL): 丢P0证据 | 成功率降 | 权限扩大 | 该用找
 | 平台全文 / 模块细则 | references/spec-v2.md · registry.md · router.md · scoring.md · gateway.md |
 | 加载·记忆·验证·进化 | token-loading.md · memory.md · testmind.md · lifecycle.md |
 | 安全·遥测·整合 | security.md · observability.md · integration.md |
+| brain-work 多 Agent / 网关 / 验证门面 | references/brain-work-runtime.md |
 | MCP 清单与工具成本 | mcp-registry.md（格式 + schema token 口径 + 审计判定） |
 | 审计方法论 | spec-v1.md(全文) · inventory.md · trigger-tests.md · apply.md |
 | 产出模板 | templates/audit-report.md · skill-score-report.md · evolution-log.md · skill-skeleton/ |

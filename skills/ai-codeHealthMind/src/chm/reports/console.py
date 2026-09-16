@@ -222,7 +222,7 @@ def _verbose_blocks(
 
     errors = report.get("tool_errors") or []
     lines.append("")
-    lines.append(f"Tool errors ({len(errors)}):")
+    lines.append("Tool errors:")
     if not errors:
         lines.append("  (none)")
     for error in errors:

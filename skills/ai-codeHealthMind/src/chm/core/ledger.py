@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Optional
 
-from ..util import read_json, short_hash, write_json
+from ..util import read_json, short_hash, stable_json, write_json
 
 
 @dataclass
@@ -90,6 +90,27 @@ class RunLedger:
 
     def write(self, path: Path | str) -> None:
         write_json(path, self.to_dict())
+
+
+def stable_run_id(
+    *,
+    mode: str,
+    commit: Optional[str],
+    finding_ids: list[str],
+    gate: str,
+    score: float,
+) -> str:
+    """Deterministic id for the judgement blocks in ``report.json`` (spec §41)."""
+    blob = stable_json(
+        {
+            "mode": mode,
+            "commit": commit or "",
+            "finding_ids": finding_ids,
+            "gate": gate,
+            "score": round(float(score), 1),
+        }
+    )
+    return short_hash(blob, length=16)
 
 
 def new_run_id(repo_root: Path | str, *, mode: str, commit: Optional[str]) -> str:

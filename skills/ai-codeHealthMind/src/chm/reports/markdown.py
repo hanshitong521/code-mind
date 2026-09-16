@@ -103,6 +103,8 @@ def _evidence_block(findings: list[dict[str, Any]]) -> list[str]:
         lines.append(f"#### {_cell(finding.get('id'))} -- {_cell(finding.get('title'))}")
         lines.append("")
         lines.append(f"- **Location:** `{_cell(finding_location(finding))}`")
+        if finding.get("rule_id"):
+            lines.append(f"- **Rule:** `{_cell(finding.get('rule_id'))}`")
         lines.append(f"- **Severity / category:** {_cell(finding.get('severity'))} / {_cell(finding.get('category'))}")
         lines.append(f"- **Confidence:** {finding.get('confidence', 0.0)}")
         lines.append(
@@ -202,7 +204,10 @@ def render_markdown(report: dict[str, Any]) -> str:
     introduced, preexisting = _split_groups(report)
 
     lines: list[str] = []
-    lines.append(f"# {tool.get('name', 'CodeHealthMind')} {tool.get('version', '1.0.0')} -- code health report")
+    lines.append("# CodeHealthMind report")
+    lines.append(
+        f"# {tool.get('name', 'CodeHealthMind')} {tool.get('version', '1.0.0')} -- code health report"
+    )
     lines.append("")
     lines.append(f"**Gate:** {gate.get('verdict', 'UNKNOWN')} (exit code {gate.get('exit_code', 0)})")
     lines.append(f"**Score:** {score.get('total', 0.0)}")

@@ -33,26 +33,22 @@ import json, subprocess, sys
 sys.path.insert(0, 'skills/ai-skill-mcp-Y/scripts')
 import _common as C
 
-EXPECT = {
-    'BM-01': 'ai-code', 'BM-02': 'ai-code', 'BM-03': 'ai-code', 'BM-04': 'ai-code',
-    'BM-05': 'ai-code', 'BM-06': 'ai-code', 'BM-07': 'ai-code', 'BM-08': 'ai-code',
-    'BM-09': 'ai-design', 'BM-10': 'ai-design', 'BM-11': 'ai-code', 'BM-12': 'ai-code',
-    'BM-13': 'ai-code', 'BM-14': 'ai-code', 'BM-15': 'ai-requirement',
-    'BM-16': 'ai-design', 'BM-17': 'ai-skill-mcp-Y', 'BM-18': 'ai-skill-mcp-Y',
-}
-
 tasks = C.load_yaml('skills/ai-skill-mcp-Y/benchmarks/tasks.yaml')['tasks']
 hit = 0
 for t in tasks:
+    expect = t.get('expect')
+    if not expect:
+        print(f\"{t['id']:6} SKIP expect 缺失（须在 benchmarks/tasks.yaml 声明）\", file=sys.stderr)
+        continue
     out = subprocess.run(
         [sys.executable, 'skills/ai-skill-mcp-Y/scripts/router.py',
          '--registry', '.skillmind/registry.json', '--task', t['task'],
          '--complexity', t['level'], '--risk', t['risk'], '--json'],
         capture_output=True, text=True).stdout
     rec = (json.loads(out or '{}').get('recommended') or [{}])[0].get('skill_id')
-    ok = rec == EXPECT[t['id']]
+    ok = rec == expect
     hit += ok
-    print(f"{t['id']:6} got={rec!s:20} expect={EXPECT[t['id']]:20} {'OK' if ok else 'MISS'}")
+    print(f"{t['id']:6} got={rec!s:20} expect={expect:20} {'OK' if ok else 'MISS'}")
 print('accuracy=%.3f' % (hit / len(tasks)))
 PYEOF
 ```

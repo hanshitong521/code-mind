@@ -1,0 +1,39 @@
+# SkillMind MCP 成本审计用（scan_mcps）。真连接面以各 Agent 的 mcp.json 为准。
+# 本仓约定：多 Agent 只连 brainstack-gateway，下列为网关后端的逻辑 server（非第二份 stdio 配置）。
+
+mcp_servers:
+  brainstack-gateway:
+    transport: http
+    standing: true
+    owner: ai-programming-docs
+    tools:
+      - name: mcp_proxy
+        description: "统一 HTTP 入口；tools/list 聚合下游 server"
+  brainstack-memory:
+    transport: stdio
+    standing: false
+    owner: project-brain-agent
+    tools:
+      - name: search_project_context
+        description: "项目记忆检索；query 要具体，limit 要小"
+      - name: get_change_context
+        description: "改文件前风险/决策上下文"
+  brainstack-verify:
+    transport: stdio
+    standing: false
+    owner: test-mind
+    tools:
+      - name: analyze_impact
+      - name: plan_verification
+      - name: prepare_verification
+      - name: run_verification
+      - name: replay_failure
+      - name: final_gate
+      - name: cleanup
+  brainstack-token:
+    transport: stdio
+    standing: false
+    owner: token-mind
+    tools:
+      - name: token_budget
+        description: "Token 账本与压缩；按需调用，非每轮 tools/list"

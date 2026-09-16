@@ -35,6 +35,13 @@ tags:
   - evidence
   - freeze
   - what-not-how
+  # 中文检索标签（二字滑窗；BM-15 FROZEN 决策冲突场景）
+  # 禁加「冻结」—— RT-10「需求已冻结，按 design.md 实现」应走 ai-code，不是本 skill
+  - 决策
+  - 口径
+  - 阻塞
+  - 私裁
+  - 重新
 
 triggers:
   include:

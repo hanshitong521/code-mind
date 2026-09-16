@@ -110,6 +110,14 @@ def relative_uri(path: str, repo: Optional[str] = None) -> str:
 # --------------------------------------------------------------------------
 
 
+def _public_tool_row(tool: Any) -> dict[str, Any]:
+    row = {k: v for k, v in (as_dict(tool) or {}).items() if k != "duration_ms"}
+    err = row.get("error")
+    if isinstance(err, dict):
+        row["error"] = {k: v for k, v in err.items() if k != "duration_ms"}
+    return row
+
+
 def build_report(
     *,
     run_id: str,
@@ -133,6 +141,11 @@ def build_report(
     score_dict = as_dict(score) or {}
     gate_dict = as_dict(gate) or {}
     ledger_dict = as_dict(ledger) or {}
+    ledger_public = {
+        k: v
+        for k, v in ledger_dict.items()
+        if k not in ("started_at", "duration_ms", "tool_duration")
+    }
 
     changed_files = len(ctx.get("changed_files") or [])
     counts = severity_counts(finding_list)
@@ -147,7 +160,6 @@ def build_report(
             "repo": ctx.get("repo_root"),
             "commit": ctx.get("commit") or ctx.get("head_ref"),
             "base": ctx.get("base_ref"),
-            "duration_ms": int(ledger_dict.get("duration_ms", 0) or 0),
         },
         "summary": {
             "changed_files": changed_files,
@@ -161,9 +173,15 @@ def build_report(
         "gate": gate_dict,
         "dedup": as_dict(dedup) or {},
         "findings": finding_dicts,
-        "tools": [as_dict(t) for t in (tool_results or [])],
-        "tool_errors": [as_dict(e) for e in (tool_errors or [])],
-        "ledger": ledger_dict,
+        "tools": [
+            _public_tool_row(t)
+            for t in (tool_results or [])
+        ],
+        "tool_errors": [
+            {k: v for k, v in (as_dict(e) or {}).items() if k != "duration_ms"}
+            for e in (tool_errors or [])
+        ],
+        "ledger": ledger_public,
         "baseline": baseline_delta,
         "index": index_stats,
     }

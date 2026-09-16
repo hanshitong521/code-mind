@@ -229,6 +229,7 @@ DEFAULT_EXCLUDES = (
     ".git",
     ".hg",
     ".svn",
+    ".codehealth",
     "node_modules",
     "target",
     "build",

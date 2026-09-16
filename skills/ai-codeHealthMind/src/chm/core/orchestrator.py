@@ -143,10 +143,12 @@ class Orchestrator:
     def run(self, *, allow_fix: bool = False) -> RunResult:
         started = time.perf_counter()
         ledger_mod = _require("chm.core.ledger")
-        run_id = ledger_mod.new_run_id(self.repo_root, mode=self.mode.value, commit=self.commit)
+        folder_id = ledger_mod.new_run_id(
+            self.repo_root, mode=self.mode.value, commit=self.commit
+        )
 
         run_dir = self._run_dir_override or (
-            self.repo_root / self.config.run_dir / run_id
+            self.repo_root / self.config.run_dir / folder_id
         )
         ensure_dir(run_dir)
         cache_dir = ensure_dir(run_dir / "cache")
@@ -299,8 +301,15 @@ class Orchestrator:
         repair_plan = self._build_repair_plan(findings) if allow_fix else []
 
         # 12. report -----------------------------------------------------------
+        stable_id = ledger_mod.stable_run_id(
+            mode=self.mode.value,
+            commit=ctx.commit or ctx.head_ref,
+            finding_ids=[f.id for f in findings],
+            gate=gate.verdict.value,
+            score=float(score.total),
+        )
         ledger = ledger_mod.RunLedger(
-            run_id=run_id,
+            run_id=stable_id,
             repo=str(self.repo_root),
             commit=ctx.commit or ctx.head_ref,
             base=ctx.base_ref,
@@ -320,7 +329,7 @@ class Orchestrator:
 
         report_mod = _require("chm.reports.json_report")
         report = report_mod.build_report(
-            run_id=run_id,
+            run_id=stable_id,
             mode=self.mode.value,
             ctx_dict=ctx.to_dict(),
             findings=findings,
@@ -360,13 +369,10 @@ class Orchestrator:
         ledger.write(run_dir / "ledger.json")
         write_json(run_dir / "context" / "scan.json", ctx.to_dict())
 
-        if self.config.baseline.enabled:
-            baseline_mod.save_baseline(baseline_path, current_metrics)
-
         runs_root = run_dir.parent
         write_json(
             runs_root / "latest.json",
-            {"run_id": run_id, "run_dir": str(run_dir), "gate": gate.verdict.value},
+            {"run_id": stable_id, "run_dir": str(run_dir), "gate": gate.verdict.value},
         )
 
         return RunResult(
@@ -496,34 +502,39 @@ class Orchestrator:
     ) -> list[ProviderResult]:
         results: dict[str, ProviderResult] = {}
         wave1: list[EvidenceProvider] = []
-        wave2: list[EvidenceProvider] = []
+        deferred: list[EvidenceProvider] = []
         skipped: list[ProviderResult] = []
 
-        for p in providers:
+        def _supports(provider: EvidenceProvider) -> bool:
             try:
-                supported = p.supports(ctx)
+                return bool(provider.supports(ctx))
             except Exception as exc:  # pragma: no cover - defensive
                 skipped.append(
                     ProviderResult(
-                        provider=p.name,
+                        provider=provider.name,
                         status=ToolStatus.UNAVAILABLE,
                         error=ToolError(
-                            provider=p.name,
+                            provider=provider.name,
                             kind=ToolFailureKind.CRASHED,
                             detail=f"supports() failed: {type(exc).__name__}: {exc}",
                             evidence_gap=True,
                         ),
                     )
                 )
+                return False
+
+        for p in providers:
+            if p.name in _SECOND_WAVE:
+                deferred.append(p)
                 continue
-            if not supported:
-                continue
-            (wave2 if p.name in _SECOND_WAVE else wave1).append(p)
+            if _supports(p):
+                wave1.append(p)
 
         parallel = bool(self.options.get("parallel", True))
-        for wave in (wave1, wave2):
+
+        def _run_wave(wave: list[EvidenceProvider]) -> None:
             if not wave:
-                continue
+                return
             if parallel and len(wave) > 1:
                 with futures.ThreadPoolExecutor(max_workers=min(4, len(wave))) as pool:
                     futs = {pool.submit(self._safe_scan, p, ctx): p for p in wave}
@@ -534,6 +545,9 @@ class Orchestrator:
                 for p in wave:
                     res = self._safe_scan(p, ctx)
                     results[res.provider] = res
+
+        _run_wave(wave1)
+        _run_wave([p for p in deferred if _supports(p)])
 
         ordered: list[ProviderResult] = []
         for name in PROVIDER_ORDER:
@@ -615,15 +629,25 @@ def rerun_gate(
     """
     orch = Orchestrator(repo_root=repo_root, config=config, mode=mode, **kwargs)
     result = orch.run()
-    before = {f["id"]: f for f in previous_report.get("findings", [])}
-    after = {f["id"]: f for f in result.report.get("findings", [])}
 
-    closed = sorted(set(before) - set(after))
-    appeared = sorted(set(after) - set(before))
+    def _fp(finding: dict) -> tuple:
+        loc = finding.get("location") or {}
+        return (
+            str(finding.get("rule_id") or ""),
+            str(loc.get("file") or ""),
+            int(loc.get("start_line") or 0),
+            str(finding.get("title") or ""),
+        )
+
+    before = {_fp(f): f for f in previous_report.get("findings", [])}
+    after = {_fp(f): f for f in result.report.get("findings", [])}
+
+    closed = sorted(before[k]["id"] for k in set(before) - set(after))
+    appeared = sorted(after[k]["id"] for k in set(after) - set(before))
     new_high = [
-        after[i]["id"]
-        for i in appeared
-        if after[i]["severity"] in ("HIGH", "CRITICAL")
+        after[k]["id"]
+        for k in set(after) - set(before)
+        if after[k]["severity"] in ("HIGH", "CRITICAL")
     ]
     return {
         "run_id": result.report["run"]["run_id"],

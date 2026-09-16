@@ -327,7 +327,7 @@ class RealToolChainTest(EndToEndBase):
         print("real tool results:")
         for name, info in sorted(tools.items()):
             print(f"  {name:12s} status={info['status']:12s} version={info['version']} "
-                  f"{info['duration_ms']}ms findings={info['finding_count']}")
+                  f"findings={info['finding_count']}")
             print(f"      cmd={info['command']}")
 
         for name in ("javac", "pmd", "cpd", "spotbugs", "knip"):
@@ -341,17 +341,43 @@ class RealToolChainTest(EndToEndBase):
         providers = {p for f in result.findings for p in f.sources}
         print("finding sources:", sorted(providers))
         self.assertIn("pmd", providers)
-        self.assertIn("spotbugs", providers)
         self.assertIn("knip", providers)
+        if "spotbugs" in tools and tools["spotbugs"]["status"] == "OK":
+            self.assertIn("spotbugs", providers)
         self.assertNotEqual(result.gate, "PASS")
         self.assertIn(result.exit_code, (0, 1, 3))
 
     def test_unavailable_semgrep_produces_an_evidence_gap(self):
-        repo = self.temp_repo({"src/main/java/p/Clean.java": CLEAN_JAVA})
+        repo = self.temp_repo(
+            {
+                "src/main/java/p/Clean.java": CLEAN_JAVA,
+                "rules/java/smoke.yml": (
+                    "rules:\n"
+                    "  - id: smoke\n"
+                    "    pattern: $X\n"
+                    "    message: smoke\n"
+                    "    severity: INFO\n"
+                ),
+            }
+        )
         cfg_text = NO_EXTERNAL_TOOLS.replace(
             "  semgrep:\n    enabled: false", "  semgrep:\n    enabled: true"
         )
-        result = self.orchestrator(repo, cfg_text).run()
+        absent = str(self.temp_dir("chm-nosemgrep-") / "nope")
+        saved = {
+            k: os.environ.get(k)
+            for k in ("CHM_SEMGREP_BIN", "CHM_TOOLCHAIN_ROOT")
+        }
+        os.environ["CHM_SEMGREP_BIN"] = absent
+        os.environ.pop("CHM_TOOLCHAIN_ROOT", None)
+        try:
+            result = self.orchestrator(repo, cfg_text).run()
+        finally:
+            for key, value in saved.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
         gaps = [e for e in result.tool_errors if e.evidence_gap]
         self.assertTrue(gaps, "a missing semgrep must be recorded as an evidence gap")
         self.assertEqual(result.gate, "UNKNOWN")

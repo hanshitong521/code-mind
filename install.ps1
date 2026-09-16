@@ -220,6 +220,23 @@ function Invoke-Rollback {
     return $true
 }
 
+# ── 解析 vendored skill 的 canonical 根目录（供 verify_skill_drift --canonical-root）──
+function Get-CanonicalRoot {
+    $cands = @(
+        (Join-Path $ScriptDir '..\..'),   # 典型布局：A-skill/{requirement-mind,concise-mind,...}
+        (Join-Path $ScriptDir '..')
+    )
+    foreach ($root in $cands) {
+        try {
+            $resolved = (Resolve-Path -LiteralPath $root -ErrorAction Stop).Path
+        } catch { continue }
+        $req = Join-Path $resolved 'requirement-mind\SKILL.md'
+        $con = Join-Path $resolved 'concise-mind\SKILL.md'
+        if ((Test-Path -LiteralPath $req) -and (Test-Path -LiteralPath $con)) { return $resolved }
+    }
+    return $null
+}
+
 # ── Doctor：体检安装结果 ──────────────────────────────────────────
 function Invoke-Doctor {
     param([string[]]$TargetDirs, [string[]]$Names, [bool]$IncludeShared, [bool]$Json)
@@ -245,7 +262,10 @@ function Invoke-Doctor {
             $prev = Get-Location
             try {
                 Set-Location $ScriptDir
-                $null = & $py $verify 2>&1
+                $verifyArgs = @($verify)
+                $canonicalRoot = Get-CanonicalRoot
+                if ($canonicalRoot) { $verifyArgs += @('--canonical-root', $canonicalRoot) }
+                $null = & $py @verifyArgs 2>&1
                 if ($LASTEXITCODE -ne 0) { $issues.Add('verify_skill_drift.py 报 DRIFT/MISSING/UNTRACKED') }
             } finally { Set-Location $prev }
         }

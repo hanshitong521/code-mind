@@ -48,6 +48,6 @@ Not: 不做需求澄清(→ai-requirement); 不做完整测试策略(→TestMind
 | `.codehealth.yml` 旋钮 · accepted_risks · 错误抽象 7 问 | references/rules.md |
 | 目录结构 · 模块职责 | references/layout.md |
 | 架构 · Finding · 风险 · 规则编写 | docs/architecture.md · docs/finding-schema.md · docs/risk-model.md · docs/rule-authoring.md |
-| ADR | docs/adr/ |
+| ADR · V2.0 路线图 | docs/adr/ · docs/adr/ADR-004-v2-code-intelligence-roadmap.md |
 
 STOP:需求澄清|完整测试策略|替代 SAST/编译器|大规模重写业务|工具缺失假绿|AI 推断当证据|重复自动抽象|动态入口命中仍自动删除|修复后不重跑 verify|未命中 ref 批读

@@ -296,6 +296,10 @@ def _glob_match(pattern: str, text: str) -> bool:
     # "**/*.min.js" -> "vendor.min.js"
     if "/" not in text:
         tail = pattern.rsplit("/", 1)[-1]
+        # ``**/generated/**`` ends with ``**`` — matching bare filenames via
+        # ``^.*$`` would mark every file (e.g. vendor.js) as generated.
+        if not tail or tail == "**" or "." not in tail:
+            return False
         return bool(_glob_to_regex(tail).match(text))
     return False
 

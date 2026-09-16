@@ -168,7 +168,7 @@ class InitialRiskTest(helpers.CHMTestCase):
         self.assertIn("ordinary source change", why)
 
 
-class PlanShapeTest(unittest.TestCase):
+class PlanShapeTest(helpers.CHMTestCase):
     def test_to_dict_has_the_contract_fields(self):
         cfg = make_config()
         ctx = make_ctx(helpers.repo_root())

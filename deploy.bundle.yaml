@@ -11,8 +11,10 @@ schema_version: 2
 skills:
   - ai-design
   - ai-code
+  - ai-codeHealthMind
   - ai-requirement
   - ai-concise
+  - ai-skill-mcp-Y
 
 install_shared: true
 

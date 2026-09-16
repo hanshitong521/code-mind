@@ -186,7 +186,7 @@ _TOOLING_PATH_RE = re.compile(
 )
 
 _API_PASSTHRU_RE = re.compile(
-    r"^\s*(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(([^)]*)\)\s*\{"
+    r"(?:^|\n)\s*(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(([^)]*)\)\s*\{"
     r"\s*return\s+request\s*\(",
     re.S,
 )

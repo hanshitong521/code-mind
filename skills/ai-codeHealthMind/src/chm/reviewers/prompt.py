@@ -16,6 +16,7 @@ import re
 from pathlib import Path
 from typing import Any, Optional, Sequence
 
+from ..context.secretfilter import scrub
 from ..util import sha256_text
 
 #: Optional project/team rule pack, appended to every reviewer prompt.
@@ -167,7 +168,13 @@ def context_payload(
 
     if include_writer_rationale:
         lines.append("[AUTHOR RATIONALE -- explicitly supplied by the caller]")
-        lines.append(writer_rationale or "(empty)")
+        if pack is not None and getattr(pack, "writer_rationale", ""):
+            rationale_text = pack.writer_rationale
+        elif writer_rationale:
+            rationale_text = scrub(writer_rationale).text
+        else:
+            rationale_text = "(empty)"
+        lines.append(rationale_text or "(empty)")
     else:
         lines.append(
             "[AUTHOR RATIONALE] withheld by context isolation -- do not speculate about intent"

@@ -474,7 +474,8 @@ def normalize_all(
             continue
         if ctx is not None and ctx.changed_files:
             cf = ctx.changed_file(path)
-            if cf is None and not (raw.extra or {}).get("report_unchanged"):
+            extra = raw.extra or {}
+            if cf is None and not extra.get("report_unchanged") and not extra.get("whole_file"):
                 # Findings outside the change set are noise by default.
                 stats.outside_diff += 1
                 continue

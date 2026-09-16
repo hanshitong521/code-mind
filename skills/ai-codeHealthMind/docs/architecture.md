@@ -185,7 +185,13 @@ portable and diffable across machines.
 conclusion depended on the missing tool. There is no code path where a tool failure
 produces `PASS`.
 
-## 7. Reference projects
+## 7. V2.0 roadmap
+
+V1.x is **native + CLI adapters** (this repo). V2.0 adds Tree-sitter, SCIP,
+CodeQL, and MCP as optional layers — incremental, no reference-source vendoring.
+See [ADR-004](adr/ADR-004-v2-code-intelligence-roadmap.md).
+
+## 8. Reference projects
 
 Design influence only — no source was copied (see
 [ADR-002](adr/ADR-002-reference-project-usage.md)):
@@ -201,7 +207,7 @@ Design influence only — no source was copied (see
 | OpenRewrite | deterministic repair recipes |
 | Knip | unused files / exports / dependencies in JS+TS |
 
-## 8. Deliberate deviations from the specification
+## 9. Deliberate deviations from the specification
 
 Recorded as ADRs, summarised here:
 

@@ -16,6 +16,9 @@ target/
 # concise-mind latch 状态文件（本地会话态，不入库）
 .concise-mind.latch.json
 
+# 评分/评审生成物（本地跑分落盘，不入库）
+reports/
+
 # IDE
 .idea/
 .vscode/

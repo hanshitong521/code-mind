@@ -2,7 +2,7 @@
 name: diagram-mind
 version: 6.6.0
 description: >-
-  DiagramMind — 把需求/代码/文档变成一张看得懂的系统图。分析模块·数据流·角色 → 选图型 → 写 Mermaid → 预检 →
+  DiagramMind — 把需求/源码/文档变成一张看得懂的系统图。分析模块·数据流·角色 → 选图型 → 写 Mermaid → 预检 →
   渲染 + 构图审计 + drift。Triggers: /ai-design, /diagram, DiagramMind, 画图, 架构图, 流程图, 时序图.
 disable-model-invocation: true
 ---
@@ -16,8 +16,8 @@ ssot:../../shared/core.md 构图:references/layout.md ponytail:裁scope
 
 **不是画图工具，是项目理解系统。** 文字只做补充；核心内容必须一张图看懂 —— **看得懂的前提是图上东西够少**。
 
-**何时用**：把需求 / 代码 / 文档 / 事故变成一张人话系统图；或给 `/ai-code` 出设计交付（`docs/diagram/design.md`）。
-**何时不用**：写业务码（`/ai-code`）｜澄清 WHAT（`/ai-requirement`）｜查日志 / 对账。
+**何时用**：把需求 / 源码 / 文档 / 事故变成一张人话系统图；或给 `/ai-code` 出设计交付（`docs/diagram/design.md`）。
+**何时不用**：写业务码（`/ai-code`）｜澄清 WHAT（`/ai-requirement`）｜日志排障与财务核对（非本技能职责）。
 
 ## 三条硬规则（不可破 invariant）
 
@@ -54,6 +54,6 @@ D0 判定 → D1 分析 → D2 选图型+定构图 → D3 写 DSL + 预检 → D
 **交付闸门**：含业务主链 ｜ 标签人话 ｜ 证据进 §0 ｜ 对得上预算 ｜ 边标动词 ｜ UNKNOWN ｜ 风险进表 ｜ **`lint.mjs` 全绿 + `render.mjs --strict` 全绿**才算交付。
 **视觉基线**（走主题 JSON · 双行标签 · `classDef` 只给关键节点 · `architecture-beta` 内置图标 · `curve: basis` · 长链走 `LR`）→ `toolchain.md`。
 
-ref:图型→`router.md`｜构图/预算→`layout.md`｜加注→`annotation.md`｜DSL→`mermaid.md`｜分析取证→`analysis.md`｜渲染/预检/审计→`render.md`｜工具链/主题/查看页→`toolchain.md`｜未知风险→`unknowns-risks.md`｜输出/模板→`output-spec.md`｜D7交付→`design-delivery.md`｜drift→`drift.md`｜决策→`decisions.md`｜模板→`templates/`（design.md·architecture.md·flowchart.md·sequence.md·state.md·er.md）｜范例→`evals/samples/`｜栈→`../../shared/core.md`
+ref:图型→`router.md`｜构图/预算→`layout.md`｜加注→`annotation.md`｜DSL→`mermaid.md`｜分析取证→`analysis.md`｜渲染/预检/审计→`render.md`｜工具链/主题/查看页→`toolchain.md`｜未知风险→`unknowns-risks.md`｜输出/模板→`output-spec.md`｜D7交付→`design-delivery.md`｜drift→`drift.md`｜ADR→`decisions.md`｜模板→`templates/`（design.md·architecture.md·flowchart.md·sequence.md·state.md·er.md）｜范例→`evals/samples/`｜栈→`../../shared/core.md`
 STOP:删主链只留结论|无证据画节点|猜未知|编数字|巨型图|节点>12不砍|画布宽>1200|无图文字解释|ref批读|图块写尖括号|图里写类名路径行号|一文档多图|为风险单开图|三张表内容进图|带间连边|对策单开subgraph|空节占位|有代码变更不出design.md|design.md YAML未过validate_handoff|lint未绿就渲染
 lex:图型路由 构图 预算 主链 锚点 节点 边 证据 说人话 按需加注 D0 节点证据表 UNKNOWN 风险表 drift 一文一图 主题 视觉基线 渲染 审计 预检 lint 变体 查看页 模板 设计交付

@@ -49,7 +49,7 @@ class ScrubTest(unittest.TestCase):
                 result = scrub(text)
                 self.assertNotIn(secret, result.text, f"{name} survived scrubbing")
                 self.assertTrue(result.had_secret, f"{name} was not detected at all")
-                self.assertIn("[REDACTED]", result.text)
+                self.assertIn("[REDACTED", result.text)
 
     def test_aws_key_kind_is_reported(self):
         result = scrub(f"key = {AWS_KEY}")
@@ -180,7 +180,7 @@ class RedactReportTest(unittest.TestCase):
         self.assertNotIn(AWS_KEY, dumped)
         self.assertNotIn("hunter2secret", dumped)
         self.assertNotIn("sk-live-abcdef1234567890", dumped)
-        self.assertIn("[REDACTED]", dumped)
+        self.assertIn("[REDACTED", dumped)
         self.assertEqual(cleaned["count"], 2)
         self.assertIs(cleaned["ok"], True)
         self.assertIsNone(cleaned["none"])

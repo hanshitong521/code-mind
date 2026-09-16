@@ -155,11 +155,12 @@ def pmd_home(ctx: Optional[ScanContext] = None, cfg: Any = None) -> Optional[Pat
     env = os.environ.get(PMD_HOME_ENV)
     if env:
         candidates.append(Path(env))
-    root = toolchain_root(ctx)
-    if root is not None:
-        found = _glob_distribution(root, "pmd-bin-")
-        if found is not None:
-            candidates.append(found)
+    else:
+        root = toolchain_root(ctx)
+        if root is not None:
+            found = _glob_distribution(root, "pmd-bin-")
+            if found is not None:
+                candidates.append(found)
 
     for cand in candidates:
         if (cand / "lib").is_dir():

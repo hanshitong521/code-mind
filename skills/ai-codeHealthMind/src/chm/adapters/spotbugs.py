@@ -140,12 +140,13 @@ class SpotBugsAdapter(CliProvider):
         env = os.environ.get(SPOTBUGS_HOME_ENV)
         if env:
             candidates.append(Path(env))
-        root = toolchain_root(effective)
-        if root is not None and root.is_dir():
-            for cand in sorted(root.glob("spotbugs-*")):
-                if cand.is_dir():
-                    candidates.append(cand)
-            candidates.append(root)
+        else:
+            root = toolchain_root(effective)
+            if root is not None and root.is_dir():
+                for cand in sorted(root.glob("spotbugs-*")):
+                    if cand.is_dir():
+                        candidates.append(cand)
+                candidates.append(root)
 
         for cand in candidates:
             if cand.is_file() and cand.suffix.lower() == ".jar":
@@ -214,6 +215,10 @@ class SpotBugsAdapter(CliProvider):
             p = Path(override)
             if p.is_dir():
                 return p
+        if ctx.cache_dir is not None:
+            cached = Path(ctx.cache_dir) / "classes"
+            if cached.is_dir():
+                return cached
         for rel in DEFAULT_CLASS_DIRS:
             p = Path(ctx.repo_root) / rel
             if p.is_dir():

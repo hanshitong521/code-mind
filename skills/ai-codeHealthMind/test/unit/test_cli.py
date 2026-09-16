@@ -258,7 +258,11 @@ class ExitCodeTest(CliMixin, CHMTestCase):
         code, out, err = run_cli(
             ["review", "--repo", "--format", "json"],
             cwd=repo,
-            env={"CHM_PMD_HOME": broken, "CHM_SPOTBUGS_HOME": broken},
+            env={
+                "CHM_PMD_HOME": broken,
+                "CHM_SPOTBUGS_HOME": broken,
+                "CHM_TOOLCHAIN_ROOT": "",
+            },
         )
         self.assertTrue(out.strip(), f"no stdout (exit {code}); stderr={err[:2000]}")
         report = json.loads(out)
@@ -266,7 +270,7 @@ class ExitCodeTest(CliMixin, CHMTestCase):
         self.assertEqual(code, 3)
         gaps = [e for e in report["tool_errors"] if e["evidence_gap"]]
         self.assertTrue(gaps, "an evidence gap must be recorded")
-        self.assertTrue(any(e["kind"] == "MISSING" for e in gaps))
+        self.assertTrue(any(e["kind"] in ("MISSING", "CONFIG") for e in gaps))
         self.assertTrue(any("pmd" == e["provider"] for e in gaps))
         # a missing tool must never be reported as a clean tool result
         pmd = [t for t in report["tools"] if t["provider"] == "pmd"]

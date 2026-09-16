@@ -32,6 +32,7 @@ protocol:
 tasks:
 
   - id: BM-01
+    expect: ai-code
     level: L0
     kind: small-change
     task: >
@@ -46,6 +47,7 @@ tasks:
     baseline: {tokens: 9000, tool_calls: 6, latency_ms: 42000}
 
   - id: BM-02
+    expect: ai-code
     level: L0
     kind: small-change
     task: >
@@ -58,6 +60,7 @@ tasks:
     baseline: {tokens: 11000, tool_calls: 7, latency_ms: 55000}
 
   - id: BM-03
+    expect: ai-code
     level: L1
     kind: feature
     task: >
@@ -71,6 +74,7 @@ tasks:
     baseline: {tokens: 48000, tool_calls: 24, latency_ms: 240000}
 
   - id: BM-04
+    expect: ai-code
     level: L1
     kind: feature
     task: >
@@ -83,6 +87,7 @@ tasks:
     baseline: {tokens: 52000, tool_calls: 26, latency_ms: 260000}
 
   - id: BM-05
+    expect: ai-code
     level: L2
     kind: debug
     task: >
@@ -96,6 +101,7 @@ tasks:
     baseline: {tokens: 96000, tool_calls: 38, latency_ms: 480000}
 
   - id: BM-06
+    expect: ai-code
     level: L2
     kind: debug
     task: >
@@ -109,6 +115,7 @@ tasks:
     baseline: {tokens: 130000, tool_calls: 48, latency_ms: 720000}
 
   - id: BM-07
+    expect: ai-code
     level: L2
     kind: database
     task: >
@@ -122,6 +129,7 @@ tasks:
     baseline: {tokens: 110000, tool_calls: 42, latency_ms: 600000}
 
   - id: BM-08
+    expect: ai-code
     level: L2
     kind: database
     task: >
@@ -135,6 +143,7 @@ tasks:
     baseline: {tokens: 88000, tool_calls: 34, latency_ms: 420000}
 
   - id: BM-09
+    expect: ai-design
     level: L2
     kind: cross-module
     task: >
@@ -149,6 +158,7 @@ tasks:
     baseline: {tokens: 160000, tool_calls: 56, latency_ms: 900000}
 
   - id: BM-10
+    expect: ai-design
     level: L2
     kind: cross-module
     task: >
@@ -162,6 +172,7 @@ tasks:
     baseline: {tokens: 76000, tool_calls: 30, latency_ms: 360000}
 
   - id: BM-11
+    expect: ai-code
     level: L1
     kind: test-fix
     task: >
@@ -175,6 +186,7 @@ tasks:
     baseline: {tokens: 34000, tool_calls: 18, latency_ms: 150000}
 
   - id: BM-12
+    expect: ai-code
     level: L2
     kind: test-fix
     task: >
@@ -189,6 +201,7 @@ tasks:
     baseline: {tokens: 92000, tool_calls: 40, latency_ms: 480000}
 
   - id: BM-13
+    expect: ai-code
     level: L2
     kind: log-heavy
     task: >
@@ -203,6 +216,7 @@ tasks:
     baseline: {tokens: 210000, tool_calls: 62, latency_ms: 1080000}
 
   - id: BM-14
+    expect: ai-code
     level: L3
     kind: log-heavy
     task: >
@@ -217,6 +231,7 @@ tasks:
     baseline: {tokens: 300000, tool_calls: 84, latency_ms: 1500000}
 
   - id: BM-15
+    expect: ai-requirement
     level: L2
     kind: cross-domain
     task: >
@@ -230,6 +245,7 @@ tasks:
     baseline: {tokens: 82000, tool_calls: 32, latency_ms: 400000}
 
   - id: BM-16
+    expect: ai-design
     level: L3
     kind: cross-domain
     task: >
@@ -244,6 +260,7 @@ tasks:
     baseline: {tokens: 380000, tool_calls: 96, latency_ms: 1800000}
 
   - id: BM-17
+    expect: ai-skill-mcp-Y
     level: L0
     kind: small-change
     task: >
@@ -258,6 +275,7 @@ tasks:
     baseline: {tokens: 7000, tool_calls: 5, latency_ms: 30000}
 
   - id: BM-18
+    expect: ai-skill-mcp-Y
     level: L3
     kind: feature
     task: >

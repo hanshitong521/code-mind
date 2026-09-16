@@ -163,8 +163,9 @@ class DeterminismTest(unittest.TestCase):
 
         payload = json.loads(render_json(_build()))
         self.assertIn("run_id", payload["run"])
-        self.assertIn("started_at", payload["ledger"])
-        self.assertIn("duration_ms", payload["ledger"])
+        self.assertNotIn("duration_ms", payload["run"])
+        self.assertNotIn("started_at", payload["ledger"])
+        self.assertNotIn("duration_ms", payload["ledger"])
 
     def test_two_independent_builds_of_the_same_input_match(self):
         self.assertEqual(render_json(_build()), render_json(_build()))

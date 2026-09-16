@@ -14,9 +14,10 @@
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, existsSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const SCRIPTS = __dirname;
 const SKILL_ROOT = resolve(__dirname, '..');
 const OUT = join(SKILL_ROOT, 'evals', 'out');
 const ASSETS = join(OUT, 'assets');
@@ -24,6 +25,7 @@ const VTEST = join(SKILL_ROOT, 'evals', 'viewer-test');
 const TEMPLATES = join(SKILL_ROOT, 'templates');
 const RENDER = join(__dirname, 'render.mjs');
 const VIEWER = join(__dirname, 'viewer.mjs');
+const LINT = join(__dirname, 'lint.mjs');
 // 断言值从主题文件取，避免"改了主题就误报"这类假失败（v6.5）
 const LIGHT_THEME = JSON.parse(readFileSync(join(SKILL_ROOT, 'assets', 'mermaid-theme.json'), 'utf8')).themeVariables;
 

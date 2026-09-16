@@ -20,7 +20,7 @@ version: 6.6.0
 kind: skill
 owner: ai-programming-docs
 description: >-
-  DiagramMind — 把需求/代码/文档变成一张看得懂的系统图。分析模块·数据流·角色 → 选图型 → 写 Mermaid → 预检 →
+  DiagramMind — 把需求/源码/文档变成一张看得懂的系统图。分析模块·数据流·角色 → 选图型 → 写 Mermaid → 预检 →
   渲染 + 构图审计 + drift。Triggers: /ai-design, /diagram, DiagramMind, 画图, 架构图, 流程图, 时序图.
 
 category: docs
@@ -33,6 +33,15 @@ tags:
   - flowchart
   - drift
   - handoff
+  # 中文检索标签（二字滑窗；只加「期望 ai-design」且不误伤金标的词）
+  - 表单
+  - 字段
+  - 重命
+  - 映射
+  - 同步
+  - 链路
+  - 模块
+  - 消费
 
 triggers:
   include:

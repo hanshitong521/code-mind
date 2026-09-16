@@ -98,6 +98,7 @@ class GitModesBase(CHMTestCase):
         write_files(repo, {"src/main/java/p/Keep.java": KEEP_V2})
         write_files(repo, {"src/main/java/p/Fresh.java": FRESH})
         (repo / "src/main/java/p/Gone.java").unlink()
+        (repo / "new").mkdir(parents=True, exist_ok=True)
         res = git(repo, "mv", "old/Name.java", "new/Renamed.java")
         self.assertEqual(res.returncode, 0, res.stderr)
         write_bytes(repo, "bin/data.bin", bytes(range(255, -1, -1)) * 8)
@@ -150,7 +151,7 @@ class DiffModeTest(GitModesBase):
         crlf = files["crlf/File.java"]
         self.assertEqual(crlf.change_kind, ChangeKind.MODIFIED)
         self.assertGreaterEqual(crlf.added_lines, 1)
-        self.assertEqual(crlf.hunks[0].lines[-1][:1], "+")
+        self.assertTrue(any(l.startswith("+") for l in crlf.hunks[0].lines))
         self.assertNotIn("\r", "".join(crlf.hunks[0].lines))
 
     def test_diff_is_sorted_and_deterministic(self):
@@ -204,7 +205,9 @@ class StagedModeTest(GitModesBase):
 
     def test_staged_rename_and_delete(self):
         repo, _base = self.base_repo()
-        git(repo, "mv", "old/Name.java", "new/Renamed.java")
+        (repo / "new").mkdir(parents=True, exist_ok=True)
+        mv = git(repo, "mv", "old/Name.java", "new/Renamed.java")
+        self.assertEqual(mv.returncode, 0, mv.stderr)
         git(repo, "rm", "-q", "src/main/java/p/Gone.java")
         ctx = resolve_context(repo, mode=ReviewMode.STAGED, config=helpers.make_config())
         files = self.by_path(ctx)

@@ -436,19 +436,28 @@ def _make_entry(
     full = root / path
     exists = full.is_file()
     size = 0
+    added_lines = 0
+    removed_lines = 0
+    is_binary = exists and is_binary_file(full)
     if exists:
         try:
             size = full.stat().st_size
         except OSError:
             size = 0
+        if not is_binary and kind is ChangeKind.ADDED:
+            try:
+                text = full.read_text(encoding="utf-8", errors="replace")
+                added_lines = text.count("\n") + (1 if text and not text.endswith("\n") else 0)
+            except OSError:
+                added_lines = 0
     return ChangedFile(
         path=path,
         change_kind=kind,
         old_path=old_path,
         language=language_of(path),
-        added_lines=0,
-        removed_lines=0,
-        is_binary=(exists and is_binary_file(full)),
+        added_lines=added_lines,
+        removed_lines=removed_lines,
+        is_binary=is_binary,
         is_generated=config.is_generated(path),
         size_bytes=size,
         content_hash=file_hash(full),
@@ -615,6 +624,27 @@ def resolve_changed_files(
             res = _git_or_raise(root, ["diff", "-M", "--no-color", "HEAD"], "diff HEAD")
             meta["commands"].append(res.command_line)
             files = parse_unified_diff(res.stdout, repo_root=root, config=cfg)
+            # ``git diff HEAD`` omits untracked paths; the working-tree diff must
+            # still surface new files the author has not staged yet.
+            status = _run_git(root, ["status", "--porcelain", "-uall"], timeout_s=60.0)
+            if status.ok:
+                meta["commands"].append(status.command_line)
+                seen = {cf.path for cf in files}
+                for raw in status.stdout.split("\n"):
+                    line = _strip_cr(raw)
+                    if len(line) < 4:
+                        continue
+                    code, path = line[:2], line[3:]
+                    path = path.replace("\\", "/")
+                    if " -> " in path:
+                        path = path.split(" -> ", 1)[1]
+                    if code.strip() != "??" or path in seen:
+                        continue
+                    entry = _make_entry(root, cfg, path, ChangeKind.ADDED)
+                    if entry is not None:
+                        files.append(entry)
+                        seen.add(path)
+                files.sort(key=lambda f: f.path)
             _cache_diff(cache_dir, short_hash("diff", info.head_sha), res.stdout, meta)
             return files, meta
 
@@ -648,6 +678,10 @@ def resolve_changed_files(
         res = _git_or_raise(root, ["diff", "--cached", "-M", "--no-color"], "diff --cached")
         meta["commands"].append(res.command_line)
         files = parse_unified_diff(res.stdout, repo_root=root, config=cfg)
+        ns = _run_git(root, ["diff", "--cached", "--name-status", "-M"], timeout_s=60.0)
+        if ns.ok:
+            meta["commands"].append(ns.command_line)
+            files = _merge_name_status(files, ns.stdout, root, cfg, meta)
         _cache_diff(cache_dir, short_hash("staged", info.head_sha), res.stdout, meta)
         return files, meta
 
@@ -716,6 +750,26 @@ def resolve_changed_files(
             if entry is not None:
                 files.append(entry)
         files.sort(key=lambda f: f.path)
+        seen = {f.path for f in files}
+        status = _run_git(root, ["status", "--porcelain", "-uall"], timeout_s=60.0)
+        if status.ok:
+            meta["commands"].append(status.command_line)
+            for raw in status.stdout.split("\n"):
+                line = _strip_cr(raw)
+                if len(line) < 4:
+                    continue
+                code, path = line[:2], line[3:]
+                path = path.replace("\\", "/")
+                if " -> " in path:
+                    path = path.split(" -> ", 1)[1]
+                if code.strip() != "??" or path in seen:
+                    continue
+                entry = _make_entry(root, cfg, path, ChangeKind.ADDED)
+                if entry is not None:
+                    files.append(entry)
+                    listed.append(path)
+                    seen.add(path)
+            files.sort(key=lambda f: f.path)
         meta["repo_files_cache"] = sorted(p for p in listed if not cfg.is_excluded(p))
         return files, meta
 
