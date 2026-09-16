@@ -1,0 +1,105 @@
+# skill.yaml — ai-codeHealthMind（CodeHealthMind v1.0.0）
+# 契约：skills/ai-skill-mcp-Y/schemas/skill-manifest.schema.json（spec-v2 §8 / §17）
+# 校验：python3 skills/ai-skill-mcp-Y/scripts/manifest_validate.py --path skills/ai-codeHealthMind/skill.yaml
+# 禁: 写入密钥/生产连接串/整段日志；禁: 用本文件取代 SKILL.md 根文档。
+#
+# 变更记录（references/skill-change-gate.md 六步门）：
+#   1 原因   — 本 skill 此前无 skill.yaml：加载模式、成本、触发排除面全未声明（审计报
+#              「triggers.exclude 为空：Precision 风险」）；根文档 136 行 > 120 行硬顶
+#   2 证据   — 根文档改前实测 136 行 / 1227 root_words / est_tokens=1617（口径：行数=splitlines，
+#              root_words=registry_build.count_words「拉丁词 + 单个中日韩字符」，est_tokens=_common），
+#              超 120 行硬顶与 800 words 强制拆分线；瘦身后 53 行 / 697 root_words / est_tokens=814
+#   3 影响面 — 新增本声明 + 根文档瘦身（移出内容落 references/）；description 逐字未改
+#              （路由/Recall 依赖它），10 条硬规则、docs/ 指针、STOP 禁项全量存活（已逐项断言）
+#   4 批准   — 用户显式「深度整改」
+#   5 版本   — 1.0.0（对齐 SKILL.md frontmatter 与 shared/release-manifest.yaml 既有版本，未跳版）
+#   6 回滚   — git revert；或删除本文件即回到「无声明」旧行为（根文档瘦身需另行 revert）
+
+id: ai-codeHealthMind
+name: CodeHealthMind
+version: 1.0.0
+kind: skill
+# capability-registry.yaml 无 codehealth 专属条目 → 取控制面仓 engineering_policy 的
+# exclusive owner（registry_build 的 owner 兜底链：capability-registry → 本字段 → source_repo
+# 归一，source_repo=ai-programming-docs 归一后同值，故声明与兜底一致）。
+owner: ai-programming-docs
+description: >-
+  CodeHealthMind — AI 写完代码后的强制代码健康 Gate。审 diff/commit/range/repo，
+  找出死代码·重复·错误抽象·过度设计·复杂度·错误处理·并发·资源·DB·性能·可测试性退化，
+  分级（CRITICAL/HIGH/MEDIUM/LOW）→ 证据校验 → 评分 → PASS/WARN/BLOCK/UNKNOWN。
+  Triggers: /codehealth, /ai-codeHealthMind, CodeHealthMind, 代码健康, 垃圾代码,
+  死代码, 过度设计, 合并准入, 代码质量门.
+
+# 必须与 registry_build.CATEGORY_BY_SKILL["ai-codeHealthMind"] 一致（=test）。
+# category 是路由打分要素：写成别的值会**覆盖**映射表、改变路由行为。
+category: test
+tags:
+  - codehealth
+  - merge-gate
+  - dead-code
+  - over-engineering
+  - wrong-abstraction
+  - complexity
+  - evidence
+  - baseline
+  - sarif
+
+triggers:
+  include:
+    - /codehealth
+    - /ai-codeHealthMind
+    - CodeHealthMind
+    - 代码健康
+    - 垃圾代码
+    - 死代码
+    - 过度设计
+    - 合并准入
+    - 代码质量门
+  # 负向面只放**本 skill 自己的易混邻域**：只做变更集健康 Gate（PASS/WARN/BLOCK/UNKNOWN），
+  # 不做 WHAT 澄清、不做完整测试策略、不替代 SAST/编译器、不做大规模重写。
+  # 禁抄别家领域词（如 `查日志`/`对账` 属 ai-skill-mcp-Y 的排除面）——
+  # 抄进来会让任何提到这些词的任务把**所有** skill 全排除掉，`recommended` 变空
+  # （命中 ACCEPTANCE §5 Hard Gate「该用找不到」）。BM-06 即因此掉到空。
+  exclude:
+    - /ai-requirement
+    - 需求澄清
+    - 需求冻结
+    - Requirement Gate
+    - 完整测试策略
+    - TestMind
+    - 替代 SAST
+    - 大规模重写业务
+
+cost:
+  # 实测（_common.est_tokens 口径，根文档瘦身后）：136 行/1227 root_words/1617 tok → 53 行/697 root_words/814 tok
+  context_tokens_estimate: 814
+  # standard：命中后要起真实工具链（javac/PMD/CPD/SpotBugs/Semgrep/Knip）与 1~2 个
+  # reviewer，但默认目标是 diff 而非整仓，且有 run cache（tool version + head + file hash
+  # + rule version + config hash 五元组）与基线增量，重活不随每轮线性增长，不属 expensive 档。
+  runtime_class: standard
+
+risk:
+  # medium：结论会阻断合并（BLOCK），且 `fix --apply` 存在改/删工作区源码的路径。
+  # destructive=false：不触生产状态；删除路径三重设防 —— `--apply` 显式 opt-in、
+  # `dead_code.allow_auto_delete` 默认 false（即使置 true 也只改「未用 import / debug 残留」
+  # 这类可证机械项）、反射/IOC/SPI/MQ/XML/RPC/动态 import 命中即禁止自动删除。
+  level: medium
+  destructive: false
+
+loading:
+  # 根 SKILL.md frontmatter 已有 disable-model-invocation: true → 本就是 on-demand；
+  # 此处显式声明，保持「声明来源」与「实际行为」一致（不改成 always）。
+  mode: on-demand
+
+verification:
+  required: true
+
+# read=扫目标项目取证（diff/commit/range/repo + 符号索引 + 动态入口探测）；
+# write 仅限生成物（目标项目 `.codehealth.yml`/`.codehealth/` 缓存、`-o` 指定的
+# console|json|markdown|sarif 报告），不触业务代码；execute=跑真实工具链
+# （javac/PMD/CPD/SpotBugs/Semgrep/Knip/OpenRewrite/test runner）与 `codehealth.py` 自身，
+# 改源码仅经 `fix --apply` 且受 risk 段所述三重设防约束。
+security_permissions:
+  - read
+  - write
+  - execute

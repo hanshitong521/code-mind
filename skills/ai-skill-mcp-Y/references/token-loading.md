@@ -68,6 +68,11 @@ est_tokens(s) = ceil(ascii_chars / 4) + ceil(cjk_chars / 1.5)
 | L2 单条 | 单文件 `est_tokens` | > 2000 tokens → 拆或脚本预处理 |
 | 运行时真实值 | 遥测实测 | `context_tokens_loaded` / `result_tokens`（`references/spec-v2.md` §14.5） |
 
+**公式实现**：`scripts/_common.py:est_tokens`（唯一实现；`selftest.py` 的 `est_tokens` 用例锁定口径）。
+**机械消费点**：`skillmind.py audit` —— 行数走 `ROOT_LINES_MAX=120`，words 走
+`ROOT_WORDS_HOT/WARN/SPLIT=200/500/800`，L2 单条走 `REF_TOKENS_MAX/SPLIT=2000/4000`。
+三者互不替代：同一份根文档**可能同时**触发行数与 words 两条 finding（两个维度各超各的）。
+
 **禁**用估算值冒充实测值：报告里估算与实测分列，来源标注 `est` / `telemetry`（`templates/skill-score-report.md`）。
 
 ## 4 与 TokenMind 的交接字段

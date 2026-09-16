@@ -285,9 +285,17 @@ def build_entry(root: Path, skill_dir: Path, ctx: dict) -> dict:
     )
 
     loading = manifest.get("loading") if isinstance(manifest.get("loading"), dict) else {}
-    load_mode = _pick(loading.get("mode")).lower()
-    if load_mode not in VALID_LOAD_MODES:
-        load_mode = "on-demand" if _as_bool(meta.get("disable-model-invocation"), False) else "always"
+    declared_mode = _pick(loading.get("mode")).lower()
+    if declared_mode in VALID_LOAD_MODES:
+        load_mode, load_mode_source = declared_mode, "declared"
+    elif _as_bool(meta.get("disable-model-invocation"), False):
+        # frontmatter 显式关闭模型自动调用 —— 也是作者显式选择，不是默认回落。
+        load_mode, load_mode_source = "on-demand", "declared"
+    else:
+        # 既无 skill.yaml.loading.mode，也无 disable-model-invocation → 落到默认常驻。
+        # 这是**未声明**，不是设计选择：V5.1 前 ai-requirement 即此情形，白付 3502 tok/轮。
+        # 审计据此区分「故意常驻」（latch 型，如 ai-concise）与「忘了声明」。
+        load_mode, load_mode_source = "always", "default"
 
     category = _one_of(
         _pick(meta.get("category"), manifest.get("category")).lower(),
@@ -347,6 +355,7 @@ def build_entry(root: Path, skill_dir: Path, ctx: dict) -> dict:
         "score": ctx["scores"].get(skill_id),
         "owner": owner,
         "load_mode": load_mode,
+        "load_mode_source": load_mode_source,
         "risk": risk,
         "destructive": destructive,
         "always_apply": load_mode == "always",
@@ -387,6 +396,37 @@ def scan_rules(root: Path) -> list:
     return out
 
 
+def _tool_items(tools: list) -> list:
+    """逐工具估算 schema token 成本（口径 `references/token-loading.md` §3）。
+
+    估算面 = 工具名 + description + 参数名/类型 —— 这三项就是模型实际看到的 schema。
+    显式 `schema_tokens` 优先（调用方有实测值时用实测）。
+    """
+    out: list = []
+    for t in tools:
+        if isinstance(t, str):
+            out.append({"name": t, "tokens": C.est_tokens(t),
+                        "destructive": False, "description_len": 0})
+            continue
+        if not isinstance(t, dict):
+            continue
+        tn = _pick(t.get("name"), t.get("id"))
+        if not tn:
+            continue
+        desc = str(t.get("description") or "")
+        params = t.get("params") if isinstance(t.get("params"), dict) else {}
+        declared = t.get("schema_tokens")
+        if declared is not None:
+            tokens = int(_as_number(declared) or 0)
+        else:
+            surface = " ".join([tn, desc] + [f"{k}:{v}" for k, v in params.items()])
+            tokens = C.est_tokens(surface)
+        out.append({"name": tn, "tokens": tokens,
+                    "destructive": _as_bool(t.get("destructive"), False),
+                    "description_len": len(desc)})
+    return out
+
+
 def _mcp_entries(raw: Any) -> list:
     if isinstance(raw, dict):
         for bucket in ("servers", "mcps", "mcp_servers"):
@@ -400,7 +440,9 @@ def _mcp_entries(raw: Any) -> list:
     out: list = []
     for rec in raw:
         if isinstance(rec, str):
-            out.append({"name": rec, "tools": 0, "standing": False})
+            out.append({"name": rec, "tools": 0, "standing": False,
+                        "tool_items": [], "tool_tokens": 0, "destructive": False,
+                        "transport": "", "owner": ""})
             continue
         if not isinstance(rec, dict):
             continue
@@ -408,11 +450,20 @@ def _mcp_entries(raw: Any) -> list:
         if not name:
             continue
         tools = rec.get("tools")
-        count = len(tools) if isinstance(tools, list) else int(_as_number(rec.get("tool_count")) or 0)
+        items = _tool_items(tools) if isinstance(tools, list) else []
+        count = len(items) if items else int(_as_number(rec.get("tool_count")) or 0)
         out.append({
             "name": name,
+            # tools 保持为**个数**（向后兼容既有消费者）；明细在 tool_items。
             "tools": count,
             "standing": _as_bool(rec.get("standing"), False),
+            # 工具定义是**每轮都进上下文**的常驻成本（等价于 always skill 的 root_words）。
+            # 只数个数 = 把成本藏起来 —— 与 D8「root_words 无消费」同类缺陷。
+            "tool_items": items,
+            "tool_tokens": sum(int(i.get("tokens") or 0) for i in items),
+            "destructive": any(bool(i.get("destructive")) for i in items),
+            "transport": _pick(rec.get("transport"), rec.get("type")) or "",
+            "owner": _pick(rec.get("owner")) or "",
         })
     return out
 

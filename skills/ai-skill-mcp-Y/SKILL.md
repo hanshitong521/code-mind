@@ -1,6 +1,6 @@
 ---
 name: ai-skill-mcp-Y
-version: 2.0.1
+version: 2.0.3
 description: >-
   SkillMind — 技能运行层: 注册/路由/评分/网关/三级加载/验证/进化。Use when skillmind、优化skill、
   审计MCP、AGENTS瘦身、技能路由、skill评分、误触发治理、skill大扫除。Not for 业务编码、/ai-code、
@@ -52,6 +52,7 @@ Hard Gate(任一即 FAIL): 丢P0证据 | 成功率降 | 权限扩大 | 该用找
 | 平台全文 / 模块细则 | references/spec-v2.md · registry.md · router.md · scoring.md · gateway.md |
 | 加载·记忆·验证·进化 | token-loading.md · memory.md · testmind.md · lifecycle.md |
 | 安全·遥测·整合 | security.md · observability.md · integration.md |
+| MCP 清单与工具成本 | mcp-registry.md（格式 + schema token 口径 + 审计判定） |
 | 审计方法论 | spec-v1.md(全文) · inventory.md · trigger-tests.md · apply.md |
 | 产出模板 | templates/audit-report.md · skill-score-report.md · evolution-log.md · skill-skeleton/ |
 | 路线·验收·迁移·基准 | docs/ROADMAP.md · ACCEPTANCE.md · MIGRATION.md · benchmarks/tasks.yaml |

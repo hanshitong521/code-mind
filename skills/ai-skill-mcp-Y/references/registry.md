@@ -37,8 +37,9 @@
 | `risk` | enum(4) | frontmatter/skill.yaml | 默认 `low` |
 | `destructive` | bool | frontmatter/skill.yaml | 默认 `false` |
 | `always_apply` | bool | 派生 `load_mode == "always"` | 常驻 L0 者 |
-| `root_lines` | int | `SKILL.md` 行数 | 尺寸治理依据（§8：常驻 <200 words） |
-| `root_words` | int | 拉丁词 + 单个中日韩字符 | 中文无空格，故按字计；口径与 `wc -w` **不同** |
+| `root_lines` | int | `SKILL.md` 行数 | **行数硬顶判据**：根 ≤120 行（`audit` 消费；`ROOT_LINES_MAX`） |
+| `root_words` | int | 拉丁词 + 单个中日韩字符 | **words 预算判据**：常驻 <200 / 普通 <500 / >800 强制拆（`audit` 消费；`ROOT_WORDS_HOT/WARN/SPLIT`）；中文无空格故按字计，口径与 `wc -w` **不同** |
+| `load_mode_source` | str | `declared` \| `default` | **`declared`** = `skill.yaml.loading.mode` 或 frontmatter `disable-model-invocation` 显式指定；**`default`** = 两者皆无，落到默认 `always`（属**未声明**，审计报 `LAZY-LOAD` 要求补声明）。用于区分「故意常驻」（latch 型，如 `ai-concise`）与「忘了声明」（V5.1 前 `ai-requirement` 白付 3502 tok/轮） |
 | `refs` | string[] | `references/**` 递归 | 相对 **skill 目录**（如 `references/lean.md`） |
 | `triggers` | {include,exclude} | `derive_triggers` ∪ skill.yaml.triggers | **include** 必须无空白单 token（丢 `trig:` 行尾的 prio 说明）；**exclude** 允许短语（`requirement freeze`），源自 description 否定从句 + skill.yaml |
 | `bundled` | bool | release-manifest ∪ deploy.bundle | 是否进分发 |

@@ -243,10 +243,42 @@ def cmd_verify(args: list[str]) -> int:
 
 # ────────────────────────────── audit（V1 工作流的 V2 机械化） ──────────────────────────────
 
-ROOT_LINES_HOT = 200      # 高频常驻入口预算
-ROOT_LINES_WARN = 500     # 普通根文档预算
-ROOT_LINES_SPLIT = 800    # 强制审视拆分
+# 根 SKILL.md 尺寸预算。**单位是这条的要害**：规范（`references/token-loading.md`
+# §1.2/§5.1、`references/spec-v2.md` §8）里「行数硬顶」与「words 分档」是**两套**
+# 独立判据。V2.0.1 之前把 words 的 200/500/800 原值填进了 *行数* 常量，于是
+# `root_words` 算了却无人消费，「行数过关、词数超标」的常驻成本整类漏检
+# （如 `ai-requirement` 196 行 / 2522 words）。
+ROOT_LINES_MAX = 120      # 根 SKILL.md 行数硬顶（所有 skill，token-loading §1.2）
+ROOT_WORDS_HOT = 200      # 高频常驻根预算（words）
+ROOT_WORDS_WARN = 500     # 普通根预算（words）
+ROOT_WORDS_SPLIT = 800    # 超此值强制拆 references/（words）
+REF_TOKENS_MAX = 2000     # 单条 reference 预算（token-loading §1.3）
+REF_TOKENS_SPLIT = 4000   # 2× 预算：必须拆或改由 scripts/ 预处理
+MCP_TOKENS_WARN = 3000    # MCP 工具 schema 合计常驻预算（est_tokens；≈12 工具 × 250）
+MCP_TOOL_TOKENS_WARN = 600  # 单个工具 schema 预算（超此值疑似把工作流写进 description）
 DESC_LEN_WARN = 400       # description 写满工作流的迹象
+
+
+def _refs_over_budget(root: Path, sid: str, refs: list) -> list:
+    """按 `est_tokens` 找超预算的 reference，按超限程度降序返回 `(tokens, 相对路径)`。
+
+    依据 `references/token-loading.md` §1.3：「单条 reference 估算 > 2000 tokens
+    → 必须再拆，或改由 `scripts/` 预处理后只回传结论」。
+    """
+    out: list = []
+    base = root / f"skills/{sid}"
+    for r in refs:
+        p = base / str(r)
+        try:
+            if not p.is_file():
+                continue
+            t = C.est_tokens(C.read_text(p))
+        except OSError:
+            continue
+        if t > REF_TOKENS_MAX:
+            out.append((t, str(r)))
+    out.sort(key=lambda x: (-x[0], x[1]))
+    return out
 
 
 def _audit_skill(root: Path, s: dict) -> list[dict]:
@@ -255,6 +287,7 @@ def _audit_skill(root: Path, s: dict) -> list[dict]:
     sid = str(s.get("skill_id"))
     rel = str(s.get("path") or f"skills/{sid}/SKILL.md")
     lines = int(s.get("root_lines") or 0)
+    words = int(s.get("root_words") or 0)
     mode = str(s.get("load_mode") or "")
     trig = s.get("triggers") if isinstance(s.get("triggers"), dict) else {}
     inc = list(trig.get("include") or [])
@@ -270,15 +303,26 @@ def _audit_skill(root: Path, s: dict) -> list[dict]:
     if str(s.get("status")) == "deprecated":
         add("status=deprecated：已退役（低频≠可删，须确认无灾备/事故场景）",
             "DISABLE-CANDIDATE", "low", "确认无 P0 场景后 90 天再评估删除")
-    if lines > ROOT_LINES_SPLIT:
-        add(f"根 SKILL.md {lines} 行 > {ROOT_LINES_SPLIT}：破坏渐进式披露",
+    if lines > ROOT_LINES_MAX:
+        add(f"根 SKILL.md {lines} 行 > 硬顶 {ROOT_LINES_MAX}：破坏渐进式披露",
             "SPLIT", "medium", "拆 references/ 并写清命中路由；复跑 trigger 四类")
-    elif lines > ROOT_LINES_WARN:
-        add(f"根 SKILL.md {lines} 行 > {ROOT_LINES_WARN}：审视可否外移",
+    if words > ROOT_WORDS_SPLIT:
+        add(f"根 SKILL.md {words} words > {ROOT_WORDS_SPLIT}：强制拆 references/",
+            "SPLIT", "medium", "外移长文到 references/；复跑 trigger 四类")
+    elif words > ROOT_WORDS_WARN:
+        add(f"根 SKILL.md {words} words > {ROOT_WORDS_WARN}：审视可否外移",
             "OPTIMIZE", "low", "外移后确认 Recall 未下降")
-    if mode == "always" and lines > ROOT_LINES_HOT:
-        add(f"常驻(always)且 {lines} 行 > {ROOT_LINES_HOT}：每轮都付 token",
-            "LAZY-LOAD", "medium", "改 on-demand 或拆 L0 摘要；对比常驻成本")
+    if mode == "always" and words > ROOT_WORDS_HOT:
+        # 区分「故意常驻」与「忘了声明」：前者该留（如 latch 型风格 skill），
+        # 后者该补声明（V5.1 前 ai-requirement 白付 3502 tok/轮）。
+        if str(s.get("load_mode_source") or "") == "declared":
+            add(f"已显式声明常驻(always)但 {words} words > {ROOT_WORDS_HOT}：常驻预算超限",
+                "OPTIMIZE", "medium",
+                "确认常驻是设计需要；可外移则压缩根文档，否则拆 L0 摘要")
+        else:
+            add(f"未声明 loading.mode，落到默认常驻且 {words} words > {ROOT_WORDS_HOT}：每轮都付 token",
+                "LAZY-LOAD", "medium",
+                "补 skill.yaml 显式声明 loading.mode；禁靠默认值决定是否常驻")
     if len(desc) > DESC_LEN_WARN:
         add(f"description {len(desc)} 字过长：疑似写完整工作流",
             "OPTIMIZE", "medium", "压成「Use when … / Not for …」两段")
@@ -291,10 +335,23 @@ def _audit_skill(root: Path, s: dict) -> list[dict]:
     if not (root / f"skills/{sid}/skill.yaml").exists():
         add("缺 skill.yaml：无统一元数据，路由/预算拿不到成本与风险声明",
             "OPTIMIZE", "medium", "按 templates/skill-skeleton/skill.yaml 补，并过 manifest validate")
-    broken = [r for r in (s.get("refs") or []) if not (root / f"skills/{sid}" / r).exists()]
+    refs = list(s.get("refs") or [])
+    broken = [r for r in refs if not (root / f"skills/{sid}" / r).exists()]
     if broken:
         add(f"refs 断链 {len(broken)} 条：{', '.join(broken[:3])}",
             "OPTIMIZE", "medium", "修路径或删引用（禁留死链）")
+    over = _refs_over_budget(root, sid, refs)
+    if over:
+        t0, r0 = over[0]
+        if t0 > REF_TOKENS_SPLIT:
+            add(f"L2 单条超预算：{r0} ≈{t0} tok > {REF_TOKENS_SPLIT}（2×预算）；"
+                f"共 {len(over)}/{len(refs)} 条超 {REF_TOKENS_MAX}",
+                "SPLIT", "medium",
+                "拆该文件或改由 scripts/ 预处理只回传结论；禁一次任务读 ≥5 个碎文件")
+        else:
+            add(f"L2 单条超预算 {len(over)}/{len(refs)} 条"
+                f"（最重 {r0} ≈{t0} tok > {REF_TOKENS_MAX}）",
+                "OPTIMIZE", "low", "拆最重的 1–2 条；确认命中路由仍可单读")
     return out
 
 
@@ -327,25 +384,66 @@ def _audit_agents(root: Path, rules: list) -> list[dict]:
 
 
 def _audit_mcp(root: Path, reg: dict) -> list[dict]:
+    """MCP 审计：**工具 schema 是常驻上下文成本**，与 always skill 的 `root_words` 同类。
+
+    历史缺陷：`mcps[].tools` 只记**个数**，从不度量 schema token → 一个 40 工具、
+    每轮都暴露的 MCP 与一个 3 工具的 MCP 在审计里长得一样。
+    """
     out: list[dict] = []
+
+    def add(res: str, issue: str, action: str, risk: str, verify: str) -> None:
+        out.append({"skill": "(mcp)", "resource": res, "issue": issue,
+                    "action": action, "risk": risk, "verify": verify})
+
     mcps = reg.get("mcps") or []
     cp = C.load_control_plane(root).get("capability_registry") or {}
     budget = ((cp.get("tool_budget") or {}).get("default_max_tools_per_phase")
               if isinstance(cp, dict) else None)
     if not mcps:
-        out.append({"skill": "(mcp)", "resource": "-",
-                    "issue": "仓库无 MCP 清单：无法审计 tool 暴露与 standing 白名单",
-                    "action": "KEEP", "risk": "low",
-                    "verify": "接入 MCP 时补 shared/mcp-registry.yaml 后重跑"})
+        add("-", "仓库无 MCP 清单：无法审计 tool 暴露与 standing 白名单",
+            "KEEP", "low", "接入 MCP 时补 MCP 清单（候选路径见 registry_build.MCP_MANIFEST_CANDIDATES）后重跑")
+        return out
+
+    total_tokens = sum(int(m.get("tool_tokens") or 0) for m in mcps)
     for m in mcps:
+        res = str(m.get("name"))
         tools = int(m.get("tools") or 0)
+        tokens = int(m.get("tool_tokens") or 0)
         standing = bool(m.get("standing"))
-        issue = f"{m.get('name')}: tools={tools} standing={standing}"
-        action = "OPTIMIZE" if (standing or (budget and tools > int(budget))) else "KEEP"
-        out.append({"skill": "(mcp)", "resource": str(m.get("name")), "issue": issue,
-                    "action": action, "risk": "medium" if action == "OPTIMIZE" else "low",
-                    "verify": f"单阶段暴露上限 capability-registry.tool_budget={budget}；"
-                              f"standing 白名单写进 AGENTS/L0"})
+        dest = bool(m.get("destructive"))
+        fired = False
+
+        if standing and tokens > 0:
+            fired = True
+            add(res, f"常驻(standing) 且工具 schema ≈{tokens} tok：每轮都进上下文",
+                "LAZY-LOAD", "medium",
+                "改按需暴露（写进 phase 白名单），或削减工具数；对照 always skill 的常驻成本口径")
+        if budget and tools > int(budget):
+            fired = True
+            add(res, f"tools={tools} > 阶段暴露上限 {budget}",
+                "OPTIMIZE", "medium",
+                "拆 server 或按 phase 分白名单；超限须在 task bundle 显式声明理由")
+        if dest:
+            fired = True
+            add(res, "含 destructive 工具：需二次权限检查 + 明确写意图才可暴露",
+                "OPTIMIZE", "high",
+                "destructive 工具默认隐藏，仅在显式写意图时暴露；确认有二次确认")
+        big = [i for i in (m.get("tool_items") or [])
+               if int(i.get("tokens") or 0) > MCP_TOOL_TOKENS_WARN]
+        if big:
+            fired = True
+            worst = max(big, key=lambda i: int(i.get("tokens") or 0))
+            add(res, f"单工具 schema 过大：{worst.get('name')} ≈{worst.get('tokens')} tok "
+                     f"> {MCP_TOOL_TOKENS_WARN}（{len(big)} 个）",
+                "OPTIMIZE", "medium",
+                "description 只答「何时用」；把工作流/示例移到 server 端文档，禁写进 schema")
+        if not fired:
+            add(res, f"tools={tools} schema≈{tokens} tok 未超预算", "KEEP", "low", "-")
+
+    if total_tokens > MCP_TOKENS_WARN:
+        add("(全部)", f"工具 schema 合计 ≈{total_tokens} tok > {MCP_TOKENS_WARN}：常驻成本超预算",
+            "OPTIMIZE", "medium",
+            "按 phase 收窄暴露面；对照八级序第 1 级「不加载」——最省的是不暴露")
     return out
 
 

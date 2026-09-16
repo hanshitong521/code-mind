@@ -61,6 +61,7 @@
           "score",
           "owner",
           "load_mode",
+          "load_mode_source",
           "risk",
           "destructive",
           "always_apply",
@@ -123,6 +124,11 @@
           "load_mode": {
             "type": "string",
             "enum": ["always", "on-demand", "deep"]
+          },
+          "load_mode_source": {
+            "type": "string",
+            "enum": ["declared", "default"],
+            "description": "declared=skill.yaml 的 loading.mode 或 frontmatter 的 disable-model-invocation 显式指定；default=两者皆无，落到默认 always（属未声明，审计报 LAZY-LOAD 要求补声明）"
           },
           "risk": {
             "type": "string",
@@ -222,7 +228,51 @@
             "minimum": 0
           },
           "standing": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "true = 每轮都暴露给模型（常驻上下文成本）"
+          },
+          "tool_items": {
+            "type": "array",
+            "description": "逐工具 schema 明细（V5.2 新增）。工具定义是每轮都进上下文的常驻成本，只数个数等于把成本藏起来",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "tokens", "destructive"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "tokens": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "est_tokens(工具名 + description + 参数名/类型)；显式 schema_tokens 优先"
+                },
+                "destructive": {
+                  "type": "boolean"
+                },
+                "description_len": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "tool_tokens": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "本 server 全部工具 schema 的 est_tokens 合计（常驻成本口径）"
+          },
+          "destructive": {
+            "type": "boolean",
+            "description": "本 server 是否含任一 destructive 工具"
+          },
+          "transport": {
+            "type": "string",
+            "description": "stdio | sse | http；清单未声明时为空串"
+          },
+          "owner": {
+            "type": "string",
+            "description": "能力归属 owner（对齐 shared/capability-registry.yaml）"
           }
         }
       },

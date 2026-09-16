@@ -11,9 +11,9 @@ python3 <this-skill>/scripts/skillmind.py registry query --status verified --jso
 
 | 字段 | 内容 |
 |---|---|
-| `skills[]` | id / name / category / tags / version / status / score / owner / load_mode / risk / destructive / root_lines / root_words / refs / triggers / bundled / hash |
+| `skills[]` | id / name / category / tags / version / status / score / owner / load_mode / **load_mode_source** / risk / destructive / root_lines / root_words / refs / triggers / bundled / hash |
 | `rules[]` | `.cursor/rules/**/*.mdc` 中 `alwaysApply: true`（**常驻 token 成本来源**） |
-| `mcps[]` | 仓库无 MCP 清单时输出空数组（**不臆造**） |
+| `mcps[]` | 仓库无 MCP 清单时输出空数组（**不臆造**）；有清单时含 `tools`（个数）/ `tool_items`（逐工具 token）/ `tool_tokens`（合计）/ `standing` / `destructive` / `transport` / `owner` |
 | `overlap[]` | 标签交集 ≥2 或 description 关键词交叉 |
 
 **轻量兜底**（只要一份清单、不需要控制面对齐时）：

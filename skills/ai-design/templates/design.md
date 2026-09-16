@@ -90,7 +90,11 @@ architecture-beta
 |---|------|------|------|
 | 1 | 〔问题〕 | 未知 / 待确认 | 〔查什么〕 |
 
-## 6. 验收
+## 6. 本次变更面
+
+> 一句话：改哪一层、哪个模块。（**D7 专属**：本次有代码变更时必写；纯理解 → 删本节并在图下注明「纯理解，无变更」）
+
+## 7. 验收
 
 | # | 判据（可 TDD 化） | 证据 |
 |---|------------------|------|
@@ -116,7 +120,9 @@ plan路径: "@docs/diagram/design.md"
      预算：节点 ≤12 · 边 ≤14 · 画布宽 320~1200px —— 细则 `references/layout.md`；
      交付前 `node scripts/render.mjs docs/diagram/ --strict` 必须全绿。
   4. §关键数字、§排查脉络、§解决方案 — 用不上就**删整节**。
-  4. 图块必须是本文档**唯一**的 mermaid 块，render.mjs 只渲第一个。
-  4. 渲染：node scripts/render.mjs docs/diagram/
+  5. §6 本次变更面 — **仅本次要改代码时保留**；纯理解就删掉它，图下注明「纯理解，无变更」。
+     节序/字段权威 = `references/output-spec.md`（模板唯一权威）+ `references/design-delivery.md`（D7 额外要求）。
+  6. 图块必须是本文档**唯一**的 mermaid 块，render.mjs 只渲第一个。
+  7. 渲染：node scripts/render.mjs docs/diagram/
      查看页：node scripts/viewer.mjs docs/diagram/design.md   （横竖 + 主题可切换）
 -->

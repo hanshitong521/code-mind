@@ -7,10 +7,11 @@
   - **可复现**：同输入同输出；分数用 score.compute 独立复算，不信任 CLI 打印。
   - **诚实**：PyYAML 缺失时相关一致性检查标记 SKIP 而非伪装 PASS。
 
-覆盖 22 项：语法 / schema / 解析器一致性 / 哈希语义一致性 / 注册表 / manifest /
+覆盖 24 项：语法 / schema / 解析器一致性 / 哈希语义一致性 / 注册表 / manifest /
 路由金标 / 评分金标 / 遥测脱敏 / overlap 检测 / 否定从句派生 / 审计 verdict /
 校验器 bool-enum 安全 / 校验器唯一来源 / 哈希免 OS 元数据污染 /
-token 估算公式 / 尺寸预算单位与 root_words 消费 / L2 单条 token 预算。
+token 估算公式 / 尺寸预算单位与 root_words 消费 / L2 单条 token 预算 /
+load_mode 来源区分 / MCP 工具 schema 成本。
 
 用法：python3 scripts/selftest.py [--json]
 退出码：0 = 全 PASS（允许 SKIP）；1 = 有 FAIL；2 = 环境错误。
@@ -599,6 +600,125 @@ def check_ref_token_budget(root: Path) -> dict:
     return {"ok": True, "detail": f"L2 单条超预算正确报出：{hit[0]['issue'][:56]}"}
 
 
+def check_load_mode_source(root: Path) -> dict:
+    """断言 `load_mode` 区分「显式声明」与「默认回落」。
+
+    历史缺陷：`load_mode` 只记结果不记来源 → 审计无法区分
+    「**故意**常驻」（latch 型 skill，如 `ai-concise`，本就该整会话生效）
+    与「**忘了声明**导致默认常驻」（V5.1 前 `ai-requirement` 即此，白付 3502 tok/轮）。
+    两者处置完全相反：前者该保留，后者该补声明。
+    """
+    sk = _mod("skillmind")
+    problems = []
+
+    reg = C.load_json(Path(C.state_dir(root)) / "registry.json", {}) or {}
+    missing = [s.get("skill_id") for s in (reg.get("skills") or [])
+               if "load_mode_source" not in s]
+    if missing:
+        problems.append(f"注册表缺 load_mode_source：{', '.join(str(m) for m in missing[:3])}")
+
+    def probe(src: str) -> set:
+        fake = {"skill_id": "__probe__", "path": "skills/__probe__/SKILL.md",
+                "root_lines": 60, "root_words": 900, "load_mode": "always",
+                "load_mode_source": src,
+                "triggers": {"include": ["x"], "exclude": ["y"]}, "refs": [],
+                "description": "probe", "status": "active"}
+        return {f["action"] for f in sk._audit_skill(root, fake)}
+
+    if "LAZY-LOAD" not in probe("default"):
+        problems.append("默认回落常驻未报 LAZY-LOAD（应提示补显式声明）")
+    if "LAZY-LOAD" in probe("declared"):
+        problems.append("显式声明的常驻被误报 LAZY-LOAD（该报预算超限，不是「未声明」）")
+    return {"ok": not problems,
+            "detail": "load_mode 来源区分正确（默认回落 vs 显式声明）" if not problems
+                      else "错误: " + "; ".join(problems)}
+
+
+def check_mcp_tool_budget(tmp: Path) -> dict:
+    """断言 MCP 工具 schema 的 token 成本被真正度量并审计。
+
+    历史缺陷：`_mcp_entries` 只数工具**个数**（`tools: int`），从不估算工具 schema 的
+    token 成本 —— 而工具定义是**每轮都进上下文**的常驻成本，等价于 always skill 的
+    `root_words`。同一类「成本存在但无人度量」的缺陷（对照 D8）。
+    """
+    rb = _mod("registry_build")
+    sk = _mod("skillmind")
+    problems = []
+
+    raw = {"servers": [{
+        "name": "demo", "transport": "stdio", "standing": True, "owner": "demo-owner",
+        "tools": [
+            {"name": "read_file",
+             "description": "Read a file from disk. Use when you need file contents.",
+             "destructive": False, "params": {"path": "string"}},
+            {"name": "delete_file",
+             "description": "Delete a file permanently. Irreversible.",
+             "destructive": True, "params": {"path": "string"}},
+        ]}]}
+    entries = rb._mcp_entries(raw)
+    if not entries:
+        return {"ok": False, "detail": "_mcp_entries 返回空"}
+    e = entries[0]
+    for key in ("tool_items", "tool_tokens", "destructive"):
+        if key not in e:
+            problems.append(f"解析层缺字段 {key}")
+    if int(e.get("tool_tokens") or 0) <= 0:
+        problems.append("tool_tokens 未计算（工具 schema 成本未度量）")
+    if len(e.get("tool_items") or []) != 2:
+        problems.append("tool_items 未逐工具展开")
+    if not e.get("destructive"):
+        problems.append("含 destructive 工具却未标记")
+    if int(e.get("tools") or 0) != 2:
+        problems.append("tools 计数回归（应保持为 2，向后兼容）")
+
+    over = dict(e, tool_tokens=int(getattr(sk, "MCP_TOKENS_WARN", 3000)) + 1)
+    clean = {"name": "clean", "tools": 2, "standing": False, "tool_tokens": 100,
+             "tool_items": [], "destructive": False}
+    found = sk._audit_mcp(tmp, {"mcps": [over, clean]})
+    if not any(f["action"] != "KEEP" for f in found):
+        problems.append("常驻且 schema 超预算的 MCP 未被报出")
+    if not any(f["action"] == "KEEP" and f["resource"] == "clean" for f in found):
+        problems.append("合规 MCP 未被判 KEEP（误报）")
+    if not any("tool_items" in i or "tokens" in i for m in [e] for i in m["tool_items"]):
+        problems.append("tool_items 未带 token 明细")
+    return {"ok": not problems,
+            "detail": "MCP 工具 schema 成本已度量并审计" if not problems
+                      else "错误: " + "; ".join(problems)}
+
+
+def check_camelcase_hint() -> dict:
+    """断言项目类型推断能看见 CamelCase / 下划线标识符。
+
+    历史缺陷：`_hint_hit` 对 ASCII 提示按词边界匹配（`(?<![a-z0-9_])mapper(?![a-z0-9_])`），
+    而 `BrandMapper.xml` 归一化后是一整块 `brandmapper.xml` —— `mapper` 前面是字母 `d`，
+    词边界不成立 → `project_type=None` → `category` 权重归零 → 总分跌破 `0.12` 阈值
+    → 「未命中任何技能」。实测 18 条基准里 **7 条**因此落空，
+    Router 准确率被压到 0.167（`docs/ACCEPTANCE.md` §1.3 要求 > 0.90）。
+    """
+    r = _mod("router")
+    problems = []
+    cases = [
+        ("BrandMapper.xml 的 selectByPrimaryKey 用的是 SELECT *", "backend"),
+        ("UserMapper 分页查询", "backend"),
+        ("OrderDao 的空指针", "backend"),
+        ("springBoot 配置读不到", "backend"),
+        ("React 组件样式调整", "frontend"),
+        ("把需求澄清成规格", "requirement"),
+    ]
+    for text, want in cases:
+        got = r.infer_project_type(text)
+        if got != want:
+            problems.append(f"{text[:22]!r} → {got!r} 期望 {want!r}")
+    # 反例：不得因拆分而把纯 ASCII 提示误命中（`java` 不该在 `javascript` 里命中）
+    for text in ("javascript 前端页面", "vuesome 组件"):
+        got = r.infer_project_type(text)
+        if got == "backend":
+            problems.append(f"{text!r} 被误判为 backend（跨域误命中）")
+    return {"ok": not problems,
+            "detail": "CamelCase/下划线标识符可被项目类型推断看见" if not problems
+                      else "错误: " + "; ".join(problems)}
+
+
 # ────────────────────────────── 主流程 ──────────────────────────────
 
 def run(root: Path) -> dict:
@@ -638,6 +758,9 @@ def run(root: Path) -> dict:
         add("est_tokens", lambda: check_est_tokens())
         add("size_budget_units", lambda: check_size_budget_units(root))
         add("ref_token_budget", lambda: check_ref_token_budget(root))
+        add("load_mode_source", lambda: check_load_mode_source(root))
+        add("mcp_tool_budget", lambda: check_mcp_tool_budget(tmp))
+        add("camelcase_hint", lambda: check_camelcase_hint())
 
     counts = {s: sum(1 for c in checks if c["status"] == s) for s in (PASS, FAIL, SKIP)}
     return {"schema_name": "skillmind-selftest", "schema_version": C.SCHEMA_VERSION,

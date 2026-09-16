@@ -224,6 +224,24 @@ def round2(x: float) -> float:
     return float(f"{x:.2f}")
 
 
+#: token 估算用的 CJK 字符面（CJK 标点 / 假名 / 汉字 / 全角）。
+_CJK_RE = re.compile(r"[\u3000-\u303f\u3040-\u30ff\u4e00-\u9fff\uff00-\uffef]")
+
+
+def est_tokens(text: Any) -> int:
+    """零依赖 token 估算（`references/token-loading.md` §3）：
+
+        est_tokens(s) = ceil(ascii_chars / 4) + ceil(cjk_chars / 1.5)
+
+    **只用于预算核验与报告填报**。禁与遥测实测值（`context_tokens_loaded` /
+    `result_tokens`）混报 —— 报告里估算与实测必须分列并标 `est` / `telemetry`。
+    """
+    s = str(text or "")
+    cjk = len(_CJK_RE.findall(s))
+    ascii_n = len(s) - cjk
+    return -(-ascii_n // 4) + -(-2 * cjk // 3)   # ceil(a/4) + ceil(cjk/1.5)
+
+
 # ────────────────────────────── IO ──────────────────────────────
 
 def read_text(path: str | Path) -> str:

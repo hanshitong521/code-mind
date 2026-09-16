@@ -3,7 +3,7 @@
 ## 通用纪律
 
 - 一次只改一个资源；改完**必须**复跑 `skillmind.py audit` + 该资源的 trigger 四类。
-- 任何 skill 改动后跑 `skillmind.py selftest`（19 项端到端，零污染）与
+- 任何 skill 改动后跑 `skillmind.py selftest`（24 项端到端，零污染）与
   `python3 scripts/validate_bundle.py`。
 - 动了 skill 内容 → `skillmind.py registry build` 重算哈希；若该 skill 在
   `shared/release-manifest.yaml` 里声明，须同步 `content_hash`（否则 `verify` 报 DRIFT）。
@@ -17,9 +17,14 @@ description 只答「现在要不要加载我?」≤1 行；含 **Use when** + *
 根 `SKILL.md` 只留：frontmatter · 何时用/不用 · 命令/路由 · 不可破 invariant · 输出契约。
 移出：API 长文、全场景步骤、重复示例、项目业务规则副本、AGENTS 已有事实。
 
-尺寸：高频常驻根 <200 words；普通根 <500；>800 行**强制**拆 `references/`，
+尺寸：高频常驻根 <200 words；普通根 <500 words；>800 words**强制**拆 `references/`。
+**行数与 words 是两套判据**：根 `SKILL.md` 另有 **120 行硬顶**（所有 skill，不限常驻）。
+L2 单条 reference 另有 **2000 tokens 预算**（`_common.est_tokens` 口径；超 2× 即必须拆）。
 且路由表写清「命中才读哪一条」。
 禁为拆而拆：一次任务要读 ≥5 个碎文件 = 失败，合回去。
+
+`audit` 报尺寸问题先分清责任：**词数超** → 常驻/加载成本；**行数超** → 结构已碎。
+两者都可能同时命中同一文件，属正常（同一份文档两个维度各超各的）。
 
 强模型：删 18 步食谱、泛 MUST/ALWAYS；改成 Goal / Constraints / DoD / Evidence。
 弱模型仍要跑通时：细节放 reference，根不写行程。

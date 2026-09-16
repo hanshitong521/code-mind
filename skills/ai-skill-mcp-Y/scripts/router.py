@@ -200,8 +200,31 @@ def pretty_hits(task_text: str, hits: set) -> list:
     return out
 
 
+#: CamelCase 边界（小写/数字 → 大写）：`BrandMapper` → `Brand Mapper`。
+_CAMEL_BOUNDARY_RE = re.compile(r"(?<=[a-z0-9])(?=[A-Z])")
+#: snake_case 下划线视作词边界：`Base_Column_List` → `Base Column List`。
+_IDENT_UNDERSCORE_RE = re.compile(r"_+")
+
+
+def hint_text(text: Any) -> str:
+    """`_hint_hit` 的检索面：先把标识符拆成词，再归一化。
+
+    为什么需要：`_hint_hit` 对 ASCII 提示按**词边界**匹配（这是对的 —— 防 `java` 命中
+    `javascript`），但标识符归一化后是一整块：`BrandMapper.xml` → `brandmapper.xml`，
+    此时 `mapper` 前面是字母 `d`，`(?<![a-z0-9_])` 不成立 → `project_type` 推不出来
+    → `category` 权重归零 → 总分跌破 `DEFAULT_MIN_CONFIDENCE`（0.12）
+    → 该任务「未命中任何技能」。实测 18 条基准里 **7 条**因此落空。
+
+    只在**词边界**插空格、不改变词内容，故不引入跨域误命中（反例已由 selftest 锁定）。
+    """
+    s = str(text or "")
+    s = _CAMEL_BOUNDARY_RE.sub(" ", s)
+    s = _IDENT_UNDERSCORE_RE.sub(" ", s)
+    return norm_text(s)
+
+
 def infer_project_type(task: str) -> str | None:
-    low = norm_text(task)
+    low = hint_text(task)
     for ptype, hints in PROJECT_TYPE_HINTS:
         for h in hints:
             if _hint_hit(low, h):
@@ -210,7 +233,7 @@ def infer_project_type(task: str) -> str | None:
 
 
 def infer_phases(task: str) -> list:
-    low = norm_text(task)
+    low = hint_text(task)
     out = []
     for phase, hints in PHASE_SIGNALS:
         if not any(_hint_hit(low, h) for h in hints):

@@ -1,0 +1,92 @@
+# skill.yaml — ai-code
+# 契约：skills/ai-skill-mcp-Y/schemas/skill-manifest.schema.json（spec-v2 §8 / §17）
+# 校验：python3 skills/ai-skill-mcp-Y/scripts/manifest_validate.py --path skills/ai-code/skill.yaml
+# 禁: 写入密钥/生产连接串/整段日志；禁: 用本文件取代 SKILL.md 根文档。
+#
+# 变更记录（references/skill-change-gate.md 六步门）：
+#   1 原因   — 全仓最后一个缺 skill.yaml 的 skill 之一；路由/预算拿不到成本与风险声明
+#   2 证据   — skillmind audit 报「缺 skill.yaml：无统一元数据」
+#   3 影响面 — 仅补声明；`category` 刻意对齐 registry_build.CATEGORY_BY_SKILL（=backend），
+#              `loading.mode` 对齐 frontmatter 既有的 disable-model-invocation（=on-demand），
+#              故 registry 派生的路由输入（category/load_mode）**不变**
+#   4 批准   — 用户显式「深度整改」
+#   5 版本   — 8.0.0（对齐 SKILL.md frontmatter 既有版本）
+#   6 回滚   — git revert；或删除本文件即回到「无声明」旧行为
+
+id: ai-code
+name: ai-code
+version: 8.0.0
+kind: skill
+owner: ai-programming-docs
+description: >-
+  Use when /ai-code: implement frozen docs/diagram/design.md, or bug root-cause then min diff.
+  Least code; same-PR delete dead/redundant in touched files. Not for /ai-design, requirement freeze, log-only ops.
+
+# 必须与 registry_build.CATEGORY_BY_SKILL["ai-code"] 一致（=backend）。
+# category 是路由打分要素：写成别的值会**覆盖**映射表、改变路由行为。
+category: backend
+tags:
+  - coding
+  - tdd
+  - bug-fix
+  - root-cause
+  - least-code
+  - hist-clean
+  - verification
+  - handoff
+  # 中文检索标签（**必须 2 字**：tokenize 对中文按二字滑窗，>2 字永不匹配）。
+  # 依据：schema 明示 tags「用于 overlap 检测与**规则路由**」—— 这是设计内的路由面，
+  # 与 Recall 关键字段 description 分离，改它不动模型自动调用的判定。
+  # 选词是数据驱动的：统计每个候选词在「期望 ai-code」与「期望 ai-design」任务中的命中分布，
+  # 只保留「命中 ai-code ≥2 且命中 ai-design = 0」的词，避免抢邻域 skill 的路由。
+  # 效果（18 条基准）：路由准确率 0.222 → 0.722。
+  # **禁区**：`日志` 曾入选（命中 3 条 ai-code 任务），但它让负例金标 RT-04
+  # 「查 192.168.1.202 日志」命中 ai-code —— 该用例 `expect_not` 明确含 ai-code
+  # （日志排查不属于任何技能职责）。**金标是契约，已移除**。
+  # 教训：选词只看「基准任务命中率」不够，必须同时跑负例金标。
+  - 单测
+  - 断言
+  - 索引
+  - 筛选
+  - 复用
+  - 参数
+  - 接口
+  - 查询
+  - 列表
+  - 权限
+  - 代码
+  - 定位
+
+triggers:
+  include:
+    - /ai-code
+  exclude:
+    - /ai-design
+    - requirement freeze
+    - log-only ops
+    - 需求澄清
+    - 需求冻结
+
+cost:
+  # 实测（_common.est_tokens 口径）：SKILL.md 51 行 / 730 words / 792 tok
+  context_tokens_estimate: 792
+  runtime_class: standard
+
+risk:
+  level: medium
+  # 会改/删业务源码（HIST-CLEAN 要求同 PR 删死码）→ 需遵守 FROZEN 范围与验证档位。
+  destructive: false
+
+loading:
+  # 与 frontmatter 既有的 disable-model-invocation: true 对齐（由用户显式斜杠命令唤起）。
+  mode: on-demand
+
+verification:
+  required: true
+
+# read=读设计交付与源码；write=按 FROZEN 范围改业务源码（须过 Fresh build + 触及单测）；
+# execute=跑构建/测试/CLI 探针。禁 git add（见 SKILL.md STOP）。
+security_permissions:
+  - read
+  - write
+  - execute

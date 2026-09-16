@@ -24,7 +24,7 @@ skills:
     source_ref: WORKING_TREE
     source_path: skills/ai-code
     artifact_path: skills/ai-code
-    content_hash: sha256:f35723b984075c69f4957883a6d98ace16ab3b0df41a6e21be3484f34c66f456
+    content_hash: sha256:17eefa4bfb8b682cba7b4829d061b6cb5b623490613038e5b9fc3ddf3e2d04f3
     version: 8.0.0
     schema_version: 1
     editable: true
@@ -34,8 +34,8 @@ skills:
     source_ref: WORKING_TREE
     source_path: skills/ai-design
     artifact_path: skills/ai-design
-    content_hash: sha256:f3b761eab119eeb3f7b617954a975f2225248c8b58603a085244fab00391a3b9
-    version: 6.5.0
+    content_hash: sha256:5826e876934b9fabc0b0447e691666c26848a14e2e4ea9950258e641d54e0a62
+    version: 6.6.0
     schema_version: 1
     editable: true
   ai-codeHealthMind:
@@ -44,7 +44,7 @@ skills:
     source_ref: WORKING_TREE
     source_path: skills/ai-codeHealthMind
     artifact_path: skills/ai-codeHealthMind
-    content_hash: sha256:87edfc5aa601b237627c019232774ffa7827d4c05c4a119dde51ddb459f27d0b
+    content_hash: sha256:704b6a34fdb33f649e84db6d5009bf535d5de2858ee27552f5313f8c4099327b
     version: 1.0.0
     schema_version: 1
     editable: true
@@ -54,8 +54,8 @@ skills:
     source_ref: WORKING_TREE
     source_path: skills/ai-skill-mcp-Y
     artifact_path: skills/ai-skill-mcp-Y
-    content_hash: sha256:0ea3e2250b87bf7b6cbf950baa218cfd3ad724fe315dd70f56395bf88a8da84c
-    version: 2.0.1
+    content_hash: sha256:32a60ac173346735cec7975004e6da9a5ce39c60c2ca03ab00f324ca4b9f38a9
+    version: 2.0.3
     schema_version: 1
     editable: true
   ai-requirement:

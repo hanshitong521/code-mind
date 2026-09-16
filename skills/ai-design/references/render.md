@@ -1,6 +1,7 @@
-# render · 渲染、构图审计与工具链
+# render · 渲染、预检与构图审计
 
 **规则：没渲染成功 + 没通过构图审计，不算出图。** 只贴 DSL 源码不算交付。
+**本页管「怎么渲、怎么判合格」；工具链安装 / 主题与视觉基线 / 查看页 / 失败处理 → `toolchain.md`。**
 
 ## 渲染前先跑 lint（省时间，不是可选项）
 
@@ -36,7 +37,12 @@ node scripts/render.mjs docs/diagram/ --variants             # 额外出 主题�
 node scripts/render.mjs <输入.mmd|.md> <输出.svg|.png>        # 单文件；.md 自动抽代码块
 node scripts/render.mjs --check                              # 探测工具链
 node scripts/render.mjs docs/diagram/ --json                 # 机器可读结果（含审计明细）
+node scripts/viewer.mjs docs/diagram/design.md               # 查看页 → design.viewer.html
+node scripts/preview.mjs docs/diagram/design.md              # 救急：没工具链时出「打开即出图」的单文件 HTML
+node scripts/selftest.mjs                                    # 自测（含 lint 用例）
 ```
+
+`preview.mjs` 是**救急预览**（浏览器从 CDN 拉 mermaid 渲染，需联网、**不做构图审计**）；**正式交付物一律走 `render.mjs --strict`**。
 
 | 选项 | 作用 |
 |------|------|
@@ -87,15 +93,6 @@ node scripts/render.mjs docs/diagram/ --json                 # 机器可读结�
 
 **别急着上 elk**：elk 治「留白」不治「看不懂」。先把信息量砍下来。
 
-## 查看页（横竖 + 主题 + 缩放）
-
-```bash
-node scripts/viewer.mjs docs/diagram/design.md            # → docs/diagram/design.viewer.html
-node scripts/viewer.mjs docs/diagram/                     # 目录里每个含图的 .md 各出一个
-```
-
-单个自包含 HTML（4 个变体 SVG 内联、无外部依赖，可直接发给别人）。三组开关：**方向**（非 `flowchart` 自动隐藏）· **主题** · **缩放**（画布很宽的图靠"原始"横向滚动看细节）。内部就是调 `render.mjs --variants`，**增量缓存照样生效**。
-
 ## 效率
 
 | 机制 | 说明 |
@@ -110,37 +107,9 @@ node scripts/viewer.mjs docs/diagram/                     # 目录里每个含�
 
 `render.mjs` 默认**一个 `.md` 只渲第一个图块**，多图块打警告并忽略其余（多主题 → 拆多份文档）。
 
-## 工具链位置（按序探测）
+## 工具链 · 主题 · 查看页 · 失败处理
 
-1. `<项目>/.tools/diagram/node_modules/`（项目本地，推荐）
-2. `<skill>/.tools/diagram/node_modules/`
-3. `~/.workbuddy-ai/binaries/diagram/node_modules/`
-
-**注意**：按 `process.cwd()` 向上找 6 层。从不含 `.tools/diagram` 的目录调用会报「未安装」—— 到项目根执行即可。
-
-## 首次安装（国内镜像 · 装到非系统盘）
-
-```bash
-mkdir -p .tools/diagram && cd .tools/diagram
-export PUPPETEER_SKIP_DOWNLOAD=true                        # 复用系统 Chrome，不下载 Chromium
-export PUPPETEER_EXECUTABLE_PATH="/c/Program Files/Google/Chrome/Application/chrome.exe"
-npm init -y && npm i @mermaid-js/mermaid-cli --registry=https://registry.npmmirror.com
-```
-
-`@mermaid-js/layout-elk` 随 mermaid-cli 一起装（`--layout elk/auto` 依赖它，`--check` 会报有没有）。
-**不要装 `@terrastruct/d2`**（v6.1 已下线，理由见下）。
-
-## 主题
-
-`assets/mermaid-theme.json`（浅）/ `mermaid-theme-dark.json`（暗）是**视觉基线**，直接作为 `mermaidConfig` 传给 Mermaid：
-
-- **三级字阶**：带标题 15px/600（`.cluster-label`）> 节点 15px > 边注 13px（`.edgeLabel`）
-- **形状语言**：节点圆角 8 + 极浅投影；带框圆角 10 + 冷灰底 `#f4f8fd`
-- 副标题降级：`.nodeLabel .s` → 13px 次要色（配合 `"标题<br/><span class='s'>副标题</span>"`）
-- `archEdgeColor` / `archEdgeArrowColor` / `archGroupBorderColor`：`architecture-beta` **不走通用变量**，漏了就还是默认紫
-- `fillType0..7` 是 `classDef` 未指定时的兜底色阶；分图型块控制 `curve`/`nodeSpacing`/`rankSpacing`
-
-改主题只动这两个 JSON，不用改图源。
+移到 `toolchain.md`（按序探测的安装位置 / 首次安装 / 主题与视觉基线 / `viewer.mjs` 查看页 / 失败处理表）。
 
 ## 渲染细节
 
@@ -155,20 +124,6 @@ v6.1 记的「`layout:'elk'` 挂死 >8 分钟」是 **D2（terrastruct）** 链�
 
 D2 仍下线的三条理由（对 D2 依然成立）：D2 的 elk 挂死 >8 分钟 ｜ ESM/CJS 解析冲突（`require.resolve` 拿到 `node-cjs/index.js`）｜ 中文字体 `simhei.ttf` base64 12.4 MB 进 WASM worker，挂死 >9 分钟。
 **结论**：Mermaid `architecture-beta` 足够表达分层架构；`.d2` 输入显式拒绝。
-
-## 失败处理
-
-| 症状 | 处理 |
-|------|------|
-| `mermaid-cli 未安装` | 打印安装命令，**不要**静默降级为"只输出源码"；也检查 cwd 是不是在项目根 |
-| Mermaid 报 parse error | 回 `mermaid.md` 陷阱表，修 DSL 后重试 |
-| `Diagrams beginning with --- are not valid` | 抽源码时没 dedent，YAML front-matter 还带缩进 |
-| 中文变方块 | Mermaid 走 Chrome 渲染，一般不会；确认 Chrome 可用 |
-| 首次渲染慢 | 冷启动，属正常；第二次走增量（0.2s） |
-| 审计报「画布宽超标」 | **先砍节点进表**；确认要保留再试 `--layout elk` 或换 `--direction` |
-| `elk 未改善，保留 dagre` | 正常提示：问题在信息量，不在引擎 |
-| `elk 复算失败（…）` | 降级继续用 dagre，不阻断；`--check` 看 `layout-elk` 是否装上 |
-| `.d2` 被拒绝 | 预期行为，D2 已下线；改用 `architecture-beta` |
 
 ## 产物
 

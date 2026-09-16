@@ -8,7 +8,7 @@
 # 1. 拷一个模板到你的项目
 cp <skill>/templates/design.md  <你的项目>/docs/diagram/design.md
 
-# 2. 改掉 <尖括号> 里的内容，图块里换成你自己的节点和边
+# 2. 把 〔...〕 占位符换成你的内容，图块里换成你自己的节点和边
 
 # 3. 渲染 + 出查看页（横竖 / 主题可切换）
 node <skill>/scripts/render.mjs docs/diagram/
@@ -19,7 +19,7 @@ node <skill>/scripts/viewer.mjs docs/diagram/design.md
 
 | 文件 | 用途 | 图型 |
 |------|------|------|
-| `design.md` | **主模板** —— 完整技术文档骨架：1 张架构图 + 分层/工件链/风险/未知/验收 表格 + `design_to_code` YAML | `architecture-beta` |
+| `design.md` | **主模板** —— 完整技术文档骨架：1 张架构图 + 分层/工件链/风险/未知/变更面/验收 表格 + `design_to_code` YAML（结构权威 = `references/output-spec.md`） | `architecture-beta` |
 | `architecture.md` | 分层架构 / 服务拓扑 | `architecture-beta` |
 | `flowchart.md` | 业务流程 / 决策分支 / 数据流 | `flowchart` |
 | `sequence.md` | 调用时序 / 请求-响应链 | `sequenceDiagram` |

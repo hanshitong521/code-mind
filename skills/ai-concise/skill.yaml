@@ -1,0 +1,70 @@
+# skill.yaml — ai-concise（ConciseMind v5.1）
+# 契约：skills/ai-skill-mcp-Y/schemas/skill-manifest.schema.json（spec-v2 §8 / §17）
+# 校验：python3 skills/ai-skill-mcp-Y/scripts/manifest_validate.py --path skills/ai-concise/skill.yaml
+# 禁: 写入密钥/生产连接串/整段日志；禁: 用本文件取代 SKILL.md 根文档。
+#
+# 变更记录（references/skill-change-gate.md 六步门）：
+#   1 原因   — 全仓唯一仍是 load_mode_source=default 的 skill；常驻是设计意图但从未声明
+#   2 证据   — skillmind audit 报「未声明 loading.mode，落到默认常驻且 448 words > 200」
+#   3 影响面 — 仅补声明，SKILL.md 一字未改；load_mode 结果不变（仍 always），仅来源变 declared
+#   4 批准   — 用户显式「深度整改」
+#   5 版本   — 5.1.0（首次纳入统一清单契约；此前无 skill.yaml）
+#   6 回滚   — git revert；或删除本文件即回到「无声明 → default」
+
+id: ai-concise
+name: ConciseMind
+version: 5.1.0
+kind: skill
+owner: concise-mind
+description: >-
+  Session-latched terse output. Use when /concise-mind, 简洁/说人话/别废话/压缩 output.
+  Not for /ai-code alone, Requirement Gate WHAT, or skill/MCP governance audits.
+
+# 必须与 registry_build.CATEGORY_BY_SKILL["ai-concise"] 一致（=docs）。
+# category 是路由打分要素：写成别的值会**覆盖**映射表、改变路由行为。
+category: docs
+tags:
+  - concise
+  - terse-output
+  - output-style
+  - compression
+  - session-latch
+  - eli5
+  - handoff
+
+triggers:
+  include:
+    - /concise-mind
+    - 简洁
+    - 说人话
+    - 别废话
+    - 简洁模式
+    - 说人话模式
+  exclude:
+    - /ai-code
+    - Requirement Gate
+    - skill governance audits
+    - MCP audits
+
+cost:
+  # 实测（_common.est_tokens 口径）：58 行 / 448 words / 573 tok
+  context_tokens_estimate: 573
+  runtime_class: cheap
+
+risk:
+  level: low
+  destructive: false
+
+loading:
+  # 显式常驻：本 skill 是会话级 latch（frontmatter `Session-latched: true`），
+  # 必须整会话生效才能约束每一轮输出 —— 常驻是设计需要，不是默认回落。
+  # 审计据此报 OPTIMIZE（常驻预算超限）而非 LAZY-LOAD（未声明）。
+  mode: always
+
+verification:
+  required: true
+
+# 只读：本 skill 不写任何文件（latch 状态由 scripts/latch.py 写 .concise-mind.latch.json，
+# 属运行期生成物，不在此声明范围内）。
+security_permissions:
+  - read

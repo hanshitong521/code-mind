@@ -1,0 +1,79 @@
+# skill.yaml — ai-requirement（RequirementMind V5）
+# 契约：skills/ai-skill-mcp-Y/schemas/skill-manifest.schema.json（spec-v2 §8 / §17）
+# 校验：python3 skills/ai-skill-mcp-Y/scripts/manifest_validate.py --path skills/ai-requirement/skill.yaml
+# 禁: 写入密钥/生产连接串/整段日志；禁: 用本文件取代 SKILL.md 根文档。
+#
+# 变更记录（references/skill-change-gate.md 六步门）：
+#   1 原因   — 根文档 3502 tok 且 load_mode 未声明 → 走默认 always，每轮都付（审计 D11）
+#   2 证据   — skillmind audit 报「常驻(always)且 2522 words > 200」；实测 est_tokens=3502/轮
+#   3 影响面 — 仅 loading.mode 声明；router.py 不消费 load_mode（已 grep 确认），Recall 不受影响
+#   4 批准   — 用户显式「深度整改」
+#   5 版本   — 5.0.0（首次纳入统一清单契约；此前无 skill.yaml / 无 VERSION）
+#   6 回滚   — git revert；或删除本文件即回到「无声明 → always」旧行为
+# 注: 本 skill 在 shared/release-manifest.yaml 中为 VENDORED_RELEASE_COPY（editable: false），
+#     canonical 在 hanshitong521/requirement-mind —— 本次改动需同步回上游仓，否则会被下次 re-vendor 覆盖。
+
+id: ai-requirement
+name: RequirementMind
+version: 5.0.0
+kind: skill
+owner: requirement-mind
+description: >-
+  AI requirement clarification, adversarial review and spec compilation. Turns a vague one-line
+  requirement into a frozen, evidence-backed DEVELOPMENT_SPEC.md gated by a Requirement Gate,
+  before any coding agent starts. Use when the user says 澄清需求 / 需求追问 / 需求审查 /
+  Requirement Gate / 开始需求分析 / requirementmind, or asks to turn a rough requirement into a
+  dev spec for Codex/Cursor/Claude Code.
+
+category: governance
+tags:
+  - requirement
+  - requirement-gate
+  - clarification
+  - spec-compilation
+  - adversarial-review
+  - evidence
+  - freeze
+  - what-not-how
+
+triggers:
+  include:
+    - 澄清需求
+    - 需求追问
+    - 需求审查
+    - Requirement Gate
+    - 开始需求分析
+    - requirementmind
+  # 负向面只放**本 skill 自己的易混邻域**：只做 WHAT（澄清/冻结/规格），不做 HOW。
+  # 禁抄别家领域词（如 `查日志`/`对账` 属 ai-skill-mcp-Y 的排除面）——
+  # 抄进来会让任何提到这些词的任务把**所有** skill 全排除掉，`recommended` 变空
+  # （命中 ACCEPTANCE §5 Hard Gate「该用找不到」）。BM-06 即因此掉到空。
+  exclude:
+    - /ai-code
+    - /ai-design
+    - 写业务码
+    - 代码实现
+    - 改生产配置
+
+cost:
+  # 实测（_common.est_tokens 口径，V5.1 瘦身后）：3502 → 1557
+  context_tokens_estimate: 1557
+  runtime_class: standard
+
+risk:
+  level: medium
+  destructive: false
+
+loading:
+  # 关键：V5.1 之前无本文件 → 走默认 always，每轮都付 3502 tok。
+  # 本 skill 只在「需求澄清会话」中相关，常驻无收益 → on-demand。
+  mode: on-demand
+
+verification:
+  required: true
+
+# read=扫描目标项目取证；write 仅限生成物目录（目标项目 .requirementmind/、
+# docs/requirementmind/、.agent-prompts/），不触业务代码。
+security_permissions:
+  - read
+  - write

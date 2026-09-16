@@ -35,6 +35,23 @@ Business Goal / Scope / Core Flow / Business Rules / Data Model / API Contract /
 - BLOCKED 时 `missing` 必须逐条列出缺失项与对应 id，让用户知道差什么。
 - gate.json 写入后快照到 `history/`，阶段游标置 `GATED`。
 
+## V5 状态机（`session.json.phase`）
+
+由 `node $SKILL/scripts/state.mjs gate-state --record --to <NODE>` 维护。
+
+```
+INPUT ──▶ ANALYZING ──▶ BLOCKED ◀──┐
+                      │            │
+                      ▼            │
+              READY_FOR_DEVELOPMENT│
+                      │            │
+                      ▼            │
+                  FROZEN ─────────┘  (开发期发现新未知回 BLOCKED)
+```
+
+**非法迁移（如 `BLOCKED → FROZEN` 跳过 READY）由脚本拦截**，不是靠自觉。
+详见 `state.mjs gate-state`。
+
 ## 防过度审查（Stop Rule 的审查侧）
 
 - `stop` 退出码 0 后禁止追加提问；为修 BLOCKED 而回流的内容，修复后直接重跑 Gate，**最多 2 轮**。
